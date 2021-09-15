@@ -11,7 +11,7 @@ EECXXFLAGS = -std=c++20 -fno-rtti -fno-exceptions $(EECCFLAGS)
 EELDFLAGS := -L$(PS2SDK)/ee/lib -Wl,-zmax-page-size=128
 
 BIN = ssx_elfldr.elf
-OBJS = main.o codeutils.o
+OBJS = main.o codeutils.o ElfLoader.o patch_hostfs.o patch_memory.o
 
 # set to just `c` to use regular newlib.
 # not that you'd really need to, but the option is there!

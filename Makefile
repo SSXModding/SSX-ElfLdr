@@ -11,12 +11,12 @@ EECXXFLAGS = -std=c++20 -fno-rtti -fno-exceptions $(EECCFLAGS)
 EELDFLAGS := -L$(PS2SDK)/ee/lib -Wl,-zmax-page-size=128
 
 BIN = ssx_elfldr.elf
-OBJS = main.o
+OBJS = main.o codeutils.o
 
 # set to just `c` to use regular newlib.
 # not that you'd really need to, but the option is there!
 EELIBC = c_nano
-EEPS2SDK_LIBS = -lcdvd  -lkernel -lps2sdkc
+EEPS2SDK_LIBS = -lcdvd -lkernel -lps2sdkc
 
 # This complicated fun makes it so that I only include the things I exactly need.
 LIBS = -nodefaultlibs -Wl,--start-group -l$(EELIBC) $(EEPS2SDK_LIBS) -Wl,--end-group
@@ -36,4 +36,4 @@ clean:
 
 # Link rule
 $(BIN): $(OBJS)
-	$(EECC) -T./linkfile -o $@ $< $(EELDFLAGS) $(LIBS)
+	$(EECC) -T./linkfile -o $@ $(OBJS) $(EELDFLAGS) $(LIBS)

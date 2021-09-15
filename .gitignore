@@ -1,0 +1,3 @@
+# the only binary products
+*.o
+*.elf

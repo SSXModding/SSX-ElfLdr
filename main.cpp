@@ -6,6 +6,9 @@
 #include "ElfLoader.h"
 #include "codeutils.h"
 
+// Alter this to change where HostFS root is.
+const char* gHostFsPath = "host:C:\\pcsx2\\bin\\ssxmod";
+
 int main() {
 	elfldr::util::DebugOut("Hello world?");
 	
@@ -13,8 +16,14 @@ int main() {
 	
 	elfldr::InitLoader();
 	
-	if(!loader.LoadElf("host:C:\\pcsx2\\bin\\ssxmod\\SLUS_200.95")) {
-		elfldr::util::DebugOut("ElfLoader::LoadElf() failed... Hanging");
+	char elfPath[260]{}; // MAX_PATH on Windows
+	
+	// if only i had a decent FS lib.
+	strncpy(&elfPath[0], gHostFsPath, sizeof(elfPath)/sizeof(elfPath[0]));
+	strcat(elfPath, "\\SLUS_200.95");
+	
+	if(!loader.LoadElf(elfPath)) {
+		elfldr::util::DebugOut("ElfLoader::LoadElf(%s) failed... Hanging", elfPath);
 		while(true);
 	}
 	

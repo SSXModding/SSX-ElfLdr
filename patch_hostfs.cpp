@@ -71,6 +71,9 @@ struct HostFsPatch : public elfldr::Patch {
 		tempPath[strlen(gHostFsPath)] = '\\';
 		tempPath[strlen(gHostFsPath)+1] = '\0';
 		
+		// honestly this might not be needed, because the path seems to be affected
+		// more by argv[0]. I'm still gonna keep it though just to be sure.
+		
 		elfldr::util::WriteString(reinterpret_cast<void*>(STRING_ADDRESS), tempPath);
 		
 		// Overwrite the pointer that the path "beautification" function uses to strcat()

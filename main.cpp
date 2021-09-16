@@ -27,12 +27,18 @@ int main() {
 		while(true);
 	}
 	
+	// reuse the elf path buffer to build the argv[0] string
+	memset(&elfPath[0], 0, sizeof(elfPath)/sizeof(elfPath[0]));
+	strncpy(&elfPath[0], gHostFsPath, sizeof(elfPath)/sizeof(elfPath[0]));
+	elfPath[strlen(gHostFsPath)] = '\\';
+	elfPath[strlen(gHostFsPath)+1] = '\0';
+	
 	// apply patches
 	elfldr::GetMemoryPatch()->Apply();
 	elfldr::GetHostFsPatch()->Apply();
 	
 	char* argv[1];
-	argv[0] = const_cast<char*>(gHostFsPath); // grody but it's never written to.
+	argv[0] = elfPath;
 	
 	// Execute the elf
 	loader.ExecElf(argv);

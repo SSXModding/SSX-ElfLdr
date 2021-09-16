@@ -22,11 +22,5 @@ struct MemclrPatch : public elfldr::Patch {
 	
 };
 
-namespace elfldr {
-	
-	elfldr::Patch* GetMemoryPatch() {
-		static MemclrPatch patch;
-		return &patch;
-	}
-	
-} // namespace elfldr
+// Register the patch into the patch system
+static elfldr::PatchRegistrar<MemclrPatch, 0x00> registrar;

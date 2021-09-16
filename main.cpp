@@ -1,4 +1,5 @@
-// Little tiny elf loader thing
+// Patching ELF loader for (right now) SSX OG
+// 2021 modeco80
 
 #include "utils.h"
 
@@ -11,10 +12,9 @@ const char* gHostFsPath = "host:C:\\pcsx2\\bin\\ssxmod";
 
 int main() {
 	elfldr::util::DebugOut("Hello world?");
+	elfldr::InitLoader();
 	
 	elfldr::ElfLoader loader;
-	
-	elfldr::InitLoader();
 	
 	char elfPath[260]{}; // MAX_PATH on Windows
 	
@@ -34,8 +34,8 @@ int main() {
 	elfPath[strlen(gHostFsPath)+1] = '\0';
 	
 	// apply patches
-	elfldr::GetMemoryPatch()->Apply();
-	elfldr::GetHostFsPatch()->Apply();
+	elfldr::GetPatchById(0x00)->Apply();
+	elfldr::GetPatchById(0x01)->Apply();
 	
 	char* argv[1];
 	argv[0] = elfPath;

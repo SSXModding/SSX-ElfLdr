@@ -19,10 +19,11 @@ OBJS = $(OBJDIR)/main.o \
 	   $(OBJDIR)/codeutils.o \
 	   $(OBJDIR)/utils.o \
 	   $(OBJDIR)/ElfLoader.o \
+	   $(OBJDIR)/patch.o \
 	   $(OBJDIR)/patch_hostfs.o \
 	   $(OBJDIR)/patch_memory.o
 
-# set to just `c` to use regular newlib.
+# set to `c` to use regular newlib.
 # not that you'd really need to, but the option is there!
 EELIBC = c_nano
 EEPS2SDK_LIBS = -lcdvd -lkernel -lps2sdkc

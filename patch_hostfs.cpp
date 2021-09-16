@@ -88,11 +88,5 @@ struct HostFsPatch : public elfldr::Patch {
 	
 };
 
-namespace elfldr {
-		
-	elfldr::Patch* GetHostFsPatch() {
-		static HostFsPatch patch;
-		return &patch;
-	}
-	
-} // namespace elfldr
+// Register the patch into the patch system
+static elfldr::PatchRegistrar<HostFsPatch, 0x01> registrar;

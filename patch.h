@@ -14,6 +14,7 @@ namespace elfldr {
 		
 	};
 	
+	// Get the memclr patch.
 	Patch* GetMemoryPatch();
 	
 	// Get the HostFS patch.

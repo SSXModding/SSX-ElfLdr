@@ -1,22 +1,12 @@
-// fun code utilities
+// Fun code utilities.
+
 #ifndef CODEUTILS_H
 #define CODEUTILS_H
 
 #include <cstring>
-#include <cstdio>
+#include <cstdint>
 
-namespace util {
-	
-	// write a message with a little prefix.
-	template<class... T>
-	constexpr void DebugOut(const char* fmt, T... t) {
-		char buf[256]{};
- 
-		// this is PAIN.
-		memcpy(&buf[0], "[ElfLdr] ", sizeof("[ElfLdr]"));
-		snprintf(&buf[sizeof("[ElfLdr]")], (sizeof(buf) - sizeof("[ElfLdr]") - 1), fmt, t...);
-		puts(buf);
-	}
+namespace elfldr::util {
 
 	void ReplaceString(void* addr, const char* string);
 

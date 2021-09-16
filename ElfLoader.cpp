@@ -8,6 +8,7 @@
 #include <cassert>
 
 #include "ElfLoader.h"
+#include "utils.h"
 #include "codeutils.h"
 
 namespace elfldr {

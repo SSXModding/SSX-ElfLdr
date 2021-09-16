@@ -1,18 +1,20 @@
 // Little tiny elf loader thing
 
+#include "utils.h"
+
 #include "patch.h"
 #include "ElfLoader.h"
 #include "codeutils.h"
 
 int main() {
-	util::DebugOut("Hello world?");
+	elfldr::util::DebugOut("Hello world?");
 	
 	elfldr::ElfLoader loader;
 	
 	elfldr::InitLoader();
 	
 	if(!loader.LoadElf("host:C:\\pcsx2\\bin\\ssxmod\\SLUS_200.95")) {
-		util::DebugOut("ElfLoader::LoadElf() failed... Hanging");
+		elfldr::util::DebugOut("ElfLoader::LoadElf() failed... Hanging");
 		while(true);
 	}
 	

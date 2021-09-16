@@ -1,3 +1,5 @@
 # the only binary products
-*.o
+obj/
+# just in case
+obj/*.o
 *.elf

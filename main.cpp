@@ -32,7 +32,7 @@ int main() {
 	elfldr::GetHostFsPatch()->Apply();
 	
 	char* argv[1];
-	argv[0] = "host:C:\\pcsx2\\bin\\ssxmod\\";
+	argv[0] = const_cast<char*>(gHostFsPath); // grody but it's never written to.
 	
 	// Execute the elf
 	loader.ExecElf(argv);

@@ -48,4 +48,4 @@ $(OBJDIR)/:
 # Link rule
 $(BIN): $(OBJDIR)/ $(OBJS)
 	$(EECC) -T./ld/linkfile -o $@ $(OBJS) $(EELDFLAGS) $(LIBS)
-	$(EESTRIP) --strip-all $<
+	$(EESTRIP) --strip-all $@

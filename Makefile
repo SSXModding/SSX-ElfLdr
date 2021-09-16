@@ -37,10 +37,12 @@ clean:
 	rm -rf $(BIN) $(OBJDIR)
 
 # compile rules	
-$(OBJDIR)/%.o: %.c
-	$(EECC) $(EECFLAGS) -c $< -o $@
 
-$(OBJDIR)/%.o: %.cpp
+# unused
+#$(OBJDIR)/%.o: src/%.c
+#	$(EECC) $(EECFLAGS) -c $< -o $@
+
+$(OBJDIR)/%.o: src/%.cpp
 	$(EECXX) $(EECXXFLAGS) -c $< -o $@
 
 $(OBJDIR)/:

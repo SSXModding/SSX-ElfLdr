@@ -1,5 +1,5 @@
 #include "patch.h"
-#include "binmap.h"
+#include "BinaryMap.h"
 #include <cassert>
 
 // This is the max amount of patches.

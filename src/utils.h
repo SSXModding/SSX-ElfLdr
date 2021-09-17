@@ -5,7 +5,9 @@
 
 namespace elfldr::util {
 	
-	// write a message with a little prefix.
+	/**
+	 * Write a message with a prefix.
+	 */
 	void DebugOut(const char* format, ...);
 	
 }

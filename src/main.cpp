@@ -7,6 +7,10 @@
 #include "ElfLoader.h"
 #include "codeutils.h"
 
+
+// define this to break the build lol
+//#define EXPERIMENTAL
+
 // Alter this to change where HostFS root is.
 const char* gHostFsPath = "host:C:\\pcsx2\\bin\\ssxmod";
 
@@ -36,6 +40,11 @@ int main() {
 	// apply patches
 	elfldr::GetPatchById(0x00)->Apply();
 	elfldr::GetPatchById(0x01)->Apply();
+	
+	// apply experimental patches
+#ifdef EXPERIMENTAL
+	elfldr::GetPatchById(0xE0)->Apply();
+#endif
 	
 	char* argv[1];
 	argv[0] = elfPath;

@@ -3,12 +3,12 @@
 //
 // How this patch works is pretty simple.
 // 
-// 	- It first tricks the game into going into the mode where it would use "host0:",
+//	- It first tricks the game into going into the mode where it would use "host0:",
 //		by replacing the string it uses with just "host", from "cd:".
 //		It also alters how many characters strncmp() will look at,
 //		to make it so we don't need to supply "host0:", just "host".
 //
-//  - Once that's done, we write the HostFS path in a little bit of slack space,
+//	- Once that's done, we write the HostFS path in a little bit of slack space,
 //		and alter a pointer which usually points to a string containing "host0:"
 //		to point to our slack space HostFS path string.
 //

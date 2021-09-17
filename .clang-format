@@ -1,0 +1,60 @@
+# Clang-Format file for ElfLdrs
+# Partially generated using https://github.com/mikr/whatstyle,
+# partially hand tuned to my liking
+#
+
+# google style is the closest unfortunately
+BasedOnStyle: Google
+
+# I think if these two aren't the same
+# it won't indent with tabs even with UseTab set to Always
+TabWidth: 4
+IndentWidth: 4
+
+UseTab: Always
+
+IndentPPDirectives: BeforeHash
+
+AllowAllParametersOfDeclarationOnNextLine: true
+AllowShortBlocksOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+
+BinPackArguments: true
+BinPackParameters: true
+BreakConstructorInitializers: BeforeColon
+BreakStringLiterals: false
+
+# 130 columns is good but causes some weird issues I don't quite like
+# especially in some codebases
+#ColumnLimit: 130
+ColumnLimit: 0
+CompactNamespaces: false
+
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+ContinuationIndentWidth: 0
+
+# turning this on causes major issues with initalizer lists,
+# turn it off
+Cpp11BracedListStyle: false
+
+# this is turned on to allow something like:
+#
+#	T MyTValue {
+#		initalizer list...
+#	};
+SpaceBeforeCpp11BracedList: true
+
+FixNamespaceComments: true
+
+NamespaceIndentation: All
+ReflowComments: true
+
+# no sorting
+SortIncludes: false
+SortUsingDeclarations: false
+
+
+SpacesInSquareBrackets: false
+SpaceBeforeParens: Never
+SpacesBeforeTrailingComments: 1

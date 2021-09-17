@@ -5,6 +5,15 @@
 
 namespace elfldr {
 
+	/**
+	 * A static map which can only hold a max amount of elements.
+	 * Uses a very simple, and slow (well.. tbf it's fast on the EE, so..)
+	 * binary search algorithm. Zero-allocation as well.
+	 *
+	 * \tparam TKey Key type.
+	 * \tparam TValue Value type.
+	 * \tparam MAX_ELEMENTS Max amount of elements this map can store.
+	 */
 	template<class TKey, class TValue, uint32_t MAX_ELEMENTS>
 	struct BinaryMap {
 		
@@ -13,12 +22,14 @@ namespace elfldr {
 		using ValueType = TValue;
 		constexpr static uint32_t MaxElements = MAX_ELEMENTS;
 		
-		constexpr BinaryMap() {
-			Index = 0;
-		}
-		
+		/**
+		 * Insert a value.
+		 *
+		 * \param[in] key The key. Checked for duplicates.
+		 * \param[in] value The value.
+		 */
 		constexpr void Insert(TKey key, const TValue& value) {
-			// avoid duplicate
+			// avoid duplicate entries.
 			if(MaybeFindEntry(key) != nullptr)
 				return;
 			
@@ -27,10 +38,21 @@ namespace elfldr {
 			Index++;
 		}
 		
+		/**
+		 * Get the amount of elements stored.
+		 *
+		 * \returns Amount of elements stored.
+		 */
 		constexpr uint32_t GetCount() const {
 			return Index;
 		}
 		
+		/**
+		 * Maybe get a value by key.
+		 *
+		 * \param[in] key The key.
+		 * \returns A pointer to the value on success, nullptr othewise.
+		 */
 		constexpr TValue* MaybeGetValue(TKey key) {
 			auto* entry = MaybeFindEntry(key);
 			if(!entry)
@@ -45,6 +67,13 @@ namespace elfldr {
 			TValue value;
 		};
 		
+		/**
+		 * Maybe find a raw entry, with the given key.
+		 *
+		 * \param[in] key The key to find.
+		 * \returns a pointer to the entry structure which has this key,
+		 * 			or nullptr if not found
+		 */
 		constexpr MapEntry* MaybeFindEntry(TKey key) {
 			for(uint32_t i = 0; i < GetCount(); ++i) {
 				if(Entries[i].key == key)
@@ -55,7 +84,7 @@ namespace elfldr {
 		}
 		
 		MapEntry Entries[MAX_ELEMENTS]{};
-		uint32_t Index;
+		uint32_t Index{0};
 	};
 	
 }

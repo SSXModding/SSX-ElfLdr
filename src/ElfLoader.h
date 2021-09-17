@@ -3,19 +3,36 @@
 
 namespace elfldr {
 	
+	/**
+	 * ELF loader class.
+	 */
 	struct ElfLoader {
 		
-		
-		// Load an ELF file. Returns false if the elf failed to load.
+		/**
+		 * Load an ELF file from the given path.
+		 *
+		 * \param[in] inputPath Input path.
+		 * \returns True if successful, false otherwise
+		 */
 		bool LoadElf(const char* inputPath);
 		
-		// Execute ELF file.
+		/**
+		 * Execute loaded ELF file.
+		 *
+		 * \param[in] argv Argv to send to ELF.
+		 */
 		void ExecElf(char** argv);
 		
 	};
 	
+	/**
+	 * Init loader services, reset IOP and load modules, and init libcdvd
+	 */
 	void InitLoader();
 	
+	/**
+	 * Reset the IOP.
+	 */
 	void ResetIOP();
 }
 

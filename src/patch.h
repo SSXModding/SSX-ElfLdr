@@ -23,7 +23,7 @@ namespace elfldr {
 	/**
 	 * Patch ID type.
 	 */
-	using PatchId = uint8_t; // means that BinaryMap<PatchId, Patch*, N>::MapEntry = 3 bytes.
+	using PatchId = uint8_t; // means that BinaryMap<PatchId, Patch*, N>::MapEntry = 5 bytes, rather than 8.
 	
 	// only exposed for PatchRegistrar
 	namespace detail {

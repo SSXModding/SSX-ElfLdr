@@ -1,4 +1,5 @@
 #include "patch.h"
+#include "binmap.h"
 #include <cassert>
 
 // This is the max amount of patches.
@@ -6,23 +7,7 @@
 // but you can bump it up.
 constexpr static uint32_t MAX_PATCHES = 8;
 
-// a entry in the patch table.
-struct PatchTableEntry {
-	uint32_t id;
-	elfldr::Patch* patch {nullptr};
-};
-
-static PatchTableEntry gPatchTable[MAX_PATCHES]{};
-uint32_t gPatchTableIndex = 0;
-
-static PatchTableEntry* FindPatchTableEntry(uint32_t id) {
-	for(uint32_t i = 0; i < gPatchTableIndex; ++i) {
-		if(gPatchTable[i].id == id && gPatchTable[i].patch != nullptr)
-			return &gPatchTable[i];
-	}
-	
-	return nullptr;
-}
+static elfldr::BinaryMap<uint32_t, elfldr::Patch*, MAX_PATCHES> gPatchMap;
 
 namespace elfldr {
 
@@ -32,27 +17,17 @@ namespace elfldr {
 			if(patch == nullptr)
 				return;
 			
-			// Don't try and register multiple of the same ID
-			if(FindPatchTableEntry(id) != nullptr)
-				return;
-			
-			// runtime sanity check.
-			assert(gPatchTableIndex < MAX_PATCHES);
-			
-			gPatchTable[gPatchTableIndex].id = id;
-			gPatchTable[gPatchTableIndex].patch = patch;
-			gPatchTableIndex++;
+			gPatchMap.Insert(id, patch);
 		}
 	} // namespace detail
 	
-	
 	Patch* GetPatchById(uint32_t id) {
-		auto* entry = FindPatchTableEntry(id);
+		auto** patch = gPatchMap.MaybeGetValue(id);
 		
-		if(!entry)
+		if(!patch)
 			return nullptr;
 		
-		return entry->patch;
+		return *patch;
 	}
 	
 } // namespace elfldr

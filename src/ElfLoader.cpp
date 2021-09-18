@@ -21,6 +21,10 @@ namespace elfldr {
 		util::DebugOut("Trying to load ELF File \"%s\"...", inputPath);
 		
 		SifLoadElf(inputPath, &gExecData);
+		
+		FlushCache(0);
+		FlushCache(2);
+		
 		return gExecData.epc > 0;
 	}
 		
@@ -28,6 +32,9 @@ namespace elfldr {
 		// this function shouldn't be called if
 		// the elf didn't load properly.
 		assert(gExecData.epc > 0);
+		
+		FlushCache(0);
+		FlushCache(2);
 		
 		// Reset the IOP and then ExecPS2 us.
 		ResetIOP();

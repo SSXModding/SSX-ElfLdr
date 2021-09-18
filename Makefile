@@ -11,9 +11,15 @@ EECCFLAGS = -D_EE -O3 -G0 $(EENOLIBGCC) -I$(PS2SDK)/ee/include -I$(PS2SDK)/commo
 EECXXFLAGS = -std=c++20 -fno-rtti -fno-exceptions $(EECCFLAGS)
 EELDFLAGS := -L$(PS2SDK)/ee/lib -Wl,-zmax-page-size=128
 
-BIN = ssx_elfldr.elf
+SSX3=0
 
+ifeq ($(SSX3),1)
+BIN = ssx_elfldr_ssx3.elf
+OBJDIR = obj_ssx3
+else
+BIN = ssx_elfldr.elf
 OBJDIR = obj
+endif
 
 OBJS = $(OBJDIR)/main.o \
 	   $(OBJDIR)/codeutils.o \
@@ -21,7 +27,13 @@ OBJS = $(OBJDIR)/main.o \
 	   $(OBJDIR)/ElfLoader.o \
 	   $(OBJDIR)/patch.o \
 	   $(OBJDIR)/patch_hostfs.o \
-	   $(OBJDIR)/patch_memory.o
+	   $(OBJDIR)/patch_memory.o \
+	   $(OBJDIR)/patch_hostfs_ssx3.o 
+
+ifeq ($(SSX3),1)
+OBJS += $(OBJDIR)/patch_hostfs_ssx3.o
+EECCFLAGS += -DSSX3
+endif
 
 # set to `c` to use regular newlib.
 # not that you'd really need to, but the option is there!

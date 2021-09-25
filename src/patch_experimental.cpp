@@ -18,6 +18,9 @@ struct ExpPatch : public Patch {
 		// nop fill the useless loop in cGame::UpdateNodes
 		util::NopFill<10>(util::Ptr(0x00189c18));
 		
+		// test CallFunction real quick
+		util::CallFunction<void>(util::Ptr(0x0018ac08), "Hello from SSX printf() %d\n", 32768);
+		
 		// Replace the loop with a hand-written 3-instruction replacement.
 		// Pre-assembled, although the assembly listing is also available.
 		//

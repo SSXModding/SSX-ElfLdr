@@ -1786,7 +1786,7 @@ namespace bx {
 		
 		undefined4 flag_0x6e8;
 		
-		void* mGame;
+		cGame* mGame; // null if no game, points to the current cGame instance
 		void* mFrontend;
 		void* mCurrLoadMan; // The current load manager. Set in cApplication::Run
 		undefined4 field_0x6f8;

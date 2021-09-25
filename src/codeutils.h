@@ -9,7 +9,8 @@
 namespace elfldr::util {
 	
 	/**
-	 * the worst casting hack ever
+	 * The worst casting hack ever.
+	 * It works, though.
 	 */
 	template<class Dest, class Source>
 	constexpr Dest UBCast(Source source) {
@@ -85,9 +86,24 @@ namespace elfldr::util {
 		return *static_cast<T*>(addr);
 	}
 	
-	// forceinline TODO
-	inline void* Ptr(uintptr_t address) {
-		return reinterpret_cast<void*>(address);
+	constexpr void* Ptr(uintptr_t address) {
+		return UBCast<void*>(address);
+	}
+	
+	/**
+	 * Call a function at the given address,
+	 * with the given arguments.
+	 *
+	 * \tparam Ret Return type.
+	 * \tparam Args Varadic arg types.
+	 *
+	 * \param[in] ptr Pointer to function. Can use util::Ptr().
+	 * \param[in] args Argument pack to forward to function.
+	 */
+	template<class Ret, class... Args>
+	constexpr Ret CallFunction(void* ptr, Args... args) {
+		using FuncT = Ret(*)(Args...);
+		return (UBCast<FuncT>(ptr))(args...);
 	}
 		
 } // namespace util

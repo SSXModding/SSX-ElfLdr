@@ -28,7 +28,7 @@ namespace elfldr {
 		return gExecData.epc > 0;
 	}
 		
-	void ElfLoader::ExecElf(char** argv) {
+	void ElfLoader::ExecElf(int argc, char** argv) {
 		// this function shouldn't be called if
 		// the elf didn't load properly.
 		assert(gExecData.epc > 0);
@@ -38,7 +38,7 @@ namespace elfldr {
 		
 		// Reset the IOP and then ExecPS2 us.
 		ResetIOP();
-		ExecPS2(reinterpret_cast<void*>(gExecData.epc), reinterpret_cast<void*>(gExecData.gp), sizeof(argv)/sizeof(argv[0]), argv);
+		ExecPS2(reinterpret_cast<void*>(gExecData.epc), reinterpret_cast<void*>(gExecData.gp), argc, argv);
 	}
 	
 	void InitLoader() {

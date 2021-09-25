@@ -8,10 +8,6 @@
 #include "codeutils.h"
 
 
-// define this to break the build lol
-//#define EXPERIMENTAL
-
-
 // Alter this to change where HostFS root is.
 #ifdef SSX3
 const char* gHostFsPath = "host:C:\\pcsx2\\bin\\ssx3";
@@ -20,7 +16,7 @@ const char* gHostFsPath = "host:C:\\pcsx2\\bin\\ssxmod";
 #endif
 
 int main() {
-	elfldr::util::DebugOut("Hello world?");
+	elfldr::util::DebugOut("SSX-ElfLdr");
 	elfldr::InitLoader();
 	
 	elfldr::ElfLoader loader;
@@ -36,7 +32,7 @@ int main() {
 #endif
 	
 	if(!loader.LoadElf(elfPath)) {
-		elfldr::util::DebugOut("ElfLoader::LoadElf(%s) failed... Hanging", elfPath);
+		elfldr::util::DebugOut("loader.LoadElf(%s) failed... Hanging!!", elfPath);
 		while(true);
 	}
 	
@@ -68,7 +64,7 @@ int main() {
 #endif
 	
 	// Execute the elf
-	loader.ExecElf(argv);
+	loader.ExecElf(sizeof(argv)/sizeof(argv[0]), argv);
 
 	return 0;
 }

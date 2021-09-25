@@ -19,9 +19,10 @@ namespace elfldr {
 		/**
 		 * Execute loaded ELF file.
 		 *
+		 * \param[in] argc Argc to send to ELF.
 		 * \param[in] argv Argv to send to ELF.
 		 */
-		void ExecElf(char** argv);
+		void ExecElf(int argc, char** argv);
 		
 	};
 	

@@ -5,10 +5,18 @@ EEPREFIX=mips64r5900el-ps2-elf
 
 # EE GNU tools:
 # - C Compiler
+# - C++ compiler
+# - Librarian
+# - Strip
+
 EECC=$(EEPREFIX)-gcc
 EECXX=$(EEPREFIX)-g++
 EEAR=$(EEPREFIX)-ar
 EESTRIP=$(EEPREFIX)-strip
+
+# I'd like to add -flto, but unfortunately,
+# doing so breaks libutils for some reason????????
+# ah.. ps2sdk binutils can't do lto objects. cool.
 
 # remove libgcc dependency
 EENOLIBGCC = -fno-stack-protector -fno-ident -fno-unwind-tables -fno-asynchronous-unwind-tables
@@ -18,12 +26,13 @@ EENOLIBGCC = -fno-stack-protector -fno-ident -fno-unwind-tables -fno-asynchronou
 #  -Wno-array-bounds: ditto
 EEWFLAGS = -Wall -Wno-stringop-overflow -Wno-array-bounds
 
-EECCFLAGS = $(EEWFLAGS) -D_EE $(EXTRADEFS) -Os -G0 $(EENOLIBGCC) -I$(PS2SDK)/ee/include -I$(PS2SDK)/common/include -I$(TOP)/include
+EECCFLAGS = $(EEWFLAGS) -D_EE $(EXTRADEFS) -Os -G0 -fomit-frame-pointer -ffunction-sections -fdata-sections $(EENOLIBGCC) -I$(PS2SDK)/ee/include -I$(PS2SDK)/common/include -I$(TOP)/include
 
 # C++20 (without RTTI/exceptions) or Riot
-EECXXFLAGS = -std=c++20 -fno-rtti -fno-exceptions $(EECCFLAGS)
+EECXXFLAGS = -std=c++20 -fno-rtti -fno-exceptions -fno-threadsafe-statics $(EECCFLAGS)
 
-EELDFLAGS := -G0 -L$(PS2SDK)/ee/lib -L$(OBJDIR) -Wl,-zmax-page-size=128
+# ld.bfd defaults to -z norelro
+EELDFLAGS := -G0 -L$(PS2SDK)/ee/lib -L$(OBJDIR) -Wl,-zmax-page-size=128,--gc-sections,--build-id=none
 
 # unused by my code
 $(OBJDIR)/%.o: %.c
@@ -72,7 +81,7 @@ clean:
 	rm $(TOP)/$(BIN) $(OBJS)
 
 $(TOP)/$(BIN): $(OBJS)
-	$(EECC) -T$(TOP)/ld/linkfile -o $@ $(OBJS) $(EELDFLAGS) $(EEBIN_LIBS)
+	$(EECXX) $(EECXXFLAGS) $(EELDFLAGS) -T$(TOP)/ld/linkfile -o $@ $(OBJS) $(EEBIN_LIBS)
 	$(EESTRIP) --strip-all $@
 endif
 

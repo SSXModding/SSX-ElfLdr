@@ -1,5 +1,7 @@
 # Makefile for the elfldr's main product
 
+VERSION=0.1
+
 # Base objects all versions of
 # elfldr need to link properly.
 OBJS = $(OBJDIR)/main.o \
@@ -10,7 +12,7 @@ OBJS = $(OBJDIR)/main.o \
 EELIBC = c_nano
 	  
 # Link libutils
-LIBS = -lkernel -lps2sdkc -lutils
+LIBS = -lutils -lkernel -lps2sdkc 
 
 ifeq ($(SSX3),1)
 BIN = ssx_elfldr_ssx3.elf
@@ -25,6 +27,7 @@ endif
 ifeq ($(EXPERIMENTAL),1)
 OBJS += $(OBJDIR)/patch_experimental.o
 EXTRADEFS += -DEXPERIMENTAL
+FEATURES += experimental
 endif
 
 ifeq ($(SSX3),1)

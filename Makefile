@@ -2,6 +2,7 @@
 
 TOP=$(PWD)
 
+# configuration variables
 SSX3=0
 EXPERIMENTAL=0
 
@@ -11,13 +12,15 @@ else
 OBJDIR = obj
 endif
 
+PASSFLAGS=OBJDIR=$(TOP)/$(OBJDIR) TOP=$(TOP) SSX3=$(SSX3) EXPERIMENTAL=$(EXPERIMENTAL)
+
 all: $(OBJDIR)/
-	$(MAKE) OBJDIR=$(TOP)/$(OBJDIR) TOP=$(TOP) -C src/utils
-	$(MAKE) OBJDIR=$(TOP)/$(OBJDIR) TOP=$(TOP) SSX3=$(SSX3) EXPERIMENTAL=$(EXPERIMENTAL) -C src/
+	$(MAKE) $(PASSFLAGS) -C src/utils
+	$(MAKE) $(PASSFLAGS) -C src/
 
 clean:
-	$(MAKE) OBJDIR=$(TOP)/$(OBJDIR) TOP=$(TOP) -C src/utils clean
-	$(MAKE) OBJDIR=$(TOP)/$(OBJDIR) TOP=$(TOP) SSX3=$(SSX3) EXPERIMENTAL=$(EXPERIMENTAL) -C src/ clean
+	$(MAKE) $(PASSFLAGS) -C src/utils clean
+	$(MAKE) $(PASSFLAGS) -C src/ clean
 	rmdir $(OBJDIR)
 
 

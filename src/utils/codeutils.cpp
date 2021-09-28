@@ -6,7 +6,7 @@
 namespace elfldr::util {
 		
 	void ReplaceString(void* addr, const char* string) {
-		DebugOut("Replacing string \"%s\" at %p: \"%s\"...", reinterpret_cast<char*>(addr), addr, string);
+		DebugOut("Replacing string \"%s\" at %p: \"%s\"...", UBCast<char*>(addr), addr, string);
 		memcpy(addr, string, strlen(string) + 1);
 	}
 

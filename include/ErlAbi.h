@@ -6,6 +6,8 @@
 
 #include <cstdint>
 
+#define ELFLDR_HIDDEN __attribute__((visibility("hidden")))
+
 namespace elfldr {
 	
 	
@@ -28,9 +30,15 @@ namespace elfldr {
 		GameRender
 	};
 	
+	using ErlFunction_t = void(*)();
+	
+	/**
+	 * a function entry.
+	 * Elfldr consumes these to add to internal lists
+	 */
 	struct FunctionEntry {
 		FunctionType type;
-		void* fnPtr;
+		ErlFunction_t fnPtr;
 	};
 	
 	// returned by the ERL's 

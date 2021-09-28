@@ -1,4 +1,5 @@
-# EE tool definitions and common Make rules
+# EE tool definitions and common Make rules,
+# used to simplify the build.
 
 # EE target prefix
 EEPREFIX=mips64r5900el-ps2-elf
@@ -26,19 +27,36 @@ EENOLIBGCC = -fno-stack-protector -fno-ident -fno-unwind-tables -fno-asynchronou
 #  -Wno-array-bounds: ditto
 EEWFLAGS = -Wall -Wno-stringop-overflow -Wno-array-bounds
 
-EECCFLAGS = $(EEWFLAGS) -D_EE $(EXTRADEFS) -Os -G0 -fomit-frame-pointer -ffunction-sections -fdata-sections $(EENOLIBGCC) -I$(PS2SDK)/ee/include -I$(PS2SDK)/common/include -I$(TOP)/include
+EECCFLAGS = $(EEWFLAGS) -D_EE $(EXTRADEFS) -G0 $(EENOLIBGCC) -I$(PS2SDK)/ee/include -I$(PS2SDK)/common/include -I$(TOP)/include
 
 # C++20 (without RTTI/exceptions) or Riot
 EECXXFLAGS = -std=c++20 -fno-rtti -fno-exceptions -fno-threadsafe-statics $(EECCFLAGS)
 
 # ld.bfd defaults to -z norelro
-EELDFLAGS := -G0 -L$(PS2SDK)/ee/lib -L$(OBJDIR) -Wl,-zmax-page-size=128,--gc-sections,--build-id=none
+EELDFLAGS = -G0 -L$(PS2SDK)/ee/lib -L$(OBJDIR) -Wl,-zmax-page-size=128,--build-id=none
+
+# If debug build is enabled,
+# emit debugging info and remove size optimization flags.
+
+ifeq ($(DEBUG),1)
+BUILDSUFFIX = _debug
+EECCFLAGS += -g -DDEBUG
+else
+
+ifeq ($(ERL),)
+EECCFLAGS += -fomit-frame-pointer -ffunction-sections -fdata-sections -Os
+EELDFLAGS += -Wl,--gc-sections
+else
+# if we're building an ERL, the size pushing options actually break some stuff.
+EECCFLAGS += -fomit-frame-pointer -Os
+endif
+endif
 
 # unused by my code
 $(OBJDIR)/%.o: %.c
 	$(EECC) $(EECFLAGS) -c $< -o $@
 
-# TODO: generate .d files in $(OBJDIR)/ and include em here
+# TODO: generate .d files in $(OBJDIR)/ and include them here
 
 $(OBJDIR)/%.o: %.cpp
 	$(EECXX) $(EECXXFLAGS) -c $< -o $@
@@ -50,14 +68,14 @@ $(OBJDIR)/%.o: %.cpp
 # to build multiple products:
 # - a static library
 # - a PS2 ELF (minified, of course :P)
-# - (TODO) a "custom" ERL.
+# - a "custom" ERL.
 #
 # Having these rules be standardized is actually quite a good thing
 # and.. while I could have just used the ps2sdk makefiles to do so,
 # I like this setup a bit more.
 
 ifneq ($(LIB),)
-# include rules for building static library
+# include rules for building a static library
 
 all: $(OBJDIR)/$(LIB)
 
@@ -75,14 +93,29 @@ ifneq ($(BIN),)
 # LIBS specifies any and all libraries the ELF *NEEDS*.
 EEBIN_LIBS = -nodefaultlibs -Wl,--start-group -l$(EELIBC) $(LIBS) -Wl,--end-group
 
-all: $(TOP)/$(BIN)
+all: $(BINDIR)/$(BIN)$(BUILDSUFFIX).elf
 
 clean:
-	rm $(TOP)/$(BIN) $(OBJS)
+	rm $(BINDIR)/$(BIN)$(BUILDSUFFIX).elf $(OBJS)
 
-$(TOP)/$(BIN): $(OBJS)
+$(BINDIR)/$(BIN)$(BUILDSUFFIX).elf: $(OBJS)
 	$(EECXX) $(EECXXFLAGS) $(EELDFLAGS) -T$(TOP)/ld/linkfile -o $@ $(OBJS) $(EEBIN_LIBS)
+ifneq ($(DEBUG),1)
 	$(EESTRIP) --strip-all $@
 endif
+endif
 
-# TODO: ERL
+ifneq ($(ERL),)
+# include rules for building PS2 ERL file
+
+all: $(BINDIR)/$(ERL)$(BUILDSUFFIX).erl
+
+clean:
+	rm $(BINDIR)/$(ERL)$(BUILDSUFFIX).erl
+	
+$(BINDIR)/$(ERL)$(BUILDSUFFIX).erl: $(OBJS)
+	$(EECC) $(EECCFLAGS) $(EELDFLAGS) -nostartfiles -nodefaultlibs -o $@ $(OBJS) $(LIBS) -Wl,-r -Wl,-d
+ifneq ($(DEBUG),1)
+	$(EESTRIP) --strip-unneeded -R .mdebug.eabi64 -R .reginfo -R .comment $@
+endif
+endif

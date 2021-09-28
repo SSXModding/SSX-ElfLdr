@@ -4,4 +4,7 @@ obj/
 obj/*.o
 obj_ssx3/
 obj_ssx3/*.o
-*.elf
+
+bin/
+bin/*.elf
+bin/*.erl

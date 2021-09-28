@@ -5,6 +5,9 @@
 
 namespace elfldr {
 	
+	/**
+	 * An ERL image.
+	 */
 	struct ErlImage {
 		
 		/**

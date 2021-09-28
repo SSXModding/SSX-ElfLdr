@@ -5,6 +5,7 @@ VERSION=0.1
 # Base objects all versions of
 # elfldr need to link properly.
 OBJS = $(OBJDIR)/main.o \
+	   $(OBJDIR)/debugout.o \
 	   $(OBJDIR)/patch.o \
 	   $(OBJDIR)/ElfLoader.o
 	  
@@ -15,9 +16,9 @@ EELIBC = c_nano
 LIBS = -lutils -lkernel -lps2sdkc 
 
 ifeq ($(SSX3),1)
-BIN = ssx_elfldr_ssx3.elf
+BIN = ssx_elfldr_ssx3
 else
-BIN = ssx_elfldr.elf
+BIN = ssx_elfldr
 endif
 
 # EXPERIMENTAL should maybe produce a new filename?

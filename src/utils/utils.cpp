@@ -1,11 +1,10 @@
-#include "utils.h"
+#include <utils.h>
 
 #include <cstdarg>
 #include <cstring>
 #include <cstdio>
 
 namespace elfldr::util {
-	
 	
 	void DebugOut(const char* format, ...) {
 		char buf[256]{};

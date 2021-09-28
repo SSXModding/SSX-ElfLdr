@@ -52,9 +52,9 @@ namespace elfldr {
 	
 	/**
 	 * Get a pointer to a singleton instance of a patch,
-	 * by it's ID.
+	 * by it's patch ID.
 	 *
-	 * \param[in] id The ID to try and get.
+	 * \param[in] id The ID of the patch to try and get.
 	 * \returns Singleton pointer, or nullptr if invalid ID.
 	 */
 	Patch* GetPatchById(PatchId id);

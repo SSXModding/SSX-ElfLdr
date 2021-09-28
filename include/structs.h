@@ -3,8 +3,9 @@
 #define STRUCTS_H
 
 #include <cstdint>
-#include "utils.h"
-#include "codeutils.h"
+
+#include <utils.h>
+#include <codeutils.h>
 
 namespace bx {
 	// ghidra typedefs used
@@ -48,7 +49,7 @@ namespace bx {
 		undefined4 mVBlankIntcHandler;
 		void* locale2;
 		int localeSize;
-		char* mExe;
+		char* mExe; // copies argv[0] pointer.
 		undefined4 LocaleLanguage;
 		undefined mVenueManager[sizeof(undefined4)*2];
 		

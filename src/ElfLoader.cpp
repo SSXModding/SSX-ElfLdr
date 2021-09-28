@@ -3,13 +3,14 @@
 #include <kernel.h>
 #include <sifrpc.h>
 #include <loadfile.h>
-#include <libcdvd.h>
+//#include <libcdvd.h>
 
 #include <cassert>
 
-#include "ElfLoader.h"
-#include "utils.h"
-#include "codeutils.h"
+#include <ElfLoader.h>
+
+#include <utils.h>
+#include <codeutils.h>
 
 namespace elfldr {
 	
@@ -51,7 +52,7 @@ namespace elfldr {
 		SifLoadModule("rom0:MCMAN", 0, NULL);
 		SifLoadModule("rom0:MCSERV", 0, NULL);
 		SifLoadModule("rom0:PADMAN", 0, NULL);
-		sceCdInit(SCECdINoD);
+		//sceCdInit(SCECdINoD);
 	}
 
 	void ResetIOP() {

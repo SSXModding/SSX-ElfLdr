@@ -22,9 +22,9 @@
 // a lot more painful, and would be a far more complicated patch. 
 // A minor tradeoff to make this patch so much easier is okay, at least to me..
 
-#include "utils.h"
-#include "codeutils.h"
-#include "patch.h"
+#include <utils.h>
+#include <codeutils.h>
+#include <patch.h>
 
 // in main.cpp
 extern const char* gHostFsPath;
@@ -37,10 +37,10 @@ struct HostFsPatch : public Patch {
 		util::DebugOut("Applying HostFS patch...");
 		
 		// where our host path string should be placed
-		constexpr static uintptr_t STRING_ADDRESS = 0x002c5cc0;
+		constexpr static std::uintptr_t STRING_ADDRESS = 0x002c5cc0;
 		
 		// where the host0 pointer is
-		constexpr static uintptr_t HOST_STRING_ADDRESS = 0x002c59c8;
+		constexpr static std::uintptr_t HOST_STRING_ADDRESS = 0x002c59c8;
 		
 	
 		// ASYNCFILE_init usually gets "cd:".
@@ -51,7 +51,7 @@ struct HostFsPatch : public Patch {
 		// (by altering the instruction. Worst hack ever.)
 		// from 6 to 4, so we can just use "host:".
 		// This could be -= 2, but meh. This is more direct and better.
-		util::MemRefTo<uint8_t>(util::Ptr(0x00238550)) = 0x4;
+		util::MemRefTo<std::uint8_t>(util::Ptr(0x00238550)) = 0x4;
 		
 		// Switch path normalization when making the "beautiful" path
 		// around so it uses the Windows path seperation character
@@ -67,9 +67,9 @@ struct HostFsPatch : public Patch {
 		// Assemble a good path string from the global HostFS path,
 		// by copying it into a temporary buffer and then adding an extra
 		// path seperator.
-		char tempPath[260]{};
+		char tempPath[util::MaxPath]{};
 		
-		strncpy(&tempPath[0], gHostFsPath, sizeof(tempPath)/sizeof(tempPath[0]));
+		strncpy(&tempPath[0], gHostFsPath, util::MaxPath * sizeof(char));
 		tempPath[strlen(gHostFsPath)] = '\\';
 		tempPath[strlen(gHostFsPath)+1] = '\0';
 		
@@ -83,7 +83,7 @@ struct HostFsPatch : public Patch {
 		//
 		// IDK why the string isn't exactly written at 2c5cc0, so we go 4 forwards. It works.
 		// I'm not questioning it
-		util::MemRefTo<uintptr_t>(util::Ptr(HOST_STRING_ADDRESS)) = STRING_ADDRESS + sizeof(uintptr_t);
+		util::MemRefTo<std::uint32_t>(util::Ptr(HOST_STRING_ADDRESS)) = STRING_ADDRESS + sizeof(std::uint32_t);
 		
 		util::DebugOut("Finished applying HostFS patch.");
 	}

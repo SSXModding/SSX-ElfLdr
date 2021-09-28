@@ -6,9 +6,9 @@
 namespace elfldr {
 
 	/**
-	 * A static map which can only hold a max amount of elements.
-	 * Uses a very simple, and slow (well.. tbf it's fast on the EE, so..)
-	 * binary search algorithm. Zero-allocation as well.
+	 * A static compile-time map which can only hold a max amount of elements.
+	 * Uses a very simple, and slow (well.. it's fast on the EE, so..)
+	 * binary search algorithm. Zero-allocation as well, which is important.
 	 *
 	 * \tparam TKey Key type.
 	 * \tparam TValue Value type.
@@ -29,9 +29,11 @@ namespace elfldr {
 		 * \param[in] value The value.
 		 */
 		constexpr void Insert(TKey key, const TValue& value) {
-			// avoid duplicate entries.
+			// Avoid duplicate entries.
 			if(MaybeFindEntry(key) != nullptr)
 				return;
+			
+			// TODO: if index goes over MAX_ELEMENTS, scream
 			
 			Entries[Index].key = key;
 			Entries[Index].value = value;

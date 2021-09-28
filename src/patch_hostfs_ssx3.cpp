@@ -22,9 +22,8 @@
 
 // currently doesn't work
 
-#include "utils.h"
-#include "codeutils.h"
-#include "patch.h"
+#include <codeutils.h>
+#include <patch.h>
 
 // in main.cpp
 extern const char* gHostFsPath;
@@ -35,10 +34,10 @@ struct HostFsPatchSSX3 : public elfldr::Patch {
 		elfldr::util::DebugOut("Applying HostFS (SSX3) patch...");
 		
 		// where our host path string should be placed
-		constexpr static uintptr_t STRING_ADDRESS = 0x0047fdb0;
+		constexpr static std::uintptr_t STRING_ADDRESS = 0x0047fdb0;
 		
 		// where the host0 pointer is
-		constexpr static uintptr_t HOST_POINTER_ADDRESS = 0x00450c50;
+		constexpr static std::uintptr_t HOST_POINTER_ADDRESS = 0x00450c50;
 		
 	
 		// ASYNCFILE_init usually gets "cd:".
@@ -51,16 +50,16 @@ struct HostFsPatchSSX3 : public elfldr::Patch {
 		
 		// throw the strlen() result away in an instruction meant to put it
 		// into the register compiler allocated, and replace it with a minimally viable constant
-		elfldr::util::MemRefTo<uint32_t>(reinterpret_cast<void*>(0x003ddea0)) = 0x02001124; // li ...(I forget), 2
+		elfldr::util::MemRefTo<std::uint32_t>(reinterpret_cast<void*>(0x003ddea0)) = 0x02001124; // li ...(I forget), 2
 				
 		// write a new string in some slack space.
 		
 		// Assemble a good path string from the global HostFS path,
 		// by copying it into a temporary buffer and then adding an extra
 		// path seperator.
-		char tempPath[260]{};
+		char tempPath[elfldr::util::MaxPath]{};
 		
-		strncpy(&tempPath[0], gHostFsPath, sizeof(tempPath)/sizeof(tempPath[0]));
+		strncpy(&tempPath[0], gHostFsPath, elfldr::util::MaxPath * sizeof(char));
 		tempPath[strlen(gHostFsPath)] = '\\';
 		tempPath[strlen(gHostFsPath)+1] = '\0';
 		

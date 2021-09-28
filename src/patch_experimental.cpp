@@ -5,8 +5,8 @@
 #include "structs.h"
 
 // addresses of some fun stuff
-constexpr static uintptr_t TheApp_Address = 0x002852f8;
-constexpr static uintptr_t TheWorld_Address = 0x00299cc8;
+constexpr static std::uintptr_t TheApp_Address = 0x002852f8;
+constexpr static std::uintptr_t TheWorld_Address = 0x00299cc8;
 
 using namespace elfldr;
 
@@ -19,7 +19,7 @@ struct ExpPatch : public Patch {
 		util::NopFill<10>(util::Ptr(0x00189c18));
 		
 		// test CallFunction real quick
-		util::CallFunction<void>(util::Ptr(0x0018ac08), "Hello from SSX printf() %d\n", 32768);
+		util::CallFunction(util::Ptr(0x0018ac08), "Hello from SSX printf() %d\n", 32768);
 		
 		// Replace the loop with a hand-written 3-instruction replacement.
 		// Pre-assembled, although the assembly listing is also available.
@@ -36,9 +36,10 @@ struct ExpPatch : public Patch {
 		// li a1, 0x3               ; load function's first parameter (3)
 		// jal 0x001864b0           ; call the cNodeManager function
 		
-		util::MemRefTo<uint32_t>(util::Ptr(0x00189c18)) = 0x2784bde8; 
-		util::MemRefTo<uint32_t>(util::Ptr(0x00189c1c)) = 0x24050003; 
-		util::MemRefTo<uint32_t>(util::Ptr(0x00189c20)) = 0x0c06192c;
+		util::MemRefTo<std::uint32_t>(util::Ptr(0x00189c18)) = 0x2784bde8; 
+		util::MemRefTo<std::uint32_t>(util::Ptr(0x00189c1c)) = 0x24050003; 
+		util::MemRefTo<std::uint32_t>(util::Ptr(0x00189c20)) = 0x0c06192c;
+		
 		
 		util::DebugOut("Finished applying exp patch...");
 	}

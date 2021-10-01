@@ -16,10 +16,6 @@ using namespace elfldr;
 // I'm lazy.
 namespace elfldr { void FlushCaches(); }
 
-void MemInit() {
-
-}
-
 struct ExpPatch : public Patch {
 	
 	void Apply() override {
@@ -38,6 +34,8 @@ struct ExpPatch : public Patch {
 		constexpr static uintptr_t memstart = 0x002d9440;
 		constexpr static int memsize = 30432192;
 
+		// Init the REAL heap.
+		
 		bx::real::MEM_init(util::Ptr(memstart), memsize);
 		bx::real::initheapdebug(memstart, 0x002d8c20, memstart + memsize);
 		

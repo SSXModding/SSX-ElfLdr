@@ -54,11 +54,13 @@ endif
 
 # unused by my code
 $(OBJDIR)/%.o: %.c
+	$(info Compiling C source file $<)
 	$(EECC) $(EECFLAGS) -c $< -o $@
 
 # TODO: generate .d files in $(OBJDIR)/ and include them here
 
 $(OBJDIR)/%.o: %.cpp
+	$(info Compiling C++ source file $<)
 	$(EECXX) $(EECXXFLAGS) -c $< -o $@
 	
 # mark our psuedotargets *as* psuedotargets
@@ -80,9 +82,11 @@ ifneq ($(LIB),)
 all: $(OBJDIR)/$(LIB)
 
 clean:
+	$(info Cleaning build products..)
 	rm $(OBJDIR)/$(LIB) $(OBJS)
 
 $(OBJDIR)/$(LIB): $(OBJS)
+	$(info Creating static library $@)
 	$(EEAR) r $@ $(OBJS)
 endif
 
@@ -96,11 +100,14 @@ EEBIN_LIBS = -nodefaultlibs -Wl,--start-group -l$(EELIBC) $(LIBS) -Wl,--end-grou
 all: $(BINDIR)/$(BIN)$(BUILDSUFFIX).elf
 
 clean:
+	$(info Cleaning build products..)
 	rm $(BINDIR)/$(BIN)$(BUILDSUFFIX).elf $(OBJS)
 
 $(BINDIR)/$(BIN)$(BUILDSUFFIX).elf: $(OBJS)
+	$(info Linking PS2 ELF $@)
 	$(EECXX) $(EECXXFLAGS) $(EELDFLAGS) -T$(TOP)/ld/linkfile -o $@ $(OBJS) $(EEBIN_LIBS)
 ifneq ($(DEBUG),1)
+	$(info Stripping ELF $@ since this is a release build)
 	$(EESTRIP) --strip-all $@
 endif
 endif
@@ -111,11 +118,16 @@ ifneq ($(ERL),)
 all: $(BINDIR)/$(ERL)$(BUILDSUFFIX).erl
 
 clean:
+	$(info Cleaning build products..)
 	rm $(BINDIR)/$(ERL)$(BUILDSUFFIX).erl
 	
 $(BINDIR)/$(ERL)$(BUILDSUFFIX).erl: $(OBJS)
+	$(info Linking ERL $@)
 	$(EECC) $(EECCFLAGS) $(EELDFLAGS) -nostartfiles -nodefaultlibs -o $@ $(OBJS) $(LIBS) -Wl,-r -Wl,-d
 ifneq ($(DEBUG),1)
 	$(EESTRIP) --strip-unneeded -R .mdebug.eabi64 -R .reginfo -R .comment $@
 endif
 endif
+
+# fun make tricks, episode # 27,402
+$V.SILENT:

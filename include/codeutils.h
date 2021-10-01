@@ -142,7 +142,7 @@ namespace elfldr::util {
 		 * Call operator, for regular functions.
 		 */
 		constexpr Ret operator()(ArgTypes... args) const {
-			return CallFunction<Ret>(elfldr::util::Ptr(FunctionAddress), args...);
+			return CallFunction<Ret>(Ptr(FunctionAddress), args...);
 		}
 		
 		/**
@@ -153,7 +153,7 @@ namespace elfldr::util {
 		 */
 		template<class ...AnyVarArgs> requires(IsVaradic)
 		constexpr Ret operator()(ArgTypes... args, AnyVarArgs... varargs) const {
-			return CallFunction<Ret>(elfldr::util::Ptr(FunctionAddress), args..., varargs...);
+			return CallFunction<Ret>(Ptr(FunctionAddress), args..., varargs...);
 		}
 		
 	};

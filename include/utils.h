@@ -9,7 +9,7 @@ namespace elfldr::util {
 	
 	/**
 	 * this should never have been hardcoded
-	 * and I'm pissed at myself for letting it slide for so long
+	 * and I'm pissed at myself for letting it slide for as long as I did
 	 */
 	constexpr static std::size_t MaxPath = 260;
 	

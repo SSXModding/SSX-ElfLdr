@@ -18,13 +18,17 @@ namespace elfldr {
 	// We use this to run the elf in ElfLoader::ExecElf
 	static t_ExecData gExecData{};
 	
+	void FlushCaches() {
+		FlushCache(0);
+		FlushCache(2);
+	}
+	
 	bool ElfLoader::LoadElf(const char* inputPath) {
 		util::DebugOut("Trying to load ELF File \"%s\"...", inputPath);
 		
 		SifLoadElf(inputPath, &gExecData);
 		
-		FlushCache(0);
-		FlushCache(2);
+		FlushCaches();
 		
 		return gExecData.epc > 0;
 	}
@@ -34,8 +38,7 @@ namespace elfldr {
 		// the elf didn't load properly.
 		assert(gExecData.epc > 0);
 		
-		FlushCache(0);
-		FlushCache(2);
+		FlushCaches();
 		
 		// Reset the IOP and then ExecPS2 us.
 		ResetIOP();

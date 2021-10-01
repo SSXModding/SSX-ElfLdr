@@ -19,6 +19,14 @@ struct MemclrPatch : public Patch {
 		// as simply NOP filling the call causes the game to crash.
 		util::NopFill<32>(util::Ptr(0x0018a294));
 		
+#ifdef EXPERIMENTAL
+		// Nop fill MEM_init() and initheapdebug from bxPreInit,
+		// the experimental patch inits the memory allocator
+		// BEFORE THE GAME EVEN LOADS! Fucking crazy that this works.
+		util::DebugOut("Special case for Exp - killing MEM_init and initheapdebug");
+		util::NopFill<6>(util::Ptr(0x0018a704));
+#endif
+		
 		util::DebugOut("Finished applying MemClr patch...");
 	}
 	

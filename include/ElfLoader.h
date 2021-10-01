@@ -26,6 +26,8 @@ namespace elfldr {
 		
 	};
 	
+	void FlushCaches();
+	
 	/**
 	 * Init loader services, reset IOP and load modules, and init libcdvd
 	 */

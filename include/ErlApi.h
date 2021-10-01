@@ -4,31 +4,36 @@
 // This file defines game apis and some libc stuff in the game
 // the ERL can call into, to replace the libc.
 // TODO: Should this be "GameApi.h"?
+// This file is actually used by patch code inside of the main elf,
+// so it should be gameapi.h or something
 
 #include <utils.h>
 #include <codeutils.h>
 //#include <structs.h>
 
 namespace bx {
+
+	constexpr static elfldr::util::VaradicFunctionWrappa<void, 0x0018ac08, const char*> printf{};
 	
-	template<class ...Args>
-	constexpr void printf(const char* format, Args... args) {
-		elfldr::util::CallFunction(elfldr::util::Ptr(0x0018ac08), format, args...);
-	}
+	// These are PS2 EE kernel system calls which we can (ab)use
+	namespace eekernel {
+		constexpr static elfldr::util::NonVaradicFunctionWrappa<void*, 0x002645c0> EndOfHeap;
+	} // namespace eekernel
 	
-	// This actually calls into REAL (REwritten EA Library??) MEM_alloc and MEM_free,
-	// because the REAL heap is the only good heap we can use.
+		
+	namespace real {
+		constexpr static elfldr::util::NonVaradicFunctionWrappa<void, 0x0023b2a0, void* /* begin */, int /* length */> MEM_init{};
+		constexpr static elfldr::util::NonVaradicFunctionWrappa<void, 0x0018a280, uintptr_t, uintptr_t, int> initheapdebug{};
+		constexpr static elfldr::util::NonVaradicFunctionWrappa<void*, 0x0023a448, const char* /* label */, std::uint64_t /* size */, int /* flags */> MEM_alloc{};
+		constexpr static elfldr::util::NonVaradicFunctionWrappa<void, 0x0023a998, void*> MEM_free{}; 
+	} // namespace real
 	
-	constexpr char* malloc(long size, const char* debugTag) {
-		return elfldr::util::CallFunction<char*>(elfldr::util::Ptr(0x0023a448), "ERL-malloc", size, 0x0 /* MB_LOW */);
-	}
-	
-	constexpr void free(char* ptr) {
-		return elfldr::util::CallFunction(elfldr::util::Ptr(0x0023a998), ptr);
-	}
-	
+
 	// TODO: new/delete implementations
-	// which use bx::malloc/bx::free
+	// which use bx::real::MEM_alloc/bx::real::MEM_free
+	//
+	// only for the ERL though, elfldr
+	// will besides ERL allocation be zero-alloc.
 }
 
 #endif // ERLAPI_H

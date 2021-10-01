@@ -119,6 +119,52 @@ namespace elfldr::util {
 		using FuncT = Ret(*)(Args...);
 		return (UBCast<FuncT>(ptr))(args...);
 	}
+	
+	/**
+	 * A basic boilerplate function wrapper object,
+	 * making it possible for relatively zero-maintainance
+	 * function wrappers to be generated.. at compile time!
+	 *
+	 * And it's all thanks to CallFunction<Ret>().
+	 *
+	 * \tparam Ret Return type.
+	 * \tparam FunctionAddress Function address.
+	 * \tparam IsVaradic True if the function takes varadic arguments.
+	 *					 This will enable another overload to operator()
+	 *					 which permits additional varadic arguments.
+	 *
+	 * \tparam ArgTypes Base argument types.
+	 */
+	template<class Ret, uintptr_t FunctionAddress, bool IsVaradic, class ...ArgTypes>
+	struct FunctionWrappa {
+		
+		/**
+		 * Call operator, for regular functions.
+		 */
+		constexpr Ret operator()(ArgTypes... args) const {
+			return CallFunction<Ret>(elfldr::util::Ptr(FunctionAddress), args...);
+		}
+		
+		/**
+		 * Call operator, for varadic functions.
+		 * This overload only participates 
+		 *
+		 * \tparam AnyVarArgs varadic arguments.
+		 */
+		template<class ...AnyVarArgs> requires(IsVaradic)
+		constexpr Ret operator()(ArgTypes... args, AnyVarArgs... varargs) const {
+			return CallFunction<Ret>(elfldr::util::Ptr(FunctionAddress), args..., varargs...);
+		}
+		
+	};
+	
+	// usings to set IsVaradic eaiser
+	
+	template<class Ret, uintptr_t FunctionAddress, class ...ArgTypes>
+	using VaradicFunctionWrappa = FunctionWrappa<Ret, FunctionAddress, true, ArgTypes...>;
+	
+	template<class Ret, uintptr_t FunctionAddress, class ...ArgTypes>
+	using NonVaradicFunctionWrappa = FunctionWrappa<Ret, FunctionAddress, false, ArgTypes...>;
 		
 } // namespace util
 

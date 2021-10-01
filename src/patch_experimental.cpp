@@ -1,11 +1,10 @@
-#include "utils.h"
-#include "codeutils.h"
-#include "patch.h"
+#include <utils.h>
+#include <codeutils.h>
+#include <patch.h>
 
-// temp include
-#include <ErlApi.h>
+#include <GameApi.h>
 
-#include "structs.h"
+#include <structs.h>
 
 // addresses of some fun stuff
 constexpr static std::uintptr_t TheApp_Address = 0x002852f8;
@@ -54,10 +53,11 @@ struct ExpPatch : public Patch {
 			//bx::real::MEM_free(test);
 		}
 		
-		// Replace the loop with a hand-written 3-instruction replacement.
-		// Pre-assembled, although the assembly listing is also available.
+		// Replace the loop in cGame::UpdateNodes()
+		// with a hand-written 3-instruction replacement.
 		//
-		// Instructions from 0x00189c24 to 0x00189c3c are completely fair game.
+		// Instructions from 0x00189c24 to 0x00189c3c are completely fair game, for
+		// any code you want to run during the node updating stage of cGame::Update().
 		// 0x00189c24 shouldn't modify a0 or a1, however.
 		//
 		// Enjoy the game loop code exec possibilities..
@@ -65,15 +65,16 @@ struct ExpPatch : public Patch {
 		
 		// The assembly:
 		//
-		// addiu a0, gp, 0xFFFFBDE8 ; load gNodeManager address
-		// li a1, 0x3               ; load function's first parameter (3)
-		// jal 0x001864b0           ; call the cNodeManager function
+		// addiu a0, gp, 0xFFFFBDE8 ; load gNodeManager address into a0 (this parameter) (maybe unneeded?)
+		// li a1, 0x3               ; load function's first parameter into a1 (3)
+		// jal 0x001864b0           ; call (linking jump) the cNodeManager function
 		
 		util::NopFill<10>(util::Ptr(0x00189c18));
 		util::MemRefTo<std::uint32_t>(util::Ptr(0x00189c18)) = 0x2784bde8; 
 		util::MemRefTo<std::uint32_t>(util::Ptr(0x00189c1c)) = 0x24050003; 
 		util::MemRefTo<std::uint32_t>(util::Ptr(0x00189c20)) = 0x0c06192c;
 		
+		// TODO:
 		
 		util::DebugOut("Finished applying exp patch...");
 	}

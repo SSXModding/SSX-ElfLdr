@@ -133,13 +133,14 @@ namespace elfldr::util {
 	 *					 This will enable another overload to operator()
 	 *					 which permits additional varadic arguments.
 	 *
-	 * \tparam ArgTypes Base argument types.
+	 * \tparam ArgTypes All argument types.
 	 */
-	template<class Ret, uintptr_t FunctionAddress, bool IsVaradic, class ...ArgTypes>
-	struct FunctionWrappa {
+	template<uintptr_t FunctionAddress, bool IsVaradic, class Ret,  class ...ArgTypes>
+	struct BasicFunctionWrappa {
 		
 		/**
-		 * Call operator, for regular functions.
+		 * Call operator, for non-varadic functions.
+		 * Only takes base argument types.
 		 */
 		constexpr Ret operator()(ArgTypes... args) const {
 			return CallFunction<Ret>(Ptr(FunctionAddress), args...);
@@ -160,11 +161,11 @@ namespace elfldr::util {
 	
 	// usings to set IsVaradic eaiser
 	
-	template<class Ret, uintptr_t FunctionAddress, class ...ArgTypes>
-	using VaradicFunctionWrappa = FunctionWrappa<Ret, FunctionAddress, true, ArgTypes...>;
+	template<uintptr_t FunctionAddress, class Ret, class ...ArgTypes>
+	using VFunctionWrappa = BasicFunctionWrappa<FunctionAddress, true, Ret, ArgTypes...>;
 	
-	template<class Ret, uintptr_t FunctionAddress, class ...ArgTypes>
-	using NonVaradicFunctionWrappa = FunctionWrappa<Ret, FunctionAddress, false, ArgTypes...>;
+	template<uintptr_t FunctionAddress, class Ret, class ...ArgTypes>
+	using FunctionWrappa = BasicFunctionWrappa<FunctionAddress, false, Ret, ArgTypes...>;
 		
 } // namespace util
 

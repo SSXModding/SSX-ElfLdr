@@ -43,13 +43,15 @@ BUILDSUFFIX = _debug
 EECCFLAGS += -g -DDEBUG
 else
 
+# if we're building an ERL, the size pushing options actually break some stuff,
+# so we keep some of it off for ERL's
 ifeq ($(ERL),)
 EECCFLAGS += -fomit-frame-pointer -ffunction-sections -fdata-sections -Os
 EELDFLAGS += -Wl,--gc-sections
 else
-# if we're building an ERL, the size pushing options actually break some stuff.
 EECCFLAGS += -fomit-frame-pointer -Os
 endif
+
 endif
 
 # unused by my code
@@ -125,6 +127,7 @@ $(BINDIR)/$(ERL)$(BUILDSUFFIX).erl: $(OBJS)
 	$(info Linking ERL $@)
 	$(EECC) $(EECCFLAGS) $(EELDFLAGS) -nostartfiles -nodefaultlibs -o $@ $(OBJS) $(LIBS) -Wl,-r -Wl,-d
 ifneq ($(DEBUG),1)
+	$(info Stripping ERL $@ since this is a release build)
 	$(EESTRIP) --strip-unneeded -R .mdebug.eabi64 -R .reginfo -R .comment $@
 endif
 endif

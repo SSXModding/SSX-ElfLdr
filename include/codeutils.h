@@ -103,7 +103,7 @@ namespace elfldr::util {
 	
 	/**
 	 * Call a function at the given address,
-	 * with the given arguments.
+	 * with the given arguments, and the return type.
 	 *
 	 * Turns directly into a call to the given subroutine, 
 	 * using a register. Pretty cool, huh?
@@ -122,50 +122,58 @@ namespace elfldr::util {
 	
 	/**
 	 * A basic boilerplate function wrapper object,
-	 * making it possible for relatively zero-maintainance
-	 * function wrappers to be generated.. at compile time!
+	 * making it possible for relatively zero-maintainance,
+	 * negative cost function wrappers to be generated..
+	 * at compile time!
 	 *
 	 * And it's all thanks to CallFunction<Ret>().
 	 *
-	 * \tparam Ret Return type.
 	 * \tparam FunctionAddress Function address.
-	 * \tparam IsVaradic True if the function takes varadic arguments.
-	 *					 This will enable another overload to operator()
-	 *					 which permits additional varadic arguments.
 	 *
+	 * \tparam IsVaradic True if the function takes varadic arguments.
+	 *					 If true, overload resolution for a version 
+	 * 					 of operator() will be permitted, which itself
+	 *					 permits arbitrary additional varadic arguments.
+	 *
+	 * \tparam Ret The return type of the wrapped function.
 	 * \tparam ArgTypes All argument types.
 	 */
-	template<uintptr_t FunctionAddress, bool IsVaradic, class Ret,  class ...ArgTypes>
+	template<uintptr_t FunctionAddress, bool IsVaradic, class Ret, class... BaseArgTypes>
 	struct BasicFunctionWrappa {
 		
 		/**
 		 * Call operator, for non-varadic functions.
 		 * Only takes base argument types.
 		 */
-		constexpr Ret operator()(ArgTypes... args) const {
+		constexpr Ret operator()(BaseArgTypes... args) const {
 			return CallFunction<Ret>(Ptr(FunctionAddress), args...);
 		}
 		
 		/**
 		 * Call operator, for varadic functions.
-		 * This overload only participates 
+		 * This overload only participates in overload resolution
+		 * if this function wrapper is varadic.
 		 *
-		 * \tparam AnyVarArgs varadic arguments.
+		 * \tparam AnyVarArgs Any varadic arguments to pass to the function.
 		 */
-		template<class ...AnyVarArgs> requires(IsVaradic)
-		constexpr Ret operator()(ArgTypes... args, AnyVarArgs... varargs) const {
+		template<class... VarArgTypes> requires(IsVaradic)
+		constexpr Ret operator()(BaseArgTypes... args, VarArgTypes... varargs) const {
 			return CallFunction<Ret>(Ptr(FunctionAddress), args..., varargs...);
 		}
 		
 	};
 	
-	// usings to set IsVaradic eaiser
+	/** 
+	 * A wrapper for a varadic function (i.e: printf)
+	 */
+	template<uintptr_t FunctionAddress, class Ret, class... ArgTypes>
+	using VarFunction = BasicFunctionWrappa<FunctionAddress, true, Ret, ArgTypes...>;
 	
-	template<uintptr_t FunctionAddress, class Ret, class ...ArgTypes>
-	using VFunctionWrappa = BasicFunctionWrappa<FunctionAddress, true, Ret, ArgTypes...>;
-	
-	template<uintptr_t FunctionAddress, class Ret, class ...ArgTypes>
-	using FunctionWrappa = BasicFunctionWrappa<FunctionAddress, false, Ret, ArgTypes...>;
+	/**
+	 * A wrapper for a regular function.
+	 */
+	template<uintptr_t FunctionAddress, class Ret, class... ArgTypes>
+	using Function = BasicFunctionWrappa<FunctionAddress, false, Ret, ArgTypes...>;
 		
 } // namespace util
 

@@ -26,6 +26,9 @@ namespace elfldr {
 		
 	};
 	
+	/**
+	 * Flush all caches. Used to save ps2sdk includes
+	 */
 	void FlushCaches();
 	
 	/**

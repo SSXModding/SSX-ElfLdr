@@ -7,12 +7,11 @@
 // inside of the bx:: namespace, which call code in the game's executable.
 //
 // This, while being beyond janky, saves needing to worry about linking libc,
-// or needing to also load/relocate libc.erl. A Good Thing, when I only have a known
-// good space of about ~350k for ERLs. In practice, this is probably more like 500k.
+// or needing to also load/relocate libc.erl. A Good Thing.
 // 
 // For memcpy, memset, and a couple other functions,
-// GCC provides built-in versions of these, which should be preferred
-#include <ErlApi.h>
+// GCC provides built-in versions of these, which should be preferred.
+#include <GameApi.h>
 
 // A sample function run every game frame,
 // called by elfldr's injection of cGame::UpdateNodes().
@@ -32,10 +31,12 @@ ELFLDR_HIDDEN elfldr::FunctionEntry entryTable[] {
 };
 
 // example implementation of the only needed ERL call,
-// "elfldr_get_functions"
+// "elfldr_get_functions". You don't really need to change this,
+// unless you wanna do some stuff before Elfldr knows your stuff.
+
 extern "C" bool elfldr_get_functions(elfldr::ErlGetFunctionReturn* ret) {
-	// if the return pointer is invalid, 
-	// there's probably worse issues, lol
+	// If the return pointer is invalid, 
+	// there's probably worse issues.
 	if(!ret)
 		return false;
 	

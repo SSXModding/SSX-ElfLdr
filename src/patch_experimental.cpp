@@ -38,16 +38,15 @@ struct ExpPatch : public Patch {
 		bx::real::MEM_init(util::Ptr(memstart), memsize);
 		bx::real::initheapdebug(memstart, 0x002d8c20, memstart + memsize);
 		
-		// Do a test allocation
-		
+		// Do a test allocation inside of the REAL heap,
+		// to see if it works.
 		void* test = bx::real::MEM_alloc("test", 32, 0x0 /* MB_LOW */);
-		bx::printf("test is %p\n", test);
-		
-		// Write a little test value in our space.
-		util::MemRefTo<uint32_t>(test) = 0x13370410;
 		
 		if(test != nullptr) {
 			bx::printf("Wow, it actually allocated an address. It's %p\n", test);
+			
+			// Write a little test value in our space.
+			util::MemRefTo<uint32_t>(test) = 0x13370410;
 			
 			// Free the memory, commented out for testing reasons.
 			//bx::real::MEM_free(test);
@@ -69,12 +68,62 @@ struct ExpPatch : public Patch {
 		// li a1, 0x3               ; load function's first parameter into a1 (3)
 		// jal 0x001864b0           ; call (linking jump) the cNodeManager function
 		
-		util::NopFill<10>(util::Ptr(0x00189c18));
+		util::NopFill<10>(util::Ptr(0x00189c18)); // start by nopfilling
+		
+		// Put in the replacement instructions
 		util::MemRefTo<std::uint32_t>(util::Ptr(0x00189c18)) = 0x2784bde8; 
 		util::MemRefTo<std::uint32_t>(util::Ptr(0x00189c1c)) = 0x24050003; 
 		util::MemRefTo<std::uint32_t>(util::Ptr(0x00189c20)) = 0x0c06192c;
 		
-		// TODO:
+		// TODO: here is where we would insert a linking jump to code we control
+		// the slack space could contain a hand-written 
+		// subroutine with something like:
+		//
+		//  ; function epilogue
+		//  addiu sp, sp, -0x4 ; reserve a dword for s0
+		//  sd s0, 0x0(sp)     ; save s0 into our reserved space
+		//
+		//	<for each hooked function>
+		//		; this is honestly a bit wasteful (4 insts/dwords per call), but,
+		//		; as long as it works, it's probably fine.
+		//
+		//		; Load the top and bottom nibble of the function call
+		//		lui s0,     0xFEEF
+		//		ori s0, s0, 0xBEEF
+		//
+		//		jalr s0
+		//		nop					 ; avoid ee branch delay side effects
+		//  <end for each>
+		//
+		//  ; function prologue
+		//  ld s0, 0x0(sp)    ; restore s0 from the stack
+		//
+		//  jr ra			  ; (and then return)
+		//	addiu sp, sp, 0x4 ; (and free the reserved stack)
+		//
+		// The code below is the pre-assembled version of these instructions.
+		
+		constexpr static std::uint32_t subroutine_prologue_template[] {
+			0x27BDFFFC,  // addiu sp, sp, -0x4
+			0xFFB00000 // sd s0, 0x0(sp)
+		};
+		
+		// this is emitted for each hooked function
+		constexpr static std::uint32_t subroutine_call_template[] {
+			0x3c10DEAD, // lui s0,     0xDEAD (0xDEAD is template top marker)
+			0x3610BEEF, // ori s0, s0, 0xBEEF (template bottom marker)
+			0x0200F809, // jalr s0
+			0x00000000  // nop (to avoid branch delay mucking up s0)
+		};
+		
+		constexpr static std::uint32_t subroutine_epilogue_template[] {
+			0xDFB00000, // ld s0, 0x0(sp) 
+			
+			0x03E00008, // jr ra
+			0x27BD0004 // addiu sp, sp, 0x4 (executed as a branch delay side effect)
+		};
+		
+	
 		
 		util::DebugOut("Finished applying exp patch...");
 	}

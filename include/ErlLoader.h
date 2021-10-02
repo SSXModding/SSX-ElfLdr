@@ -19,6 +19,37 @@ namespace elfldr {
 	};
 	
 	/**
+	 * malloc() callback type for the ERL loader.
+	 */
+	using ErlMalloc = void*(*)(std::uint32_t);
+	
+	/**
+	 * free() callback type for the ERL loader.
+	 */
+	using ErlFree = void(*)(void*);
+	
+	/**
+	 * The warning callback is called upon loader warnings.
+	 */
+	using ErlWarningCallback = void(*)(const char*);
+	
+	
+	// TODO for standalone: remove this and just set it to malloc/free?
+	// the flexibility might actually be nice, I'll have to see.
+	
+	/**
+	 * Set the ERL loader's memory allocation/deallocation
+	 * functions.
+	 */
+	void SetErlAllocationFunctions(ErlMalloc malloc, ErlFree free);
+	
+	
+	/**
+	 * Set the warning callback for the ERL loader.
+	 */
+	void SetErlWarningCallback(ErlWarningCallback warning);
+	
+	/**
 	 * Load and relocate a .erl file.
 	 *
 	 * \param[in] path ERL path.

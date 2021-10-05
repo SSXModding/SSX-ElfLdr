@@ -5,15 +5,15 @@ VERSION=0.1
 # Base objects all versions of
 # elfldr need to link properly.
 OBJS = $(OBJDIR)/main.o \
-	   $(OBJDIR)/debugout.o \
 	   $(OBJDIR)/patch.o \
 	   $(OBJDIR)/ElfLoader.o
 	  
 # Use Nano newlib.
 EELIBC = c_nano
 	  
-# Link libutils
-LIBS = -lutils -lkernel -lps2sdkc 
+# Link libutils (elf version), and some other
+# fancy ps2sdk libs we need
+LIBS = -lutils-elf -lkernel -lps2sdkc 
 
 ifeq ($(SSX3),1)
 BIN = ssx_elfldr_ssx3

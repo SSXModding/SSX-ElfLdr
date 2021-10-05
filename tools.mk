@@ -33,7 +33,7 @@ EECCFLAGS = $(EEWFLAGS) -D_EE $(EXTRADEFS) -G0 $(EENOLIBGCC) -I$(PS2SDK)/ee/incl
 EECXXFLAGS = -std=c++20 -fno-rtti -fno-exceptions -fno-threadsafe-statics $(EECCFLAGS)
 
 # ld.bfd defaults to -z norelro
-EELDFLAGS = -G0 -L$(PS2SDK)/ee/lib -L$(OBJDIR) -Wl,-zmax-page-size=128,--build-id=none
+EELDFLAGS = -G0 -L$(PS2SDK)/ee/lib -L$(BINDIR) -Wl,-zmax-page-size=128,--build-id=none
 
 # If debug build is enabled,
 # emit debugging info and remove size optimization flags.
@@ -43,8 +43,9 @@ BUILDSUFFIX = _debug
 EECCFLAGS += -g -DDEBUG
 else
 
-# if we're building an ERL, the size pushing options actually break some stuff,
-# so we keep some of it off for ERL's
+# If we're building an ERL, these size pushing options actually break some stuff.
+# Keep some of it off for ERL's.
+
 ifeq ($(ERL),)
 EECCFLAGS += -fomit-frame-pointer -ffunction-sections -fdata-sections -Os
 EELDFLAGS += -Wl,--gc-sections
@@ -53,6 +54,8 @@ EECCFLAGS += -fomit-frame-pointer -Os
 endif
 
 endif
+
+# Rules to build source files.
 
 # unused by my code
 $(OBJDIR)/%.o: %.c
@@ -68,26 +71,32 @@ $(OBJDIR)/%.o: %.cpp
 # mark our psuedotargets *as* psuedotargets
 .PHONY: all clean
 
-# These ifneq's seem weird, but.. this file is intended to be used
-# to build multiple products:
-# - a static library
-# - a PS2 ELF (minified, of course :P)
-# - a "custom" ERL.
+# These ifneq's seem weird, but.. this make include file actually provides
+# the targets to build multiple products, so the Makefiles don't have to.
+#
+# These are:
+#  - an static library (currently placed in $(OBJDIR), I might need a better spot lol)
+#  - a PS2 ELF (minified, of course :P)
+#  - a "custom" ERL ("custom" i.e no version/copyright/ident/depends info.).
 #
 # Having these rules be standardized is actually quite a good thing
 # and.. while I could have just used the ps2sdk makefiles to do so,
-# I like this setup a bit more.
+# I like this setup a bit more, because it's a lot better and, most importantly,
+# *one* include file.
 
 ifneq ($(LIB),)
 # include rules for building a static library
+# TODO: LIB should only contain a name,
+# we should gnuize/compose a filename here.
 
-all: $(OBJDIR)/$(LIB)
+all: $(OBJDIR)/ $(BINDIR)/$(LIB)
 
 clean:
 	$(info Cleaning build products..)
-	rm $(OBJDIR)/$(LIB) $(OBJS)
+	rm $(BINDIR)/$(LIB) $(OBJS)
+	rmdir $(OBJDIR)
 
-$(OBJDIR)/$(LIB): $(OBJS)
+$(BINDIR)/$(LIB): $(OBJS)
 	$(info Creating static library $@)
 	$(EEAR) r $@ $(OBJS)
 endif
@@ -97,13 +106,16 @@ ifneq ($(BIN),)
 
 # This complicated fun makes it so that I only include the libs I exactly need.
 # LIBS specifies any and all libraries the ELF *NEEDS*.
+# For simplicity, and, to avoid any *more* pain, we DO assume a libc,
+# which needs to be specified in the product's Makefile
 EEBIN_LIBS = -nodefaultlibs -Wl,--start-group -l$(EELIBC) $(LIBS) -Wl,--end-group
 
-all: $(BINDIR)/$(BIN)$(BUILDSUFFIX).elf
+all: $(OBJDIR)/ $(BINDIR)/$(BIN)$(BUILDSUFFIX).elf
 
 clean:
 	$(info Cleaning build products..)
 	rm $(BINDIR)/$(BIN)$(BUILDSUFFIX).elf $(OBJS)
+	rmdir $(OBJDIR)
 
 $(BINDIR)/$(BIN)$(BUILDSUFFIX).elf: $(OBJS)
 	$(info Linking PS2 ELF $@)
@@ -117,15 +129,16 @@ endif
 ifneq ($(ERL),)
 # include rules for building PS2 ERL file
 
-all: $(BINDIR)/$(ERL)$(BUILDSUFFIX).erl
+all: $(OBJDIR)/ $(BINDIR)/$(ERL)$(BUILDSUFFIX).erl
 
 clean:
 	$(info Cleaning build products..)
-	rm $(BINDIR)/$(ERL)$(BUILDSUFFIX).erl
+	rm $(BINDIR)/$(ERL)$(BUILDSUFFIX).erl $(OBJS)
+	rmdir $(OBJDIR)
 	
 $(BINDIR)/$(ERL)$(BUILDSUFFIX).erl: $(OBJS)
 	$(info Linking ERL $@)
-	$(EECC) $(EECCFLAGS) $(EELDFLAGS) -nostartfiles -nodefaultlibs -o $@ $(OBJS) $(LIBS) -Wl,-r -Wl,-d
+	$(EECC) $(EECCFLAGS) $(EELDFLAGS) -nostartfiles -nodefaultlibs -o $@ $(OBJS) $(LIBS) -Wl,-r
 ifneq ($(DEBUG),1)
 	$(info Stripping ERL $@ since this is a release build)
 	$(EESTRIP) --strip-unneeded -R .mdebug.eabi64 -R .reginfo -R .comment $@
@@ -134,3 +147,9 @@ endif
 
 # fun make tricks, episode # 27,402
 $V.SILENT:
+
+# needs to be below all these other rules,
+# otherwise it physically will not fire.
+# just make things
+$(OBJDIR)/:
+	mkdir -p $@

@@ -30,6 +30,9 @@ namespace elfldr::util {
 	 */
 	template<class Dest, class Source>
 	constexpr Dest UBCast(Source source) {
+		// FIXME: actually using this at compile time
+		// causes some uninitialized member errors.
+		
 		union {
 			Source src;
 			Dest dst;
@@ -37,9 +40,17 @@ namespace elfldr::util {
 		
 		// Does this actually cause any problems? It'd just truncate data,
 		// I think? 
-		// Either way, the safer, the better, especially when I'm doing
-		// union type punning (something C++ itself considers UB - although GCC still lets it work).
-		static_assert(sizeof(u) == sizeof(Source), "anonymous union used for punning must be sizeof(Source), dest may be bigger");
+		// Either way, the safer, the better. 
+		// Especially when I'm doing union type punning.
+		//
+		//(something C++ itself considers UB,
+		// although GCC still lets it work even with strict aliasing.
+		//
+		// People point at me C99/C11 techinically "allowing" union punning, but
+		// in reality it's GCC behaviour which truly allows it 
+		// (even compiling C++ where strict aliasing).
+		//)
+		static_assert(sizeof(u) == sizeof(Source), "anonymous union used for punning must be sizeof(Source). Dest may not be bigger.");
 		
 		return u.dst;
 	}
@@ -49,6 +60,15 @@ namespace elfldr::util {
 	 */
 	void DebugOut(const char* format, ...);
 	
+#ifdef DEBUG
+	void DebugAssertFailed(const char* exp, const char* file, std::uint32_t line);
+#endif
+
+	void RelAssertFailed(const char* exp, const char* file, std::uint32_t line);
+	
 }
+
+// TODO: assert macros.
+// The runtime code is here, so I'd just need to provide that.
 
 #endif // UTILS_H

@@ -1,10 +1,11 @@
 # the only binary products
-obj/
-# just in case
-obj/*.o
-obj_ssx3/
-obj_ssx3/*.o
+src/**/obj/
+src/**/obj/*.o
+
+src/**/obj_ssx3/
+src/**/obj_ssx3/*.o
 
 bin/
 bin/*.elf
+bin/*.a
 bin/*.erl

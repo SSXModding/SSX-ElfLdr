@@ -65,6 +65,22 @@ namespace elfldr::util {
 	 * \param[in] string String to write.
 	 */
 	void WriteString(void* addr, const char* string);
+	
+	/**
+	 * Patches the 4 instructions pointed to by code to something like:
+	 * \code
+	 *  lui s0, 0x0018 ; top 16 bits
+	 *  ori s0, s0, 0xBADE ; lower 16 bits
+	 *  jalr s0
+	 *  nop ; branch delay problems SUCK
+	 * \code
+	 *
+	 * The given subroutine is called with no arguments.
+	 *
+	 * \param[out] Code address. 4 instructions space MUST be valid.
+	 * \param[in] subroutine The subroutine address to call.
+	 */
+	void AddUnlimitedCallVoid(void* code, void* subroutine);
 
 	/**
 	 * Fill an aligned section with MIPS nop (all zeros.)

@@ -81,46 +81,54 @@ struct ExpPatch : public Patch {
 		//
 		//  ; function epilogue
 		//  addiu sp, sp, -0x4 ; reserve a dword for s0
-		//  sd s0, 0x0(sp)     ; save s0 into our reserved space
+		//	sd s0, 0x0(sp)     ; save s0 into our reserved space
 		//
 		//	<for each hooked function>
 		//		; this is honestly a bit wasteful (4 insts/dwords per call), but,
 		//		; as long as it works, it's probably fine.
 		//
 		//		; Load the top and bottom nibble of the function call
-		//		lui s0,     0xFEEF
+		//		lui s0,     0xDEAD
 		//		ori s0, s0, 0xBEEF
 		//
 		//		jalr s0
-		//		nop					 ; avoid ee branch delay side effects
-		//  <end for each>
+		//		nop ; avoid ee branch delay side effects
+		//	<end for each>
 		//
-		//  ; function prologue
-		//  ld s0, 0x0(sp)    ; restore s0 from the stack
+		//	; function prologue
+		//	ld s0, 0x0(sp)    ; restore s0 from the stack
 		//
-		//  jr ra			  ; (and then return)
+		//	jr ra			  ; (and then return)
 		//	addiu sp, sp, 0x4 ; (and free the reserved stack)
 		//
 		// The code below is the pre-assembled version of these instructions.
 		
+		// basic function prologue
 		constexpr static std::uint32_t subroutine_prologue_template[] {
 			0x27BDFFFC,  // addiu sp, sp, -0x4
-			0xFFB00000 // sd s0, 0x0(sp)
+			0x00000000,  // nop (branch delay filler)
+			0xFFB00000   // sd s0, 0x0(sp) (save the old value of s0)
 		};
 		
 		// this is emitted for each hooked function
 		constexpr static std::uint32_t subroutine_call_template[] {
-			0x3c10DEAD, // lui s0,     0xDEAD (0xDEAD is template top marker)
-			0x3610BEEF, // ori s0, s0, 0xBEEF (template bottom marker)
+			// Load dword address to jump to
+			0x3c10DEAD, // lui s0,     0xDEAD (template top word)
+			0x3610BEEF, // ori s0, s0, 0xBEEF (template bottom word)
+			
+			// Call the loaded address.
 			0x0200F809, // jalr s0
 			0x00000000  // nop (to avoid branch delay mucking up s0)
 		};
 		
 		constexpr static std::uint32_t subroutine_epilogue_template[] {
-			0xDFB00000, // ld s0, 0x0(sp) 
+			// Restore registers
+			0xDFB00000, // ld s0, 0x0(sp) (load the old value of s0)
+			0x00000000, // nop (branch delay filler)
 			
+			// Subroutine return.
 			0x03E00008, // jr ra
-			0x27BD0004 // addiu sp, sp, 0x4 (executed as a branch delay side effect)
+			0x27BD0004  // addiu sp, sp, 0x4 (executed as a branch delay side effect)
 		};
 		
 	

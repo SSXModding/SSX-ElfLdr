@@ -34,7 +34,8 @@ namespace elfldr {
 	
 	/**
 	 * a function entry.
-	 * Elfldr consumes these to add to internal lists
+	 * Elfldr consumes these to add to an internal list
+	 * which it then emits assembler to call.
 	 */
 	struct FunctionEntry {
 		FunctionType type;

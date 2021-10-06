@@ -5,17 +5,23 @@
 
 namespace elfldr::util {
 	
-	constexpr static std::uint32_t subroutine_call_template[] {
+	// This is kinda wasteful, but it should work.
+	
+	constexpr static std::uint32_t SubroutineCallTemplate[] {
 		// Load dword address to jump to
-		0x3c10DEAD, // lui s0,     0xDEAD (template top word)
-		0x3610BEEF, // ori s0, s0, 0xBEEF (template bottom word)
+		0x3c100000, // lui s0,     0x0000 (template top word)
+		0x36100000, // ori s0, s0, 0x0000 (template bottom word)
 			
 		// Call the loaded address.
 		0x0200F809, // jalr s0
 		0x00000000  // nop (to avoid branch delay mucking up s0)
 	};
 	
+	// size of the above template in bytes
+	constexpr static std::size_t SubroutineCallTemplate_Size = sizeof(SubroutineCallTemplate)/sizeof(std::uint32_t);
+	
 	// accessor for both words of a dword individually.
+	// this makes the code for AddUnlimitedCallVoid a lot less stupid
 	union SeperatedDword {
 		std::uint32_t dword;
 		
@@ -25,7 +31,6 @@ namespace elfldr::util {
 		};
 	};
 	
-		
 	void ReplaceString(void* addr, const char* string) {
 		DebugOut("Replacing string \"%s\" at %p: \"%s\"...", UBCast<char*>(addr), addr, string);
 		__builtin_memcpy(addr, string, strlen(string) + 1);
@@ -36,12 +41,17 @@ namespace elfldr::util {
 		__builtin_memcpy(addr, string, strlen(string) + 1);
 	}
 	
-	void AddUnlimitedCallVoid(void* code, void* subroutine) {
-		// TODO: actually implement this function.
-		// 
-		// copy the template to *code,
-		// then the first 2 instructions get the top word
-		// and bottom word of subroutine (presumably created via util::Ptr() or something)
+	void WriteUnlimitedCallVoid(void* code, void* subroutine) {
+		auto* codeptr = UBCast<SeperatedDword*>(code);
+		const auto subrdword = UBCast<SeperatedDword>(subroutine);
+		
+		// copy the template instructions...
+		__builtin_memcpy(codeptr, SubroutineCallTemplate, SubroutineCallTemplate_Size);
+		
+		// change the template's nil values
+		// to each word of the subroutine.
+		codeptr[0].bottom_word = subrdword.top_word;
+		codeptr[1].bottom_word = subrdword.bottom_word;
 	}
 	
 }

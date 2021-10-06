@@ -1,9 +1,5 @@
 // Helper code in libutils for handling ELFLDR_ASSERT()
 // and ELFLDR_ASSERTREL (ELFLDR_ASSERT which is kept in for release.)
-//
-// This code picks betwee. lol couldn't I just.. 
-// damn I'm stupid.
-// think we knew this before
 
 #include <utils.h> // DebugOut or bx::printf for ERL
 //#include <GameApi.h>

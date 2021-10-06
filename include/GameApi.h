@@ -17,7 +17,7 @@ namespace bx {
 	
 	// These are PS2 EE kernel system calls which we can (ab)use
 	namespace eekernel {
-		constexpr static elfldr::util::Function<0x002645c0, void*> EndOfHeap;
+		constexpr static elfldr::util::Function<0x002645c0, void*> EndOfHeap{};
 	} // namespace eekernel
 	
 		

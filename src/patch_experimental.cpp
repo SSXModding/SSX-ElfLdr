@@ -27,17 +27,18 @@ struct ExpPatch : public Patch {
 		
 		bx::printf("Initalizing REAL heap, before the game does\n");
 		
+		// maybe this should be a function in gameapi.h?
+		
 		// all these values are hard-coded for US. sorry.
 		// You can in theory pick these values out with a little bit of guess work
 		// (the game printf's out 2/3 of these, fwiw)
 		constexpr static uintptr_t memstart = 0x002d9440;
 		constexpr static int memsize = 30432192;
-
-		// Init the REAL heap.
 		
 		bx::real::MEM_init(util::Ptr(memstart), memsize);
 		bx::real::initheapdebug(memstart, 0x002d8c20, memstart + memsize);
 		
+#ifdef DEBUG		
 		// Do a test allocation inside of the REAL heap,
 		// to see if it works.
 		void* test = bx::real::MEM_alloc("test", 32, 0x0 /* MB_LOW */);
@@ -48,9 +49,12 @@ struct ExpPatch : public Patch {
 			// Write a little test value in our space.
 			util::MemRefTo<uint32_t>(test) = 0x13370410;
 			
+			bx::printf("value in test is: %d\n", reinterpret_cast<std::uint32_t>(*test));
+			
 			// Free the memory, commented out for testing reasons.
-			//bx::real::MEM_free(test);
+			bx::real::MEM_free(test);
 		}
+#endif
 		
 		// Replace the loop in cGame::UpdateNodes()
 		// with a hand-written 3-instruction replacement.
@@ -75,58 +79,16 @@ struct ExpPatch : public Patch {
 		util::MemRefTo<std::uint32_t>(util::Ptr(0x00189c1c)) = 0x24050003; 
 		util::MemRefTo<std::uint32_t>(util::Ptr(0x00189c20)) = 0x0c06192c;
 		
-		// TODO: here is where we would insert a linking jump to code we control
-		// the slack space could contain a hand-written 
-		// subroutine with something like:
-		//
-		//  ; function epilogue
-		//  addiu sp, sp, -0x4 ; reserve a dword for s0
-		//	sd s0, 0x0(sp)     ; save s0 into our reserved space
-		//
-		//	<for each hooked function>
-		//		; this is honestly a bit wasteful (4 insts/dwords per call), but,
-		//		; as long as it works, it's probably fine.
-		//
-		//		; Load the top and bottom nibble of the function call
-		//		lui s0,     0xDEAD
-		//		ori s0, s0, 0xBEEF
-		//
-		//		jalr s0
-		//		nop ; avoid ee branch delay side effects
-		//	<end for each>
-		//
-		//	; function prologue
-		//	ld s0, 0x0(sp)    ; restore s0 from the stack
-		//
-		//	jr ra			  ; (and then return)
-		//	addiu sp, sp, 0x4 ; (and free the reserved stack)
-		//
-		// The code below is the pre-assembled version of these instructions.
 		
 		// basic function prologue
 		constexpr static std::uint32_t subroutine_prologue_template[] {
 			0x27BDFFFC,  // addiu sp, sp, -0x4
-			0x00000000,  // nop (branch delay filler)
 			0xFFB00000   // sd s0, 0x0(sp) (save the old value of s0)
-		};
-		
-		// this is emitted for each hooked function
-		constexpr static std::uint32_t subroutine_call_template[] {
-			// Load dword address to jump to
-			0x3c10DEAD, // lui s0,     0xDEAD (template top word)
-			0x3610BEEF, // ori s0, s0, 0xBEEF (template bottom word)
-			
-			// Call the loaded address.
-			0x0200F809, // jalr s0
-			0x00000000  // nop (to avoid branch delay mucking up s0)
 		};
 		
 		constexpr static std::uint32_t subroutine_epilogue_template[] {
 			// Restore registers
 			0xDFB00000, // ld s0, 0x0(sp) (load the old value of s0)
-			0x00000000, // nop (branch delay filler)
-			
-			// Subroutine return.
 			0x03E00008, // jr ra
 			0x27BD0004  // addiu sp, sp, 0x4 (executed as a branch delay side effect)
 		};

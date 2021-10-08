@@ -9,6 +9,10 @@
 // is this include needed?
 #include <codeutils.h>
 
+// stuff.
+#include <erl/ErlLoader.h>
+#include <GameApi.h>
+
 
 // Alter this to change where HostFS root is.
 #ifdef SSX3
@@ -38,6 +42,18 @@ int main() {
 		while(true);
 	}
 	
+#if 1	
+	// Populate Liberl's allocation/free routines with an aligned
+	// malloc/free from REAL. These SHOULDN'T be called until later though.
+	elfldr::erl::SetAllocationFunctions([](std::uint32_t size) {
+		return bx::real::MEM_alloc("Liberl", size + 4, 0x40 /* bx::real::MB_ALIGN */);
+	}, 
+	[](void* ptr) {
+		if(ptr)
+			bx::real::MEM_free(ptr);
+	});
+#endif	
+	
 	// reuse the elf path buffer to build the argv[0] string
 	memset(&elfPath[0], 0, elfldr::util::MaxPath * sizeof(char));
 	strncpy(&elfPath[0], gHostFsPath, elfldr::util::MaxPath * sizeof(char));
@@ -54,6 +70,8 @@ int main() {
 	
 	// apply experimental patches
 #ifdef EXPERIMENTAL
+
+
 	elfldr::GetPatchById(0xE0)->Apply();
 #endif
 	

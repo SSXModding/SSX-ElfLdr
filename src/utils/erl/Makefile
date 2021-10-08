@@ -3,6 +3,7 @@
 # libutils objects
 OBJS = $(OBJDIR)/codeutils.o \
 	   $(OBJDIR)/assert.o \
+	   $(OBJDIR)/fnv.o \
 	   $(OBJDIR)/debugout.o
 
 # Define a custom vpath to make this build still work.

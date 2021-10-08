@@ -76,7 +76,7 @@ namespace elfldr::util {
 	 * \code
 	 *
 	 * The given subroutine is called with no arguments.
-	 * The code also assumes `s0` is a safe register (i.e: it is saved during the hook.).
+	 * The written code also assumes `s0` is a safe register (i.e: it is saved during the hook.).
 	 *
 	 * \param[out] Code address. 4 instructions space MUST be valid.
 	 * \param[in] subroutine The subroutine address to call.

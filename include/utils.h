@@ -13,6 +13,12 @@ namespace elfldr::util {
 	 */
 	constexpr static std::size_t MaxPath = 260;
 	
+	// it's std::move for elfldr!!!
+	template<class T>
+	constexpr T&& Move(T&& t) {
+		return static_cast<T&&>(t);
+	}
+	
 	/**
 	 * The worst casting function ever.
 	 * It works, though.

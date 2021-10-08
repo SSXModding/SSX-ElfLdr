@@ -3,7 +3,22 @@
 
 #include <cstdint>
 
+// The API for Liberl.
+//
+// Liberl is a C++ replacement library for the PS2SDK ERL
+// loader library, designed to be lean (which unfortunately means
+// a minor sacrifice of features.).
+//
+// Liberl has no support for imports (from either the Elfldr executable, or another ERL),
+// no support for dependencies (which is intentional, seeing how that would be a pain),
+// no support for "global" symbols, and generally,
+// is written to just be enough to work.
+//
+
 namespace elfldr::erl {
+	
+	// symbol data type
+	using Symbol = std::uintptr_t;
 	
 	/**
 	 * An ERL image.
@@ -13,9 +28,13 @@ namespace elfldr::erl {
 		virtual ~Image() = default;
 		
 		/**
-		 * Resolve a symbol inside of this ERL image.
+		 * Resolve a ERL-local symbol.
+		 *
+		 * \returns Symbol address if found, or 0x0 (nullptr).
+		 *
+		 * \param[in] symbolName The name of the symbol to resolve.
 		 */
-		virtual void* ResolveSymbol(const char* symbolName) = 0;
+		virtual Symbol ResolveSymbol(const char* symbolName) = 0;
 		
 		
 	};
@@ -31,27 +50,16 @@ namespace elfldr::erl {
 	using Free = void(*)(void*);
 	
 	/**
-	 * The warning callback is called upon loader warnings.
-	 */
-	using WarningCallback = void(*)(const char*);
-	
-	/**
 	 * Set the ERL loader's memory allocation/deallocation
 	 * functions.
 	 */
 	void SetAllocationFunctions(Malloc erlmalloc, Free erlfree);
 	
-	
-	/**
-	 * Set the warning callback for the ERL loader.
-	 */
-	void SetWarningCallback(WarningCallback warning);
-	
 	/**
 	 * Load and relocate a .erl file.
 	 *
 	 * \param[in] path ERL path.
-	 * \returns ErlImage handle (allocated with the ERL allocator), or nullptr on error.
+	 * \returns Image handle (allocated with the ERL allocator), or nullptr on error.
 	 */
 	Image* LoadErl(const char* path);
 	

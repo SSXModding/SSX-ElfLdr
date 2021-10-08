@@ -38,10 +38,10 @@ struct ExpPatch : public Patch {
 		bx::real::MEM_init(util::Ptr(memstart), memsize);
 		bx::real::initheapdebug(memstart, 0x002d8c20, memstart + memsize);
 		
-#ifdef DEBUG		
+//#ifdef DEBUG		
 		// Do a test allocation inside of the REAL heap,
 		// to see if it works.
-		void* test = bx::real::MEM_alloc("test", 32, 0x0 /* MB_LOW */);
+		void* test = bx::real::MEM_alloc("test", 320, 0x40 /* MB_LOW */);
 		
 		if(test != nullptr) {
 			bx::printf("Wow, it actually allocated an address. It's %p\n", test);
@@ -49,12 +49,12 @@ struct ExpPatch : public Patch {
 			// Write a little test value in our space.
 			util::MemRefTo<uint32_t>(test) = 0x13370410;
 			
-			bx::printf("value in test is: %d\n", reinterpret_cast<std::uint32_t>(*test));
+			bx::printf("value in test is: %d\n", util::MemRefTo<std::uint32_t>(test));
 			
 			// Free the memory, commented out for testing reasons.
 			bx::real::MEM_free(test);
 		}
-#endif
+//#endif
 		
 		// Replace the loop in cGame::UpdateNodes()
 		// with a hand-written 3-instruction replacement.

@@ -10,6 +10,7 @@
 constexpr static std::uintptr_t TheApp_Address = 0x002852f8;
 constexpr static std::uintptr_t TheWorld_Address = 0x00299cc8;
 
+
 using namespace elfldr;
 
 // I'm lazy.
@@ -20,12 +21,7 @@ struct ExpPatch : public Patch {
 	void Apply() override {
 		util::DebugOut("Applying exp patch...");
 		
-		// test FunctionWrappa
-		bx::printf("Hello World, using the magic of FunctionWrappa<...>: %d\n", 32768);
-		
 		FlushCaches();
-		
-		bx::printf("Initalizing REAL heap, before the game does\n");
 		
 		// maybe this should be a function in gameapi.h?
 		
@@ -44,12 +40,12 @@ struct ExpPatch : public Patch {
 		void* test = bx::real::MEM_alloc("test", 320, 0x40 /* MB_LOW */);
 		
 		if(test != nullptr) {
-			bx::printf("Wow, it actually allocated an address. It's %p\n", test);
+			util::DebugOut("Wow, it actually allocated an address. It's %p\n", test);
 			
 			// Write a little test value in our space.
 			util::MemRefTo<uint32_t>(test) = 0x13370410;
 			
-			bx::printf("value in test is: %d\n", util::MemRefTo<std::uint32_t>(test));
+			util::DebugOut("value in test is: %d\n", util::MemRefTo<std::uint32_t>(test));
 			
 			// Free the memory, commented out for testing reasons.
 			bx::real::MEM_free(test);

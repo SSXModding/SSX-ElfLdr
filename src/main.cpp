@@ -18,7 +18,10 @@
 #ifdef SSX3
 const char* gHostFsPath = "host:C:\\pcsx2\\bin\\ssx3";
 #else
-const char* gHostFsPath = "host:C:\\pcsx2\\bin\\ssxmod";
+//const char* gHostFsPath = "host:C:\\pcsx2\\bin\\ssxmod";
+
+// TODO: remove the ifdef, this is how I'm handling hostfs from now on
+const char* gHostFsPath = "host:";
 #endif
 
 int main() {
@@ -27,14 +30,15 @@ int main() {
 	
 	elfldr::ElfLoader loader;
 	
-	char elfPath[elfldr::util::MaxPath]{}; // MAX_PATH on Windows
+	char elfPath[elfldr::util::MaxPath]{};
 	
 	// if only i had a decent FS lib.
 	strncpy(&elfPath[0], gHostFsPath, elfldr::util::MaxPath * sizeof(char));
 #ifdef SSX3
 	strcat(elfPath, "\\SLUS_207.72");
 #else
-	strcat(elfPath, "\\SLUS_200.95");
+	strcat(elfPath, "SLUS_200.95");
+	//strcat(elfPath, "\\SLUS_200.95");
 #endif
 	
 	if(!loader.LoadElf(elfPath)) {
@@ -57,8 +61,8 @@ int main() {
 	// reuse the elf path buffer to build the argv[0] string
 	memset(&elfPath[0], 0, elfldr::util::MaxPath * sizeof(char));
 	strncpy(&elfPath[0], gHostFsPath, elfldr::util::MaxPath * sizeof(char));
-	elfPath[strlen(gHostFsPath)] = '\\';
-	elfPath[strlen(gHostFsPath)+1] = '\0';
+	//elfPath[strlen(gHostFsPath)] = '\\';
+	//elfPath[strlen(gHostFsPath)+1] = '\0';
 	
 	// apply patches
 #ifdef SSX3

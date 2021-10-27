@@ -1,4 +1,6 @@
-// Fun code utilities, provided by the "libutils" libtary.
+// Fun code utilities, provided by the "libutils" library.
+
+// TODO: move to utils/
 
 #ifndef CODEUTILS_H
 #define CODEUTILS_H
@@ -30,7 +32,7 @@ namespace elfldr::util {
 	 */
 	struct GnuVtablePointer {
 		// Looking at generated assembly reveals
-		// that these are actually 2 shorts.
+		// that these are actually emitted as 2 shorts.
 		std::uint16_t adj_upper;
 		std::uint16_t adj_lower;
 		

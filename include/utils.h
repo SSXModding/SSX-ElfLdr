@@ -1,5 +1,7 @@
 // General utilities, provided by the "libutils" library.
 
+// TODO: move to utils/
+
 #ifndef UTILS_H
 #define UTILS_H
 

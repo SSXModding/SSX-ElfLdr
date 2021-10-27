@@ -2,10 +2,14 @@
 #define GAMEAPI_H
 
 // This file defines game apis and some libc stuff in the game
-// that we can call into.
+// that we can call into, using instances of the codeutils
+// function wrapper objects.
 //
 // This header file is usable for both ERLs and the main
-// ElfLdr elf.
+// ElfLdr elf. However, any usage will have to wait until the
+// ELF has been loaded, obviously. Also, these are US/SLUS-20095,
+// just like all the other addresses I have.
+//
 
 #include <utils.h>
 #include <codeutils.h>

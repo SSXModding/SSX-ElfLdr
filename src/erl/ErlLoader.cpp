@@ -37,7 +37,6 @@ namespace elfldr::erl {
 				return -1;
 		}
 		
-		
 		std::uint8_t* buffer;
 		HashTable<String, Symbol> symbol_table;
 	};
@@ -62,14 +61,16 @@ namespace elfldr::erl {
 		auto* image = new ImageImpl();
 		bool loaded = false;
 		
-		ERL_DEBUG_PRINTF("Attempting to load ERL \"%s\"", path);
-		
+				
 		ScopeExitGuard guard([&]() {
 			// if the image wasn't loaded properly,
 			// destroy it.
 			if(!loaded)
 				delete image;
 		});
+		
+		ERL_DEBUG_PRINTF("Attempting to load ERL \"%s\"", path);
+
 		
 	}
 

@@ -18,6 +18,7 @@
 
 namespace elfldr {
 	
+	
 	template<class T>
 	struct BasicString {
 		using CharType = T;
@@ -25,10 +26,9 @@ namespace elfldr {
 
 		inline BasicString() = default;
 
-		// couldn't this be done with ctad?
-		// actually no it couldn't I dont think
-		inline BasicString(const T* cstr)
-			: BasicString(cstr, strlen(cstr)) {}
+		inline BasicString(const T* cstr) {
+			CopyFromCString(cstr);
+		}
 
 		inline BasicString(const T* mem, int length) {
 			if(!mem)
@@ -131,6 +131,17 @@ namespace elfldr {
 		}
 
 	private:
+	
+		void CopyFromCString(const T* cstr) {
+			if(!cstr)
+				return;
+			
+			const auto clen = strlen(cstr);
+			
+			Resize(clen);
+			memcpy(&memory[0], &cstr[0], clen * sizeof(T));
+		}
+	
 		T* memory{nullptr};
 		SizeType len{};
 	};

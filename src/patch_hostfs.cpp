@@ -30,39 +30,25 @@
 extern const char* gHostFsPath;
 
 using namespace elfldr;
+		
+// where our host path string should be placed
+constexpr static std::uintptr_t STRING_ADDRESS = 0x002c5cc4;
+constexpr static std::uintptr_t HOST_POINTER = 0x002c59c8;
 
 struct HostFsPatch : public Patch {
 	
 	void Apply() override {
 		util::DebugOut("Applying HostFS patch...");
+
 		
-		// where our host path string should be placed
-		constexpr static std::uintptr_t STRING_ADDRESS = 0x002c5cc0;
-		
-		// where the host0 pointer is
-		constexpr static std::uintptr_t HOST_STRING_ADDRESS = 0x002c59c8;
-		
-	
 		// ASYNCFILE_init usually gets "cd:".
-		// We replace this with a string which will match "host"
+		// We replace this with a string which will match "host",
+		// after we..
 		util::ReplaceString(util::Ptr(0x002c4e70), "host");
 		
-		// Replace the strncmp length param constant in ASYNCFILE_init 
-		// (by altering the instruction. Worst hack ever.)
-		// from 6 to 4, so we can just use "host:".
-		// This could be -= 2, but meh. This is more direct and better.
+		// replace the strncmp length param constant in ASYNCFILE_init 
+		// from 6 to 4, so we can just use "host".
 		util::MemRefTo<std::uint8_t>(util::Ptr(0x00238550)) = 0x4;
-		
-		// Switch path normalization when making the "beautiful" path
-		// around so it uses the Windows path seperation character
-		// on linux you may actually need to remove this
-		//
-		// this actually isn't needed. I'm keeping it here in case it is:
-		//
-		//elfldr::util::MemRefTo<uint8_t>(reinterpret_cast<void*>(0x0023770c)) = '/';
-		//elfldr::util::MemRefTo<uint8_t>(reinterpret_cast<void*>(0x00237710)) = '\\';
-		
-		// write a new string in some slack space.
 		
 		// Assemble a good path string from the global HostFS path,
 		// by copying it into a temporary buffer and then adding an extra
@@ -70,20 +56,60 @@ struct HostFsPatch : public Patch {
 		char tempPath[util::MaxPath]{};
 		
 		strncpy(&tempPath[0], gHostFsPath, util::MaxPath * sizeof(char));
-		tempPath[strlen(gHostFsPath)] = '\\';
-		tempPath[strlen(gHostFsPath)+1] = '\0';
+		//tempPath[strlen(gHostFsPath)] = '\\';
+		//tempPath[strlen(gHostFsPath)+1] = '\0';
 		
-		// honestly this might not be needed, because the path seems to be affected
-		// more by argv[0]. I'm still gonna keep it though just to be sure.
+		// Write a new string in some slack space.
 		
 		util::WriteString(util::Ptr(STRING_ADDRESS), tempPath);
 		
 		// Overwrite the pointer that the path "beautification" function uses to strcat()
-		// "host0:" originally, pointing it to our HostFS string.
-		//
-		// IDK why the string isn't exactly written at 2c5cc0, so we go 4 forwards. It works.
-		// I'm not questioning it
-		util::MemRefTo<std::uint32_t>(util::Ptr(HOST_STRING_ADDRESS)) = STRING_ADDRESS + sizeof(std::uint32_t);
+		// "host0:" pointing it to our HostFS path instead.
+		util::MemRefTo<std::uint32_t>(util::Ptr(HOST_POINTER)) = STRING_ADDRESS;
+		
+		// Write paths 
+		util::WriteString(util::Ptr(0x002b3ab0), "host:data/modules/ioprp16.img");
+		util::WriteString(util::Ptr(0x002b3b08), "host:data/modules/sio2man.irx");
+		util::WriteString(util::Ptr(0x002b3b48), "host:data/modules/padman.irx");
+		util::WriteString(util::Ptr(0x002b3b88), "host:data/modules/libsd.irx");
+		util::WriteString(util::Ptr(0x002b3bc8), "host:data/modules/sdrdrv.irx");
+		util::WriteString(util::Ptr(0x002b3c08), "host:data/modules/snddrv.irx"); // eac custom!!!
+		util::WriteString(util::Ptr(0x002b3c48), "host:data/modules/mcman.irx");
+		util::WriteString(util::Ptr(0x002b3c88), "host:data/modules/mcserv.irx");
+		
+		// This will completely disable loading worlds from BIG files.
+		// Only enable this if you've extracted everything!!!	
+#if 1		
+		util::NopFill<3>(util::Ptr(0x00187704)); // nop TheApp.MountWorld(...) in cGame::cGame()
+		util::NopFill<2>(util::Ptr(0x001879f4)); // nop TheApp.UnmountWorld() in cGame::~cGame()
+#endif
+
+		// you know what? fuck you
+		// *unbigs your files*
+		// (i could patch bxMain() but cApplication::Run() never returns in release.)
+		//util::NopFill<36>(util::Ptr(0x00183b68));
+
+		// Rewrite most of the cWorld path strings to remove the |.
+		// This allows world files to either be loose or inside of the venue BIG files 
+		// (as long as the above code is not enabled).
+		
+		// I don't think this is ever used cause the game mounts the big
+		// before calling cWorld::Load(). Maybe older versions of the function
+		// mounted the BIG file from this path itself? We may never know
+		// (unless said older builds leak of course..)
+		util::WriteString(util::Ptr(0x002bdfc0), "data/models/%s.big"); 
+		
+		// Actually used paths.
+		util::WriteString(util::Ptr(0x002bdfd8), "data/models/%s.wdx");
+		util::WriteString(util::Ptr(0x002bdff0), "data/models/%s.wdf");
+		util::WriteString(util::Ptr(0x002be008), "data/models/%s.wdr");
+		util::WriteString(util::Ptr(0x002be020), "data/models/%s.wdv");
+		util::WriteString(util::Ptr(0x002be038), "data/models/%s.wds");
+		util::WriteString(util::Ptr(0x002be050), "data/models/%s.wfx");
+		util::WriteString(util::Ptr(0x002be068), "data/models/%s.aip");
+		util::WriteString(util::Ptr(0x002be080), "data/models/%s.ssh");
+		util::WriteString(util::Ptr(0x002be098), "data/models/%sl.ssh");
+		util::WriteString(util::Ptr(0x002b6d10), "data/models/%s_sky");
 		
 		util::DebugOut("Finished applying HostFS patch.");
 	}

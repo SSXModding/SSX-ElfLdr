@@ -12,13 +12,36 @@
 // Liberl has no support for imports (from either the Elfldr executable, or another ERL),
 // no support for dependencies (which is intentional, seeing how that would be a pain),
 // no support for "global" symbols, and generally,
-// is written to just be enough to work.
+// is written to just be enough to work for my usage and not much more.
 //
 
 namespace elfldr::erl {
 	
-	// symbol data type
+	/**
+	 * Symbol data type.
+	 * Must be pointer-sized.
+	 */
 	using Symbol = std::uintptr_t;
+	
+	/* maybe do this instead?
+	struct Symbol {
+		
+		constexpr bool IsValid() const {
+			return _ptr != 0x0;
+		}
+		
+		// usage:
+		// auto sym = image->ResolveSymbol("my_function");
+		// auto fptr = sym.As<void(*)()>();
+		template<class T>
+		constexpr T* As() {
+			
+		}
+		
+		std::uintptr_t _ptr;
+	};
+	*/
+	
 	
 	/**
 	 * An ERL image.

@@ -13,16 +13,7 @@
 #include <erl/ErlLoader.h>
 #include <GameApi.h>
 
-
-// Alter this to change where HostFS root is.
-#ifdef SSX3
-const char* gHostFsPath = "host:C:\\pcsx2\\bin\\ssx3";
-#else
-//const char* gHostFsPath = "host:C:\\pcsx2\\bin\\ssxmod";
-
-// TODO: remove the ifdef, this is how I'm handling hostfs from now on
-const char* gHostFsPath = "host:";
-#endif
+const char* gHostFsPath="host:";
 
 int main() {
 	elfldr::util::DebugOut("SSX-ElfLdr");

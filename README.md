@@ -20,8 +20,6 @@ Really only useful for keeping elfldr around for as long as possible.
 
 You need PS2SDK installed (the PS2DEV/open source one, not the Sony one).
 
-Change the HostFS path in src/main.cpp to fit your configuration, if required, then run `make`.
-
 To build the SSX3 version of the loader, run `make SSX3=1`.
 
 To build the version with experimental patches run `make EXPERIMENTAL=1`

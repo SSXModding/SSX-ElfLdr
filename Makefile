@@ -18,7 +18,7 @@ endif
 # submake macro thing
 define do_submake
 	$(info Submake for $(1)...)
-	$(MAKE) OBJDIR=$(TOP)/$(1)/$(OBJDIR) BINDIR=$(TOP)/$(BINDIR) TOP=$(TOP) SSX3=$(SSX3) EXPERIMENTAL=$(EXPERIMENTAL) -C $(1) $(2)
+	@$(MAKE) OBJDIR=$(TOP)/$(1)/$(OBJDIR) BINDIR=$(TOP)/$(BINDIR) TOP=$(TOP) SSX3=$(SSX3) EXPERIMENTAL=$(EXPERIMENTAL) -C $(1) $(2)
 endef
 
 .PHONY: all clean erl

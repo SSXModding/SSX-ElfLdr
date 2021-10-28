@@ -13,7 +13,7 @@
 #include <erl/ErlLoader.h>
 #include <GameApi.h>
 
-const char* gHostFsPath="host:";
+const char* gHostFsPath = "host:";
 
 int main() {
 	elfldr::util::DebugOut("SSX-ElfLdr");
@@ -31,6 +31,8 @@ int main() {
 	strcat(elfPath, "SLUS_200.95");
 	//strcat(elfPath, "\\SLUS_200.95");
 #endif
+	
+	// TODO: Search CWD for elfs, and identify game version
 	
 	if(!loader.LoadElf(elfPath)) {
 		elfldr::util::DebugOut("loader.LoadElf(%s) failed... Hanging!!", elfPath);

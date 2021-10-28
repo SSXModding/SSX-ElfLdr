@@ -1,0 +1,43 @@
+name: Elfldr Autobuilds
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      
+      # This techinically also "Installs" it too.
+      # TODO: CACHE SO I DON'T KEEP HITTING GITHUB SERVERS.
+      - name: Fetch and setup ps2sdk
+        run: |
+          export PS2DEV=$HOME/ps2dev
+          export PS2SDK=$PS2DEV/ps2sdk
+          export GSKIT=$PS2DEV/gsKit
+          wget -q https://github.com/ps2dev/ps2dev/releases/download/latest/ps2dev-ubuntu-latest.tar.gz
+          tar xf ps2dev-ubuntu-latest.tar.gz -C $HOME
+          echo $PS2DEV/bin >> $GITHUB_PATH
+          echo $PS2DEV/ee/bin >> $GITHUB_PATH
+          echo $PS2DEV/iop/bin >> $GITHUB_PATH
+          echo $PS2DEV/dvp/bin >> $GITHUB_PATH
+          echo $PS2SDK/bin >> $GITHUB_PATH
+          echo "PS2DEV=$PS2DEV" >> $GITHUB_ENV
+          echo "PS2SDK=$PS2SDK" >> $GITHUB_ENV
+          echo "GSKIT=$GSKIT" >> $GITHUB_ENV
+          
+      - name: Build elfldr
+        run: |
+            make
+            
+      - name: Upload build
+        uses: actions/upload-artifact@v2.2.4
+        with:
+            name: ssx_elfldr.elf
+            path: ${{github.workspace}}/bin/ssx_elfldr.elf

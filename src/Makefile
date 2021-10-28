@@ -19,8 +19,6 @@ BIN = ssx_elfldr
 
 # EXPERIMENTAL should maybe produce a new filename?
 
-# ifeq's for including patches
-
 ifeq ($(EXPERIMENTAL),1)
 OBJS += $(OBJDIR)/patch_experimental.o
 EXTRADEFS += -DEXPERIMENTAL

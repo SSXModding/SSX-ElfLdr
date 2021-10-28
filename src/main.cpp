@@ -44,13 +44,9 @@ int main() {
 	});
 #endif	
 	
-	// apply patches
-#ifdef SSX3
-	elfldr::GetPatchById(0x31)->Apply();
-#else
 	elfldr::GetPatchById(0x00)->Apply();
 	elfldr::GetPatchById(0x01)->Apply();
-#endif
+	
 #ifdef EXPERIMENTAL
 	elfldr::GetPatchById(0xE0)->Apply();
 #endif

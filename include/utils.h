@@ -68,15 +68,22 @@ namespace elfldr::util {
 	 */
 	void DebugOut(const char* format, ...);
 	
+	// Internal runtime stuff - do not call on your own accord
+	
 #ifdef DEBUG
-	void DebugAssertFailed(const char* exp, const char* file, std::uint32_t line);
+	void _AssertFailed(const char* exp, const char* file, std::uint32_t line);
 #endif
 
-	void RelAssertFailed(const char* exp, const char* file, std::uint32_t line);
+	void _VerifyFailed(const char* exp, const char* file, std::uint32_t line);
 	
 }
 
-// TODO: assert macros.
-// The runtime code is here, so I'd just need to provide that.
+#ifdef DEBUG
+	#define ELFLDR_ASSERT(x) if(!x) elfldr::util::_AssertFailed(#x, __FILE__, __LINE__)
+#else
+	#define ELFLDR_ASSERT(x)
+#endif
+
+#define ELFLDR_VERIFY(x) if(!x) elfldr::util::_VerifyFailed(#x, __FILE__, __LINE__)
 
 #endif // UTILS_H

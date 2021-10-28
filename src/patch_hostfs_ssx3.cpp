@@ -20,7 +20,7 @@
 // path beautification is a massive 256 characters, so there's not as much
 // of a limit.
 
-// currently doesn't work
+// currently dead code
 
 #include <codeutils.h>
 #include <patch.h>

@@ -23,21 +23,14 @@ int main() {
 	
 	char elfPath[elfldr::util::MaxPath]{};
 	
+	// TODO: Search CWD for elfs, and identify game version.
+	
 	// if only i had a decent FS lib.
 	strncpy(&elfPath[0], gHostFsPath, elfldr::util::MaxPath * sizeof(char));
-#ifdef SSX3
-	strcat(elfPath, "\\SLUS_207.72");
-#else
 	strcat(elfPath, "SLUS_200.95");
-	//strcat(elfPath, "\\SLUS_200.95");
-#endif
 	
-	// TODO: Search CWD for elfs, and identify game version
 	
-	if(!loader.LoadElf(elfPath)) {
-		elfldr::util::DebugOut("loader.LoadElf(%s) failed... Hanging!!", elfPath);
-		while(true);
-	}
+	ELFLDR_VERIFY(loader.LoadElf(elfPath));
 	
 #if 1	
 	// Populate Liberl's allocation/free routines with an aligned
@@ -51,12 +44,6 @@ int main() {
 	});
 #endif	
 	
-	// reuse the elf path buffer to build the argv[0] string
-	memset(&elfPath[0], 0, elfldr::util::MaxPath * sizeof(char));
-	strncpy(&elfPath[0], gHostFsPath, elfldr::util::MaxPath * sizeof(char));
-	//elfPath[strlen(gHostFsPath)] = '\\';
-	//elfPath[strlen(gHostFsPath)+1] = '\0';
-	
 	// apply patches
 #ifdef SSX3
 	elfldr::GetPatchById(0x31)->Apply();
@@ -64,21 +51,12 @@ int main() {
 	elfldr::GetPatchById(0x00)->Apply();
 	elfldr::GetPatchById(0x01)->Apply();
 #endif
-	
-	// apply experimental patches
 #ifdef EXPERIMENTAL
-
-
 	elfldr::GetPatchById(0xE0)->Apply();
 #endif
 	
 	char* argv[1];
-	
-#ifndef SSX3
-	argv[0] = elfPath;
-#else
-	argv[0] = "cdrom0:\\SLUS_207.72";
-#endif
+	argv[0] = elfldr::util::UBCast<char*>(gHostFsPath); // I hate this
 	
 	// Execute the elf
 	loader.ExecElf(sizeof(argv)/sizeof(argv[0]), argv);

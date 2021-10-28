@@ -1,24 +1,21 @@
+//
 // Helper code in libutils for handling ELFLDR_ASSERT()
-// and ELFLDR_ASSERTREL (ELFLDR_ASSERT which is kept in for release.)
+// and ELFLDR_VERIFY()
+//
 
-#include <utils.h> // DebugOut or bx::printf for ERL
-//#include <GameApi.h>
+#include <utils.h>
 
 namespace elfldr::util {
 	
 #ifdef DEBUG
-	void DebugAssertFailed(const char* exp, const char* file, std::uint32_t line) {
-		DebugOut("Debug assertion failed!!!!\nExpression: %s\nFile: %s\nLine: %d", file, line);
-
-		// Spin forever.
+	void _AssertFailed(const char* exp, const char* file, std::uint32_t line) {
+		DebugOut("ELFLDR_ASSERT() expression failed!!!!\nExpression: %s\nFile: %s\nLine: %d", exp, file, line);
 		while(true);
 	}
 #endif
 
-	void RelAssertFailed(const char* exp, const char* file, std::uint32_t line) {
-		DebugOut("Release assertion failed!!!!\nExpression: %s\nFile: %s\nLine: %d", file, line);
-
-		// Spin forever.
+	void _VerifyFailed(const char* exp, const char* file, std::uint32_t line) {
+		DebugOut("ELFLDR_VERIFY() expression failed!!!!\nExpression: %s\nFile: %s\nLine: %d", exp, file, line);
 		while(true);
 	}
 	

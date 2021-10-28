@@ -95,7 +95,7 @@ all: $(OBJDIR)/ $(BINDIR)/$(LIB)
 
 clean:
 	$(info Cleaning build products..)
-	rm $(BINDIR)/$(LIB) $(OBJS)
+	rm $(BINDIR)/$(LIB) $(OBJS) $(OBJDIR)/*.d
 	rmdir $(OBJDIR)
 
 $(BINDIR)/$(LIB): $(OBJS)
@@ -116,7 +116,7 @@ all: $(OBJDIR)/ $(BINDIR)/$(BIN)$(BUILDSUFFIX).elf
 
 clean:
 	$(info Cleaning build products..)
-	rm $(BINDIR)/$(BIN)$(BUILDSUFFIX).elf $(OBJS)
+	rm $(BINDIR)/$(BIN)$(BUILDSUFFIX).elf $(OBJS) $(OBJDIR)/*.d
 	rmdir $(OBJDIR)
 
 $(BINDIR)/$(BIN)$(BUILDSUFFIX).elf: $(OBJS)
@@ -135,7 +135,7 @@ all: $(OBJDIR)/ $(BINDIR)/$(ERL)$(BUILDSUFFIX).erl
 
 clean:
 	$(info Cleaning build products..)
-	rm $(BINDIR)/$(ERL)$(BUILDSUFFIX).erl $(OBJS)
+	rm $(BINDIR)/$(ERL)$(BUILDSUFFIX).erl $(OBJS) $(OBJDIR)/*.d
 	rmdir $(OBJDIR)
 	
 $(BINDIR)/$(ERL)$(BUILDSUFFIX).erl: $(OBJS)

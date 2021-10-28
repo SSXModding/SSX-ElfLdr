@@ -2,23 +2,15 @@
 
 TOP=$(PWD)
 
-# configuration variables
-SSX3=0
 EXPERIMENTAL=0
 
 BINDIR = bin
-
-# TODO
-ifeq ($(SSX3),1)
-OBJDIR = obj_ssx3
-else
 OBJDIR = obj
-endif
 
 # submake macro thing
 define do_submake
 	$(info Submake for $(1)...)
-	@$(MAKE) OBJDIR=$(TOP)/$(1)/$(OBJDIR) BINDIR=$(TOP)/$(BINDIR) TOP=$(TOP) SSX3=$(SSX3) EXPERIMENTAL=$(EXPERIMENTAL) -C $(1) $(2)
+	@$(MAKE) OBJDIR=$(TOP)/$(1)/$(OBJDIR) BINDIR=$(TOP)/$(BINDIR) TOP=$(TOP) EXPERIMENTAL=$(EXPERIMENTAL) -C $(1) $(2)
 endef
 
 .PHONY: all clean erl

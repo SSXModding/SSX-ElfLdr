@@ -4,6 +4,8 @@ A little patching elf loader for SSX OG, giving the ability to run the game unde
 
 For OG, it also will offer ERL code loading support, allowing developers to run custom code *while* the game is playing. Pretty cool, huh?
 
+Automatic builds of Elfldr are available [via GitHub Actions](https://github.com/modeco80/SSX-ElfLdr/actions).
+
 ## Game Support
 
 Game regions/versions or whole games marked as Unsupported are planned to be supported later.

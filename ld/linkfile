@@ -17,7 +17,7 @@ PHDRS {
 }
 
 SECTIONS {
-	.text 0x01E00000: {
+	.text 0x01000000: {
 		_ftext = . ;
 		*(.text)
 		*(.text.*)

@@ -6,8 +6,12 @@ VERSION=0.1
 # elfldr need to link properly.
 OBJS = $(OBJDIR)/main.o \
 	   $(OBJDIR)/patch.o \
+	   $(OBJDIR)/GameVersion.o \
 	   $(OBJDIR)/ElfLoader.o
 	  
+# We do not use newlib file IO routines.
+EXTRADEFS = -DNEWLIB_PORT_AWARE
+
 # Use Nano newlib.
 EELIBC = c_nano
 	  

@@ -3,7 +3,7 @@
 #include <kernel.h>
 #include <sifrpc.h>
 #include <loadfile.h>
-//#include <libcdvd.h>
+#include <fileio.h>
 
 #include <cassert>
 
@@ -50,12 +50,13 @@ namespace elfldr {
 		SifInitIopHeap();
 		SifLoadFileInit();
 	
-		// Load some ROM modules and init libcdvd.
+		// Load some ROM modules.
 		SifLoadModule("rom0:SIO2MAN", 0, NULL);
 		SifLoadModule("rom0:MCMAN", 0, NULL);
 		SifLoadModule("rom0:MCSERV", 0, NULL);
 		SifLoadModule("rom0:PADMAN", 0, NULL);
-		//sceCdInit(SCECdINoD);
+		
+		fioInit();
 	}
 
 	void ResetIOP() {

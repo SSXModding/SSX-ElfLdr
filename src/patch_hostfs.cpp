@@ -26,6 +26,8 @@
 #include <codeutils.h>
 #include <patch.h>
 
+#include "GameVersion.h"
+
 // in main.cpp
 extern const char* gHostFsPath;
 
@@ -39,8 +41,8 @@ struct HostFsPatch : public Patch {
 	
 	void Apply() override {
 		util::DebugOut("Applying HostFS patch...");
-
 		
+
 		// ASYNCFILE_init usually gets "cd:".
 		// We replace this with a string which will match "host",
 		// after we..

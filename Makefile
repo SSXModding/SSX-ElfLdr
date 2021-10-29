@@ -8,8 +8,9 @@ BINDIR = bin
 OBJDIR = obj
 
 # submake macro thing
+#$(info Submake for $(1)...)
 define do_submake
-	$(info Submake for $(1)...)
+
 	@$(MAKE) OBJDIR=$(TOP)/$(1)/$(OBJDIR) BINDIR=$(TOP)/$(BINDIR) TOP=$(TOP) EXPERIMENTAL=$(EXPERIMENTAL) -C $(1) $(2)
 endef
 

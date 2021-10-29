@@ -5,7 +5,8 @@
 
 namespace elfldr {
 	
-	enum class GameType : std::uint8_t {
+	enum class Game : std::uint8_t {
+		Invalid,
 		SSXOG
 	};
 	
@@ -14,6 +15,29 @@ namespace elfldr {
 		PAL,
 		NTSCJ
 	};
+	
+	struct GameVersionData {
+		/**
+		 * What game.
+		 */
+		Game game;
+		
+		/**
+		 * What region.
+		 */
+		GameRegion region;
+		
+		// TODO: Game version?
+		
+		const char* GetGameBinary() const;
+	};
+	
+	/**
+	 * Probe the game version data.
+	 */
+	void ProbeVersion();
+	
+	const GameVersionData& GetGameVersionData();
 	
 } // namespace elfldr
 

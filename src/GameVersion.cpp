@@ -24,11 +24,10 @@ if(auto fd = fioDopen("host:"); fd != -1) {
 */
 
 // Global copy of game version data.
-static elfldr::GameVersionData gGameVersionData{};
-
+static elfldr::GameVersionData gGameVersionData {};
 
 namespace elfldr {
-	
+
 	namespace {
 		// TODO: Maybe have this return the fd
 		// if it exists, so we can do version scanning?
@@ -37,16 +36,16 @@ namespace elfldr {
 				fioClose(fd);
 				return true;
 			}
-			
+
 			return false;
 		}
-		
+
 		bool TryFile(char* buf, const char* path) {
 			strncpy(&buf[0], gHostFsPath, elfldr::util::MaxPath * sizeof(char));
 			strcat(buf, path);
 			return FileExists(buf);
 		}
-		
+
 		const char* GameBinaryFor(Game game, GameRegion region) {
 			switch(game) {
 				case Game::SSXOG:
@@ -55,7 +54,7 @@ namespace elfldr {
 							return "SLUS_200.95";
 						case GameRegion::PAL:
 							return "SLES_500.30";
-						
+
 						default:
 							return "???";
 					}
@@ -64,34 +63,33 @@ namespace elfldr {
 					return "???";
 			}
 		}
-	}
-	
+	} // namespace
+
 	const char* GameVersionData::GetGameBinary() const {
 		return GameBinaryFor(game, region);
 	}
-	
 
 	void ProbeVersion() {
-		char path[util::MaxPath]{};
-		
-#define TryCase(game_, region_, message) 				   \
-		if(TryFile(path, GameBinaryFor(game_, region_))) { \
-			gGameVersionData.game = game_; 				   \
-			gGameVersionData.region = region_; 			   \
-			util::DebugOut(message);					   \
-			return;										   \
-		}
-		
+		char path[util::MaxPath] {};
+
+#define TryCase(game_, region_, message)               \
+	if(TryFile(path, GameBinaryFor(game_, region_))) { \
+		gGameVersionData.game = game_;                 \
+		gGameVersionData.region = region_;             \
+		util::DebugOut(message);                       \
+		return;                                        \
+	}
+
 		TryCase(Game::SSXOG, GameRegion::NTSC, "Version probe detected SSX OG NTSC.")
 		TryCase(Game::SSXOG, GameRegion::PAL, "Version probe detected SSX OG PAL.")
-		
+
 #undef TryCase
 
 		gGameVersionData.game = Game::Invalid;
 	}
-	
+
 	const GameVersionData& GetGameVersionData() {
 		return gGameVersionData;
 	}
-	
-}
+
+} // namespace elfldr

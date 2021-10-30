@@ -2,7 +2,7 @@
 // on the filesystem, so it's easier to tinker with them.
 //
 // How this patch works is pretty simple.
-// 
+//
 //	- It first tricks the game into going into the mode where it would use "host0:",
 //		by replacing the string it uses with just "host", from "cd:".
 //		It also alters how many characters strncmp() will look at,
@@ -29,55 +29,52 @@
 extern const char* gHostFsPath;
 
 struct HostFsPatchSSX3 : public elfldr::Patch {
-	
 	void Apply() override {
 		elfldr::util::DebugOut("Applying HostFS (SSX3) patch...");
-		
+
 		// where our host path string should be placed
 		constexpr static std::uintptr_t STRING_ADDRESS = 0x0047fdb0;
-		
+
 		// where the host0 pointer is
 		constexpr static std::uintptr_t HOST_POINTER_ADDRESS = 0x00450c50;
-		
-	
+
 		// ASYNCFILE_init usually gets "cd:".
 		// We replace this with a string which will match "host"
-		
+
 		elfldr::util::ReplaceString(reinterpret_cast<void*>(0x004a3ed8), "ho");
-		
+
 		// for some reason this fucking crashes the game, i don't get why
 		//elfldr::util::MemRefTo<uint32_t>(reinterpret_cast<void*>(0x004a3ed8)) = 0x003A6F68; // "ho:\0"
-		
+
 		// throw the strlen() result away in an instruction meant to put it
 		// into the register compiler allocated, and replace it with a minimally viable constant
 		elfldr::util::MemRefTo<std::uint32_t>(reinterpret_cast<void*>(0x003ddea0)) = 0x02001124; // li ...(I forget), 2
-				
+
 		// write a new string in some slack space.
-		
+
 		// Assemble a good path string from the global HostFS path,
 		// by copying it into a temporary buffer and then adding an extra
 		// path seperator.
-		char tempPath[elfldr::util::MaxPath]{};
-		
+		char tempPath[elfldr::util::MaxPath] {};
+
 		strncpy(&tempPath[0], gHostFsPath, elfldr::util::MaxPath * sizeof(char));
 		tempPath[strlen(gHostFsPath)] = '\\';
-		tempPath[strlen(gHostFsPath)+1] = '\0';
-		
+		tempPath[strlen(gHostFsPath) + 1] = '\0';
+
 		// honestly this might not be needed, because the path seems to be affected
 		// more by argv[0]. I'm still gonna keep it though just to be sure.
-		
+
 		//elfldr::util::WriteString(reinterpret_cast<void*>(STRING_ADDRESS), tempPath);
-		
+
 		// Overwrite the pointer that the path "beautification" function uses to strcat()
 		// "host0:" originally, pointing it to our HostFS string.
 		//
 		// IDK why the string isn't exactly written at 2c5cc0, so we go 4 forwards. It works.
 		// I'm not questioning it
 		//elfldr::util::MemRefTo<uintptr_t>(reinterpret_cast<void*>(HOST_POINTER_ADDRESS)) = STRING_ADDRESS + sizeof(uintptr_t);
-		
+
 		elfldr::util::DebugOut("Finished applying HostFS patch.");
 	}
-	
 };
 
 // Register the patch into the patch system

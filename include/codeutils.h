@@ -12,21 +12,19 @@
 #include <utils.h>
 
 namespace elfldr::util {
-	
+
 	/**
 	 * CRTP baseclass for empty classes,
 	 * to still allow introspection of any field
 	 */
-	template<class T>
+	template <class T>
 	struct IntrospectableType {
-		
-		template<class Y>
+		template <class Y>
 		constexpr Y FieldAtOffset(std::size_t offset) {
 			return static_cast<Y>(static_cast<T*>(this) + offset);
 		}
-		
 	};
-	
+
 	/**
 	 * Vtable pointer structure for GCC 2 Abi.
 	 */
@@ -35,19 +33,19 @@ namespace elfldr::util {
 		// that these are actually emitted as 2 shorts.
 		std::uint16_t adj_upper;
 		std::uint16_t adj_lower;
-		
+
 		/**
 		 * The function pointer.
 		 */
 		void* function_ptr;
-		
-		template<auto Func>
+
+		template <auto Func>
 		constexpr void assign_function() {
 			// ?
 			static_assert(sizeof(Func) == sizeof(void*), "Don't put in a virtual PMF...");
 			function_ptr = UBCast<void*>(Func);
 		}
-		
+
 		// TODO: varadic constexpr operator() for call?
 		// could be done with util::CallFunction().. although I don't really see the point
 	};
@@ -67,7 +65,7 @@ namespace elfldr::util {
 	 * \param[in] string String to write.
 	 */
 	void WriteString(void* addr, const char* string);
-	
+
 	/**
 	 * Patches the 4 instructions pointed to by code to something like:
 	 * \code
@@ -91,7 +89,7 @@ namespace elfldr::util {
 	 * \tparam N Instruction count
 	 * \param[in] start Start address.
 	 */
-	template<size_t N>
+	template <size_t N>
 	constexpr void NopFill(void* start) {
 		// TODO: static_assert for dword-alignment?
 		// if this is implemented,
@@ -115,11 +113,11 @@ namespace elfldr::util {
 	 * \param[in] addr Address
 	 * \tparam T type.
 	 */
-	template<class T>
+	template <class T>
 	constexpr T& MemRefTo(void* addr) {
 		return *UBCast<T*>(addr);
 	}
-	
+
 	/**
 	 * Call a function at the given address,
 	 * with the given arguments, and the return type.
@@ -133,12 +131,12 @@ namespace elfldr::util {
 	 * \param[in] ptr Pointer to function. Can use util::Ptr().
 	 * \param[in] args Argument pack to forward to function as arguments.
 	 */
-	template<class Ret = void, class... Args>
+	template <class Ret = void, class... Args>
 	constexpr Ret CallFunction(void* ptr, Args... args) {
-		using FuncT = Ret(*)(Args...);
+		using FuncT = Ret (*)(Args...);
 		return (UBCast<FuncT>(ptr))(args...);
 	}
-	
+
 	/**
 	 * A basic boilerplate function wrapper object,
 	 * making it possible for relatively zero-maintainance,
@@ -157,9 +155,8 @@ namespace elfldr::util {
 	 * \tparam Ret The return type of the wrapped function.
 	 * \tparam ArgTypes All argument types.
 	 */
-	template<uintptr_t FunctionAddress, bool IsVaradic, class Ret, class... BaseArgTypes>
+	template <uintptr_t FunctionAddress, bool IsVaradic, class Ret, class... BaseArgTypes>
 	struct BasicFunctionWrappa {
-		
 		/**
 		 * Call operator, for non-varadic functions.
 		 * Only takes base argument types.
@@ -167,7 +164,7 @@ namespace elfldr::util {
 		constexpr Ret operator()(BaseArgTypes... args) const {
 			return CallFunction<Ret>(Ptr(FunctionAddress), args...);
 		}
-		
+
 		/**
 		 * Call operator, for varadic functions.
 		 * This overload only participates in overload resolution
@@ -175,25 +172,24 @@ namespace elfldr::util {
 		 *
 		 * \tparam AnyVarArgs Any varadic arguments to pass to the function.
 		 */
-		template<class... VarArgTypes> requires(IsVaradic)
-		constexpr Ret operator()(BaseArgTypes... args, VarArgTypes... varargs) const {
+		template <class... VarArgTypes>
+		requires(IsVaradic) constexpr Ret operator()(BaseArgTypes... args, VarArgTypes... varargs) const {
 			return CallFunction<Ret>(Ptr(FunctionAddress), args..., varargs...);
 		}
-		
 	};
-	
+
 	/** 
 	 * A wrapper for a varadic function (i.e: printf)
 	 */
-	template<uintptr_t FunctionAddress, class Ret, class... ArgTypes>
+	template <uintptr_t FunctionAddress, class Ret, class... ArgTypes>
 	using VarFunction = BasicFunctionWrappa<FunctionAddress, true, Ret, ArgTypes...>;
-	
+
 	/**
 	 * A wrapper for a regular function.
 	 */
-	template<uintptr_t FunctionAddress, class Ret, class... ArgTypes>
+	template <uintptr_t FunctionAddress, class Ret, class... ArgTypes>
 	using Function = BasicFunctionWrappa<FunctionAddress, false, Ret, ArgTypes...>;
-		
-} // namespace util
+
+} // namespace elfldr::util
 
 #endif // CODEUTILS_H

@@ -16,13 +16,13 @@
 //
 
 namespace elfldr::erl {
-	
+
 	/**
 	 * Symbol data type.
 	 * Must be pointer-sized.
 	 */
 	using Symbol = std::uintptr_t;
-	
+
 	/* maybe do this instead?
 	struct Symbol {
 		
@@ -41,15 +41,13 @@ namespace elfldr::erl {
 		std::uintptr_t _ptr;
 	};
 	*/
-	
-	
+
 	/**
 	 * An ERL image.
 	 */
 	struct Image {
-		
 		virtual ~Image() = default;
-		
+
 		/**
 		 * Resolve a ERL-local symbol.
 		 *
@@ -58,26 +56,24 @@ namespace elfldr::erl {
 		 * \param[in] symbolName The name of the symbol to resolve.
 		 */
 		virtual Symbol ResolveSymbol(const char* symbolName) = 0;
-		
-		
 	};
-	
+
 	/**
 	 * malloc() callback type for the ERL loader.
 	 */
-	using Malloc = void*(*)(std::uint32_t);
-	
+	using Malloc = void* (*)(std::uint32_t);
+
 	/**
 	 * free() callback type for the ERL loader.
 	 */
-	using Free = void(*)(void*);
-	
+	using Free = void (*)(void*);
+
 	/**
 	 * Set the ERL loader's memory allocation/deallocation
 	 * functions.
 	 */
 	void SetAllocationFunctions(Malloc erlmalloc, Free erlfree);
-	
+
 	/**
 	 * Load and relocate a .erl file.
 	 *
@@ -85,12 +81,12 @@ namespace elfldr::erl {
 	 * \returns Image handle (allocated with the ERL allocator), or nullptr on error.
 	 */
 	Image* LoadErl(const char* path);
-	
+
 	/**
 	 * Destroy a loaded ERL image.
 	 */
 	void DestroyErl(Image* theImage);
-	
-}
+
+} // namespace elfldr::erl
 
 #endif // ERLLOADER_H

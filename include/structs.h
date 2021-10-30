@@ -9,50 +9,49 @@
 
 namespace bx {
 	// ghidra typedefs used
-	
+
 	using undefined = uint8_t;
 	using undefined4 = uint32_t;
-	
+
 	// don't care about data members, we only need it to make a thiscall func/pointer
-	struct cNodeManager : public elfldr::util::IntrospectableType<cNodeManager> {}; 
-	
+	struct cNodeManager : public elfldr::util::IntrospectableType<cNodeManager> {};
+
 	struct cNode {
-		
 		struct vtable {
 			elfldr::util::GnuVtablePointer vtb_padding; // this is 0x00/0x00/0x00000000
-			
+
 			elfldr::util::GnuVtablePointer destructor; // ~cNode
-			
+
 			elfldr::util::GnuVtablePointer Update;
 			elfldr::util::GnuVtablePointer Render;
-			
+
 			// these functions are used by something?
 			elfldr::util::GnuVtablePointer Fun3;
 			elfldr::util::GnuVtablePointer Fun4;
-			
+
 			elfldr::util::GnuVtablePointer Fun5;
 			elfldr::util::GnuVtablePointer Fun6;
 			elfldr::util::GnuVtablePointer Fun7;
 			elfldr::util::GnuVtablePointer Fun8;
 		};
-		
+
 		// these may not be proper, but they're here
 		cNode* prev;
 		cNode* next;
 		cNode::vtable* vtable;
 	};
-	
+
 	// don't feel like importing this, tbh
 	struct cGame : public elfldr::util::IntrospectableType<cGame> {};
-	
+
 	struct cApplication : public elfldr::util::IntrospectableType<cApplication> {
 		undefined4 mVBlankIntcHandler;
 		void* locale2;
 		int localeSize;
 		char* mExe; // copies argv[0] pointer.
 		undefined4 LocaleLanguage;
-		undefined mVenueManager[sizeof(undefined4)*2];
-		
+		undefined mVenueManager[sizeof(undefined4) * 2];
+
 		// would like to see about nuking this.
 		undefined field_0x1c;
 		undefined field_0x1d;
@@ -1638,7 +1637,7 @@ namespace bx {
 		undefined field_0x649;
 		undefined field_0x64a;
 		undefined field_0x64b;
-		
+
 		// start of an unknown class.
 		undefined field_0x64c;
 		undefined field_0x64d;
@@ -1776,17 +1775,17 @@ namespace bx {
 		undefined field_0x6d1;
 		undefined field_0x6d2;
 		undefined field_0x6d3;
-		
+
 		int mVenueBigHandle;
 		void* mBezMan;
-		
+
 		undefined4 mFramesRendered;
-		
+
 		float mGameRate;
 		float mDeltaTime;
-		
+
 		undefined4 flag_0x6e8;
-		
+
 		cGame* mGame; // null if no game, points to the current cGame instance
 		void* mFrontend;
 		void* mCurrLoadMan; // The current load manager. Set in cApplication::Run
@@ -1796,7 +1795,7 @@ namespace bx {
 	// this itself is wrong (well, based on cApplication::cApplication decompilation, so idk.) but
 	// it should be good enough
 	static_assert(sizeof(cApplication) == 1788, "[bxStructs] cApplication is wrong, should be 1788 bytes");
-	
+
 } // namespace bx
 
 #endif //STRUCTS_H

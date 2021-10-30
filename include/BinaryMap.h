@@ -14,14 +14,13 @@ namespace elfldr {
 	 * \tparam TValue Value type.
 	 * \tparam MAX_ELEMENTS Max amount of elements this map can store.
 	 */
-	template<class TKey, class TValue, uint32_t MAX_ELEMENTS>
+	template <class TKey, class TValue, uint32_t MAX_ELEMENTS>
 	struct BinaryMap {
-		
 		// traits
 		using KeyType = TKey;
 		using ValueType = TValue;
 		constexpr static uint32_t MaxElements = MAX_ELEMENTS;
-		
+
 		/**
 		 * Insert a value.
 		 *
@@ -32,14 +31,14 @@ namespace elfldr {
 			// Avoid duplicate entries.
 			if(MaybeFindEntry(key) != nullptr)
 				return;
-			
+
 			// TODO: if index goes over MAX_ELEMENTS, scream
-			
+
 			Entries[Index].key = key;
 			Entries[Index].value = value;
 			Index++;
 		}
-		
+
 		/**
 		 * Get the amount of elements stored.
 		 *
@@ -48,7 +47,7 @@ namespace elfldr {
 		constexpr uint32_t GetCount() const {
 			return Index;
 		}
-		
+
 		/**
 		 * Maybe get a value by key.
 		 *
@@ -59,16 +58,16 @@ namespace elfldr {
 			auto* entry = MaybeFindEntry(key);
 			if(!entry)
 				return nullptr;
-			
+
 			return &entry->value;
 		}
-		
-	private:
+
+	   private:
 		struct MapEntry {
 			TKey key;
 			TValue value;
 		};
-		
+
 		/**
 		 * Maybe find a raw entry, with the given key.
 		 *
@@ -81,14 +80,14 @@ namespace elfldr {
 				if(Entries[i].key == key)
 					return &Entries[i];
 			}
-			
+
 			return nullptr;
 		}
-		
-		MapEntry Entries[MAX_ELEMENTS]{};
-		uint32_t Index{0};
+
+		MapEntry Entries[MAX_ELEMENTS] {};
+		uint32_t Index { 0 };
 	};
-	
-}
+
+} // namespace elfldr
 
 #endif

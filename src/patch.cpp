@@ -17,18 +17,18 @@ namespace elfldr {
 			// Don't allow a null patch
 			if(patch == nullptr)
 				return;
-			
+
 			gPatchMap.Insert(id, patch);
 		}
 	} // namespace detail
-	
+
 	Patch* GetPatchById(PatchId id) {
 		auto** patch = gPatchMap.MaybeGetValue(id);
-		
+
 		if(!patch)
 			return nullptr;
-		
+
 		return *patch;
 	}
-	
+
 } // namespace elfldr

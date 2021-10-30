@@ -18,12 +18,12 @@ endef
 
 all: $(BINDIR)/
 	$(call do_submake,src/utils/elf)
-	$(call do_submake,src/erl)
+#	$(call do_submake,src/erl)
 	$(call do_submake,src/)
 
 clean:
 	$(call do_submake,src/utils/elf,clean)
-	$(call do_submake,src/erl,clean)
+#	$(call do_submake,src/erl,clean)
 	$(call do_submake,src/,clean)
 	rmdir $(BINDIR)
 

@@ -17,7 +17,7 @@ EELIBC = c_nano
 	  
 # Link libutils (elf version), and some other
 # fancy ps2sdk libs we need
-LIBS = -lutils-elf -lerl-loader -lkernel -lps2sdkc 
+LIBS = -lutils-elf -lkernel -lps2sdkc 
 
 BIN = ssx_elfldr
 

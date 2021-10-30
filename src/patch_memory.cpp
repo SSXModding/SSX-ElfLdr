@@ -1,16 +1,37 @@
 // MemClr patch - relatively useless,
 // disables memory clearing done by the game.
 
+#include "patch.h"
+
 #include <utils.h>
 #include <codeutils.h>
-#include <patch.h>
+
+#include "GameVersion.h"
 
 using namespace elfldr;
 
 struct MemclrPatch : public Patch {
-	void Apply() override {
-		util::DebugOut("Applying MemClr patch...");
+	const char* GetName() const override {
+		return "MemoryClear";
+	}
 
+	const char* GetIdentifier() const override {
+		return "memclr";
+	}
+
+	bool IsCompatiable() const override {
+		const auto& data = GetGameVersionData();
+
+		if(data.game != Game::SSXOG)
+			return false;
+
+		if(data.region != GameRegion::NTSC)
+			return false;
+
+		return true;
+	}
+
+	void Apply() override {
 		// NOP fill the direct memory clearing loop in bxPreInit()
 		util::NopFill<10>(util::Ptr(0x0018a6d8));
 
@@ -25,8 +46,6 @@ struct MemclrPatch : public Patch {
 		util::DebugOut("Special case for Exp - killing MEM_init and initheapdebug");
 		util::NopFill<6>(util::Ptr(0x0018a704));
 #endif
-
-		util::DebugOut("Finished applying MemClr patch...");
 	}
 };
 

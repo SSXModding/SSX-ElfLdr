@@ -10,13 +10,29 @@ namespace elfldr {
 	 */
 	struct Patch {
 		/**
-		 * Apply the patch, by whatever means
-		 * the patch writer wants.
+		 * Get the name of this patch.
+		 */
+		virtual const char* GetName() const = 0;
+
+		// this is for configuration provisions
+		virtual const char* GetIdentifier() const = 0;
+
+		/**
+		 * Get whether or not this patch is 
+		 * compatiable with the current detected game.
+		 *
+		 * \returns true if compatiable, false otherwise
+		 */
+		virtual bool IsCompatiable() const = 0;
+
+		/**
+		 * Apply the patch.
 		 */
 		virtual void Apply() = 0;
-
-		// interface to get name?
 	};
+
+	// TODO: might be scrapping patch ids
+	// in place for identifiers
 
 	/**
 	 * Patch ID type.
@@ -54,6 +70,8 @@ namespace elfldr {
 	 * \returns Singleton pointer, or nullptr if invalid ID.
 	 */
 	Patch* GetPatchById(PatchId id);
+
+	//Patch* GetPatchByIdentifier(const char* name);
 
 } // namespace elfldr
 

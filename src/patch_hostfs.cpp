@@ -12,9 +12,6 @@
 //		and alter a pointer which usually points to a string containing "host0:"
 //		to point to our slack space HostFS path string.
 //
-// After that, that's suprisingly all we need to do,
-// and besides IOP modules needing the CD still, the rest of the game
-// will load from HostFS perfectly fine, no issues.
 //
 // Note that (including path seperators) there is about a 31 character
 // limit for the HostFS path. This techinically could be fixable by making
@@ -22,9 +19,10 @@
 // a lot more painful, and would be a far more complicated patch.
 // A minor tradeoff to make this patch so much easier is okay, at least to me..
 
+#include "patch.h"
+
 #include <utils.h>
 #include <codeutils.h>
-#include <patch.h>
 
 #include "GameVersion.h"
 
@@ -38,9 +36,27 @@ constexpr static std::uintptr_t STRING_ADDRESS = 0x002c5cc4;
 constexpr static std::uintptr_t HOST_POINTER = 0x002c59c8;
 
 struct HostFsPatch : public Patch {
-	void Apply() override {
-		util::DebugOut("Applying HostFS patch...");
+	const char* GetName() const override {
+		return "HostFS";
+	}
 
+	const char* GetIdentifier() const override {
+		return "hostfs";
+	}
+
+	bool IsCompatiable() const override {
+		const auto& data = GetGameVersionData();
+
+		if(data.game != Game::SSXOG)
+			return false;
+
+		if(data.region != GameRegion::NTSC)
+			return false;
+
+		return true;
+	}
+
+	void Apply() override {
 		// ASYNCFILE_init usually gets "cd:".
 		// We replace this with a string which will match "host",
 		// after we..
@@ -50,24 +66,15 @@ struct HostFsPatch : public Patch {
 		// from 6 to 4, so we can just use "host".
 		util::MemRefTo<std::uint8_t>(util::Ptr(0x00238550)) = 0x4;
 
-		// Assemble a good path string from the global HostFS path,
-		// by copying it into a temporary buffer and then adding an extra
-		// path seperator.
-		char tempPath[util::MaxPath] {};
-
-		strncpy(&tempPath[0], gHostFsPath, util::MaxPath * sizeof(char));
-		//tempPath[strlen(gHostFsPath)] = '\\';
-		//tempPath[strlen(gHostFsPath)+1] = '\0';
-
 		// Write a new string in some slack space.
 
-		util::WriteString(util::Ptr(STRING_ADDRESS), tempPath);
+		util::WriteString(util::Ptr(STRING_ADDRESS), gHostFsPath);
 
 		// Overwrite the pointer that the path "beautification" function uses to strcat()
 		// "host0:" pointing it to our HostFS path instead.
 		util::MemRefTo<std::uint32_t>(util::Ptr(HOST_POINTER)) = STRING_ADDRESS;
 
-		// Write paths
+		// Write new IOP module paths
 		util::WriteString(util::Ptr(0x002b3ab0), "host:data/modules/ioprp16.img");
 		util::WriteString(util::Ptr(0x002b3b08), "host:data/modules/sio2man.irx");
 		util::WriteString(util::Ptr(0x002b3b48), "host:data/modules/padman.irx");
@@ -110,8 +117,6 @@ struct HostFsPatch : public Patch {
 		util::WriteString(util::Ptr(0x002be080), "data/models/%s.ssh");
 		util::WriteString(util::Ptr(0x002be098), "data/models/%sl.ssh");
 		util::WriteString(util::Ptr(0x002b6d10), "data/models/%s_sky");
-
-		util::DebugOut("Finished applying HostFS patch.");
 	}
 };
 

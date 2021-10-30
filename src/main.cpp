@@ -3,7 +3,7 @@
 
 #include <utils.h>
 
-#include <patch.h>
+#include "patch.h"
 #include <ElfLoader.h>
 
 // is this include needed?
@@ -26,6 +26,18 @@ void DoLoadElf(const elfldr::GameVersionData& gdata) {
 	ELFLDR_VERIFY(gLoader.LoadElf(elfPath));
 }
 
+void ApplyPatch(elfldr::Patch* patch) {
+	ELFLDR_VERIFY(patch);
+
+	elfldr::util::DebugOut("Applying patch \"%s\"...", patch->GetName());
+	if(!patch->IsCompatiable()) {
+		elfldr::util::DebugOut("Patch \"%s\" is incompatiable with the current game.", patch->GetName());
+		return;
+	}
+	patch->Apply();
+	elfldr::util::DebugOut("Finished applying patch \"%s\"...", patch->GetName());
+}
+
 int main() {
 	elfldr::util::DebugOut("SSX-ElfLdr");
 
@@ -45,11 +57,11 @@ int main() {
 
 	DoLoadElf(gdata);
 
-	elfldr::GetPatchById(0x00)->Apply();
-	elfldr::GetPatchById(0x01)->Apply();
+	ApplyPatch(elfldr::GetPatchById(0x00));
+	ApplyPatch(elfldr::GetPatchById(0x01));
 
 #ifdef EXPERIMENTAL
-	elfldr::GetPatchById(0xE0)->Apply();
+	ApplyPatch(elfldr::GetPatchById(0xE0));
 #endif
 
 	char* argv[1];

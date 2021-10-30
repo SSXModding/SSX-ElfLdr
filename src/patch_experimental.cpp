@@ -1,10 +1,12 @@
+#include "patch.h"
+
 #include <utils.h>
 #include <codeutils.h>
-#include <patch.h>
 
 #include <GameApi.h>
-
 #include <structs.h>
+
+#include "GameVersion.h"
 
 // addresses of some fun stuff
 constexpr static std::uintptr_t TheApp_Address = 0x002852f8;
@@ -18,9 +20,27 @@ namespace elfldr {
 }
 
 struct ExpPatch : public Patch {
-	void Apply() override {
-		util::DebugOut("Applying exp patch...");
+	const char* GetName() const override {
+		return "Experimental";
+	}
 
+	const char* GetIdentifier() const override {
+		return "experimental-1";
+	}
+
+	bool IsCompatiable() const override {
+		const auto& data = GetGameVersionData();
+
+		if(data.game != Game::SSXOG)
+			return false;
+
+		if(data.region != GameRegion::NTSC)
+			return false;
+
+		return true;
+	}
+
+	void Apply() override {
 		FlushCaches();
 
 		// maybe this should be a function in gameapi.h?
@@ -87,8 +107,6 @@ struct ExpPatch : public Patch {
 			0x03E00008, // jr ra
 			0x27BD0004	// addiu sp, sp, 0x4 (executed as a branch delay side effect)
 		};
-
-		util::DebugOut("Finished applying exp patch...");
 	}
 };
 

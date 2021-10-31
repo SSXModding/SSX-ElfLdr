@@ -34,7 +34,11 @@ void ApplyPatch(elfldr::Patch* patch) {
 		elfldr::util::DebugOut("Patch \"%s\" is incompatiable with the current game.", patch->GetName());
 		return;
 	}
+
+	elfldr::util::gTabLevel++;
 	patch->Apply();
+	elfldr::util::gTabLevel--;
+
 	elfldr::util::DebugOut("Finished applying patch \"%s\"...", patch->GetName());
 }
 

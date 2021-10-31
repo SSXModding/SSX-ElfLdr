@@ -71,7 +71,7 @@ namespace elfldr {
 	 */
 	Patch* GetPatchById(PatchId id);
 
-	//Patch* GetPatchByIdentifier(const char* name);
+	//Patch* GetPatchByIdentifier(const char* ident);
 
 } // namespace elfldr
 

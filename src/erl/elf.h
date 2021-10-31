@@ -7,8 +7,8 @@
 
 namespace elfldr::erl {
 
-// TODO: constexpr >:((((((
-	
+	// TODO: constexpr >:((((((
+
 #define REL_TYPE 1
 #define PROGBITS 1
 #define NOBITS 8
@@ -23,8 +23,7 @@ namespace elfldr::erl {
 #define R_MIPS_26 4
 #define R_MIPS_HI16 5
 #define R_MIPS_LO16 6
-	
-	
+
 	struct elf_header_t {
 		union { // is there a reason why this is a union?
 			std::uint8_t raw[16];
@@ -35,7 +34,7 @@ namespace elfldr::erl {
 				std::uint8_t ei_version;
 			} cook;
 		} e_ident;
-		
+
 		std::uint16_t e_type;
 		std::uint16_t e_machine;
 		std::uint32_t e_version;
@@ -55,7 +54,7 @@ namespace elfldr::erl {
 		std::uint32_t sh_name;
 		std::uint32_t sh_type;
 		std::uint32_t sh_flags;
-		std::uint32_t sh_addr; 
+		std::uint32_t sh_addr;
 		std::uint32_t sh_offset;
 		std::uint32_t sh_size;
 		std::uint32_t sh_link;
@@ -78,6 +77,6 @@ namespace elfldr::erl {
 		std::uint32_t r_info;
 	};
 
-}
+} // namespace elfldr::erl
 
 #endif // ELF_H

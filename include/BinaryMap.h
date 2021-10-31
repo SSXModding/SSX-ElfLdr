@@ -1,3 +1,6 @@
+// TODO: Is this worth using in other bits of elfldr?
+// if not, move to src/
+
 #ifndef BINMAP_H
 #define BINMAP_H
 
@@ -33,9 +36,8 @@ namespace elfldr {
 				return;
 
 			// TODO: if index goes over MAX_ELEMENTS, scream
-
-			Entries[Index].key = key;
-			Entries[Index].value = value;
+			Keys[Index] = key;
+			Values[Index] = value;
 			Index++;
 		}
 
@@ -59,15 +61,22 @@ namespace elfldr {
 			if(!entry)
 				return nullptr;
 
-			return &entry->value;
+			return entry;
+		}
+		
+		constexpr TKey* GetKeys() {
+			return &Keys[0];
+		}
+		
+		/**
+		 * Retrieve all values.
+		 * This can be used to get all contained values.
+		 */
+		constexpr TValue* GetValues() {
+			return &Values[0];
 		}
 
 	   private:
-		struct MapEntry {
-			TKey key;
-			TValue value;
-		};
-
 		/**
 		 * Maybe find a raw entry, with the given key.
 		 *
@@ -75,16 +84,18 @@ namespace elfldr {
 		 * \returns a pointer to the entry structure which has this key,
 		 * 			or nullptr if not found
 		 */
-		constexpr MapEntry* MaybeFindEntry(TKey key) {
+		constexpr TValue* MaybeFindEntry(TKey key) {
 			for(uint32_t i = 0; i < GetCount(); ++i) {
-				if(Entries[i].key == key)
-					return &Entries[i];
+				if(Keys[i] == key)
+					return &Values[i];
 			}
 
 			return nullptr;
 		}
-
-		MapEntry Entries[MAX_ELEMENTS] {};
+		// seperate so they both are stored
+		// in a linear order
+		TKey Keys[MAX_ELEMENTS] {};
+		TValue Values[MAX_ELEMENTS] {};
 		uint32_t Index { 0 };
 	};
 

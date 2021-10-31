@@ -63,6 +63,13 @@ namespace elfldr::util {
 		return u.dst;
 	}
 
+#ifndef ERL	
+	/**
+	 * Global tab level.
+	 */
+	extern std::uint8_t gTabLevel;
+#endif
+
 	/**
 	 * Write a message with a prefix.
 	 */

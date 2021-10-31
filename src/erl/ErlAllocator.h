@@ -1,7 +1,7 @@
 #ifndef ALLOCATOR_H
 #define ALLOCATOR_H
 
-// This file defines 
+// This file defines
 // allocator forwarding functions
 // which call into the Liberl allocation functions.
 //
@@ -9,14 +9,14 @@
 // customized with the user's liberl allocation function.
 
 namespace elfldr::erl {
-	
+
 	// C style malloc() api
-	
-	void* ErlAlloc(std::uint32_t size); 
-	
+
+	void* ErlAlloc(std::uint32_t size);
+
 	void ErlFree(void* ptr);
-		
-}
+
+} // namespace elfldr::erl
 
 // Provide C++ new/new[] and delete/delete[]
 // overloads which use the liberl heap.
@@ -37,6 +37,5 @@ inline void operator delete(void* ptr) noexcept {
 inline void operator delete[](void* ptr) noexcept {
 	elfldr::erl::ErlFree(ptr);
 }
-
 
 #endif // ALLOCATOR_H

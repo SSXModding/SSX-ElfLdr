@@ -54,7 +54,14 @@ namespace elfldr {
 							return "SLUS_200.95";
 						case GameRegion::PAL:
 							return "SLES_500.30";
-
+						default:
+							return "???";
+					}
+					break;
+				case Game::SSXDVD:
+					switch(region) {
+						case GameRegion::NTSC:
+							return "SLUS_203.26";
 						default:
 							return "???";
 					}
@@ -80,8 +87,11 @@ namespace elfldr {
 		return;                                        \
 	}
 
-		TryCase(Game::SSXOG, GameRegion::NTSC, "Version probe detected SSX OG NTSC.")
-		TryCase(Game::SSXOG, GameRegion::PAL, "Version probe detected SSX OG PAL.")
+		TryCase(Game::SSXOG, GameRegion::NTSC, "Version probe detected SSX OG (NTSC).")
+		TryCase(Game::SSXOG, GameRegion::PAL, "Version probe detected SSX OG (PAL).")
+
+		// SSXDVD
+		TryCase(Game::SSXDVD, GameRegion::NTSC, "Version probe detected SSX Tricky (NTSC).")
 
 #undef TryCase
 

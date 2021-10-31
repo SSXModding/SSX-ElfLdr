@@ -16,7 +16,8 @@ Game regions/versions or whole games marked as Unsupported are planned to be sup
 | SSX OG (2000) | USA (Greatest Hits)| Unknown
 | SSX OG (2000) | PAL (1.0)          | Unsupported
 | SSX OG (2000) | NTSC-J (1.0)       | Unsupported
-| SSX Tricky    | (N/A)              | Unsupported
+| SSX Tricky    | USA (1.0)          | Supported
+| SSX Tricky    | PAL/NTSC-J         | Unsupported
 | SSX 3         | (N/A)              | Unsupported
 | SSX On Tour   | (N/A)              | Unsupported
 
@@ -38,6 +39,10 @@ This patch allows the game to load entirely from the host filesystem, making it 
  - Extract all of the game's files from the ISO into a directory of your choosing.
  - Once you've done so, using a .BIG extraction tool, extract all of the .BIG archives in data/models, and place all of the files made in that folder.
  - Copy `ssx_elfldr.elf` alongside the main game ELF (e.g: for US, `SLUS_200.95`).
+
+#### Setup (SSX Tricky)
+ - Extract all of the game's files from the ISO into a directory of your choosing.
+ - Copy `ssx_elfldr.elf` alongside the main game ELF.
 
 ### MemClr patch
 

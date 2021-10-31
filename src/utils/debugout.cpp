@@ -10,6 +10,10 @@
 
 namespace elfldr::util {
 
+#ifndef ERL
+	std::uint8_t gTabLevel = 0;
+#endif
+
 	// This code is messy since it needs to only use gcc builtins
 	// to work across erl/elf boundaries, alongside some Platform Soup
 	// to use bx::printf for the ERL.
@@ -30,6 +34,10 @@ namespace elfldr::util {
 		__builtin_vsnprintf(&buf[sizeof("[ElfLdr]")], (sizeof(buf) - sizeof("[ElfLdr]") - 1), format, val);
 
 #ifndef ERL
+		// Tab level handling
+		for(int i = 0; i < gTabLevel; ++i)
+			putc('\t', stdout);
+
 		// use nano newlib puts() where we can
 		puts(buf);
 #else

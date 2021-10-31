@@ -22,30 +22,44 @@ struct MemclrPatch : public Patch {
 	bool IsCompatiable() const override {
 		const auto& data = GetGameVersionData();
 
-		if(data.game != Game::SSXOG)
-			return false;
-
 		if(data.region != GameRegion::NTSC)
 			return false;
 
-		return true;
+		if(data.game == Game::SSXOG || data.game == Game::SSXDVD)
+			return true;
+
+		return false;
 	}
 
 	void Apply() override {
-		// NOP fill the direct memory clearing loop in bxPreInit()
-		util::NopFill<10>(util::Ptr(0x0018a6d8));
+		const auto& data = GetGameVersionData();
 
-		// NOP fill the memory clearing logic in CMN initheapdebug(),
-		// as simply NOP filling the call causes the game to crash.
-		util::NopFill<32>(util::Ptr(0x0018a294));
+		switch(data.game) {
+			case Game::SSXOG: {
+				// NOP fill the direct memory clearing loop in bxPreInit()
+				util::NopFill<10>(util::Ptr(0x0018a6d8));
+
+				// NOP fill the memory clearing logic in CMN initheapdebug(),
+				// as simply NOP filling the call causes the game to crash.
+				util::NopFill<32>(util::Ptr(0x0018a294));
 
 #ifdef EXPERIMENTAL
-		// Nop fill MEM_init() and initheapdebug from bxPreInit,
-		// the experimental patch inits the memory allocator
-		// BEFORE THE GAME EVEN LOADS! Fucking crazy that this works.
-		util::DebugOut("Special case for Exp - killing MEM_init and initheapdebug");
-		util::NopFill<6>(util::Ptr(0x0018a704));
+				util::DebugOut("Special case for Exp - killing MEM_init and initheapdebug");
+				util::NopFill<6>(util::Ptr(0x0018a704));
 #endif
+			} break;
+
+			// gaming
+			case Game::SSXDVD: {
+				// bxPreInit
+				util::MemRefTo<std::uint32_t>(util::Ptr(0x00182b08)) = 0x00000000;
+
+				// initheapdebug()
+				// nopping out the writes themselves seems to be the best here.
+				util::MemRefTo<std::uint32_t>(util::Ptr(0x001826c8)) = 0x00000000;
+				util::MemRefTo<std::uint32_t>(util::Ptr(0x00182700)) = 0x00000000;
+			} break;
+		}
 	}
 };
 

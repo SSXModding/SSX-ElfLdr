@@ -102,7 +102,7 @@ namespace elfldr {
 		TryCase(Game::SSXDVD, GameRegion::NTSC, "Version probe detected SSX Tricky (NTSC).")
 
 		// SSX 3
-		TryCase(Game::SSX3, GameRegion::NTSC, "Version probe detected SSX 4 (NTSC).")
+		TryCase(Game::SSX3, GameRegion::NTSC, "Version probe detected SSX 3 (NTSC).")
 
 #undef TryCase
 

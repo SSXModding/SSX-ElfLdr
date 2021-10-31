@@ -44,6 +44,11 @@ This patch allows the game to load entirely from the host filesystem, making it 
 #### Setup (SSX Tricky)
  - Extract all of the game's files from the ISO into a directory of your choosing.
  - Copy `ssx_elfldr.elf` alongside the main game ELF.
+ 
+#### Setup (SSX 3)
+ - Extract all of the game's files from the ISO into a directory of your choosing.
+ - (Optional) Remove the PAD files, they are not needed and a waste of disk space.
+ - Copy `ssx_elfldr.elf` alongside the main game ELF.
 
 ### MemClr patch
 

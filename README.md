@@ -18,7 +18,8 @@ Game regions/versions or whole games marked as Unsupported are planned to be sup
 | SSX OG (2000) | NTSC-J (1.0)       | Unsupported
 | SSX Tricky    | USA (1.0)          | Supported
 | SSX Tricky    | PAL/NTSC-J         | Unsupported
-| SSX 3         | (N/A)              | Unsupported
+| SSX 3         | USA (1.0)          | Unsupported
+| SSX 3         | PAL/NTSC-J         | Unsupported
 | SSX On Tour   | (N/A)              | Unsupported
 
 ## Building

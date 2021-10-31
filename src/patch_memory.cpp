@@ -59,6 +59,10 @@ struct MemclrPatch : public Patch {
 				util::MemRefTo<std::uint32_t>(util::Ptr(0x001826c8)) = 0x00000000;
 				util::MemRefTo<std::uint32_t>(util::Ptr(0x00182700)) = 0x00000000;
 			} break;
+
+				// SSX3 release does not actually clear the memory,
+				// so patch data for it isn't needed!
+				// go EA
 		}
 	}
 };

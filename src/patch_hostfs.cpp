@@ -46,7 +46,7 @@ struct HostFsPatch : public Patch {
 		if(data.region != GameRegion::NTSC)
 			return false;
 
-		if(data.game == Game::SSXOG || data.game == Game::SSXDVD)
+		if(data.game == Game::SSXOG || data.game == Game::SSXDVD || data.game == Game::SSX3)
 			return true;
 
 		return false;
@@ -137,6 +137,20 @@ struct HostFsPatch : public Patch {
 				util::WriteString(util::Ptr(0x003873f0), "host:data/modules/mcserv.irx");
 
 				// TODO: Bigless
+			} break;
+
+			// TODO: The game still passes some cdrom0: paths,
+			// but it's only to some network module garbage,
+			// so it's probably fine.
+			case Game::SSX3: {
+				util::ReplaceString(util::Ptr(0x004a3ed8), "host0:");
+				util::ReplaceString(util::Ptr(0x0048d9c8), "host:");
+
+				// null terminate the ';1' so it isn't concatenated
+				// to paths (HostFS doesn't need it)
+				util::MemRefTo<std::uint8_t>(util::Ptr(0x004a3ea0)) = 0x0;
+
+				util::WriteString(util::Ptr(0x00495828), "host:");
 			} break;
 		}
 	}

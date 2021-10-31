@@ -66,6 +66,14 @@ namespace elfldr {
 							return "???";
 					}
 					break;
+				case Game::SSX3:
+					switch(region) {
+						case GameRegion::NTSC:
+							return "SLUS_207.72";
+						default:
+							return "???";
+					}
+					break;
 				default:
 					return "???";
 			}
@@ -92,6 +100,9 @@ namespace elfldr {
 
 		// SSXDVD
 		TryCase(Game::SSXDVD, GameRegion::NTSC, "Version probe detected SSX Tricky (NTSC).")
+
+		// SSX 3
+		TryCase(Game::SSX3, GameRegion::NTSC, "Version probe detected SSX 4 (NTSC).")
 
 #undef TryCase
 

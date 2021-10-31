@@ -8,7 +8,8 @@ namespace elfldr {
 	enum class Game : std::uint8_t {
 		Invalid,
 		SSXOG,
-		SSXDVD
+		SSXDVD,
+		SSX3
 	};
 
 	enum class GameRegion : std::uint8_t {

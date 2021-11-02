@@ -1,7 +1,7 @@
 // HostFS patch - allows game files to be loose
 // on the filesystem, so it's easier to tinker with them.
 //
-// How this patch works is pretty simple.
+// How this patch works is pretty simple. (TODO: Rewrite this!)
 //
 //	- It first tricks the game into going into the mode where it would use "host0:",
 //		by replacing the string it uses with just "host", from "cd:".
@@ -12,12 +12,13 @@
 //		and alter a pointer which usually points to a string containing "host0:"
 //		to point to our slack space HostFS path string.
 //
+// This patch also provides support for patching the game in such a way
+// where world data can be plain files on disc, making them a LOT easier to modify.
 //
-// Note that (including path seperators) there is about a 31 character
-// limit for the HostFS path. This techinically could be fixable by making
-// the game use a slack space rather than a stack array, however, that would be
-// a lot more painful, and would be a far more complicated patch.
-// A minor tradeoff to make this patch so much easier is okay, at least to me..
+// This currently works for:
+//	- SSX OG
+//	- SSX Tricky (dubbed SSXDVD in code)
+//
 
 #include "patch.h"
 
@@ -86,10 +87,8 @@ struct HostFsPatch : public Patch {
 
 				// This will completely disable loading worlds from BIG files.
 				// Only enable this if you've extracted everything!!!
-#if 1
 				util::NopFill<3>(util::Ptr(0x00187704)); // nop TheApp.MountWorld(...) in cGame::cGame()
 				util::NopFill<2>(util::Ptr(0x001879f4)); // nop TheApp.UnmountWorld() in cGame::~cGame()
-#endif
 
 				// you know what? fuck you
 				// *unbigs your files*
@@ -124,6 +123,10 @@ struct HostFsPatch : public Patch {
 				// the above comments (with some per-game changes).
 
 			case Game::SSXDVD: {
+				// The new REAL library version introduced here onwards
+				// doesn't hardcode the length of the host0 string, and trying to hardcode
+				// the length results in crashing.
+				// So we admit defeat and just give it what it wants.
 				util::ReplaceString(util::Ptr(0x00387468), "host0:");
 				util::WriteString(util::Ptr(0x003b9130), "host:");
 
@@ -136,7 +139,17 @@ struct HostFsPatch : public Patch {
 				util::WriteString(util::Ptr(0x003873b0), "host:data/modules/mcman.irx");
 				util::WriteString(util::Ptr(0x003873f0), "host:data/modules/mcserv.irx");
 
-				// TODO: Bigless
+				// BIGless worlds
+				// You'll need bigfile's bigextract to extract the world archives,
+				// since they're c0fb BIG archives.
+
+				// It seems they got a little mad at the bunch of paths and made paths composed
+				// via sprintf(), so this is actually quite a bit easier to do than OG.
+				util::ReplaceString(util::Ptr(0x003a7bb8), "data/models/%s%s");
+
+				// NOP world BIG file mounts, both for hardcoded SSXFE and the world's mounting
+				util::NopFill<4>(util::Ptr(0x001862dc));
+				util::MemRefTo<std::uint32_t>(util::Ptr(0x00263e1c)) = 0x00000000;
 			} break;
 
 			// TODO: The game still passes some cdrom0: paths,
@@ -151,6 +164,9 @@ struct HostFsPatch : public Patch {
 				util::MemRefTo<std::uint8_t>(util::Ptr(0x004a3ea0)) = 0x0;
 
 				util::WriteString(util::Ptr(0x00495828), "host:");
+
+				// TODO: Bigless
+				// (maybe as an ERL, we can patch loading chunks)
 			} break;
 		}
 	}

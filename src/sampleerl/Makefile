@@ -5,7 +5,7 @@ OBJS = $(OBJDIR)/sampleerl.o
 
 
 # Link libutils with the erl.
-LIBS = -lutils
+LIBS = -lutils-erl
 
 ERL = sample_erl
 

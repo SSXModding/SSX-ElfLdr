@@ -9,8 +9,8 @@
 
 #include <ElfLoader.h>
 
-#include <utils.h>
-#include <codeutils.h>
+#include <utils/utils.h>
+#include <utils/codeutils.h>
 
 namespace elfldr {
 

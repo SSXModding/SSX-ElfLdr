@@ -4,8 +4,8 @@
 
 #include <cstdint>
 
-#include <utils.h>
-#include <codeutils.h>
+#include <utils/utils.h>
+#include <utils/codeutils.h>
 
 namespace bx {
 	// ghidra typedefs used

@@ -1,7 +1,4 @@
 // General utilities, provided by the "libutils" library.
-
-// TODO: move to utils/
-
 #ifndef UTILS_H
 #define UTILS_H
 
@@ -18,6 +15,11 @@ namespace elfldr::util {
 	// it's std::move for elfldr!!!
 	template <class T>
 	constexpr T&& Move(T&& t) {
+		return static_cast<T&&>(t);
+	}
+
+	template <class T>
+	constexpr T&& Forward(T&& t) {
 		return static_cast<T&&>(t);
 	}
 

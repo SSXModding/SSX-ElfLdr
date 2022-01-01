@@ -1,10 +1,13 @@
 #include "patch.h"
 
-#include <utils.h>
-#include <codeutils.h>
+#include <utils/utils.h>
+#include <utils/Allocator.h>
+#include <utils/codeutils.h>
 
 #include <GameApi.h>
 #include <structs.h>
+
+#include <erl/ErlLoader.h>
 
 #include "GameVersion.h"
 
@@ -17,6 +20,28 @@ using namespace elfldr;
 // I'm lazy.
 namespace elfldr {
 	void FlushCaches();
+}
+
+// aligned malloc/free for ERL
+
+void* AlignedBxMalloc(std::uint32_t c) {
+	auto raw_pointer = bx::real::MEM_alloc("Lily <3", c + sizeof(std::uint32_t), 0x40);
+	auto value = reinterpret_cast<uintptr_t>(raw_pointer);
+	value += (-value) & sizeof(std::uint32_t);
+
+	// prepare the returned pointer by putting in the original malloc address
+	auto* ret_pointer = reinterpret_cast<void*>(value);
+	reinterpret_cast<uintptr_t*>(ret_pointer)[-1] = reinterpret_cast<uintptr_t>(raw_pointer);
+
+	// util::DebugOut("debug(malloc): real pointer is %p", raw_pointer);
+	return ret_pointer;
+}
+
+void AlignedBxFree(void* p) {
+	auto real_pointer = reinterpret_cast<void*>(reinterpret_cast<uintptr_t*>(p)[-1]);
+	// util::DebugOut("debug(free): real pointer is %p", real_pointer);
+	if(real_pointer != nullptr)
+		bx::real::MEM_free(real_pointer);
 }
 
 struct ExpPatch : public Patch {
@@ -43,6 +68,15 @@ struct ExpPatch : public Patch {
 	void Apply() override {
 		FlushCaches();
 
+		// clang-format off
+		util::SetAllocationFunctions([](std::uint32_t c) {
+			return bx::real::MEM_alloc("Lily <3", c, 0x0 /* i forgor mbflags :( */);
+		}, [](void* p) {
+						if(p)
+						bx::real::MEM_free(p);
+		 }, AlignedBxMalloc, AlignedBxFree);
+		// clang-format on
+
 		// maybe this should be a function in gameapi.h?
 
 		// all these values are hard-coded for US. sorry.
@@ -53,24 +87,6 @@ struct ExpPatch : public Patch {
 
 		bx::real::MEM_init(util::Ptr(memstart), memsize);
 		bx::real::initheapdebug(memstart, 0x002d8c20, memstart + memsize);
-
-		//#ifdef DEBUG
-		// Do a test allocation inside of the REAL heap,
-		// to see if it works.
-		void* test = bx::real::MEM_alloc("test", 320, 0x40 /* MB_LOW */);
-
-		if(test != nullptr) {
-			util::DebugOut("Wow, it actually allocated an address. It's %p\n", test);
-
-			// Write a little test value in our space.
-			util::MemRefTo<uint32_t>(test) = 0x13370410;
-
-			util::DebugOut("value in test is: %d\n", util::MemRefTo<std::uint32_t>(test));
-
-			// Free the memory, commented out for testing reasons.
-			bx::real::MEM_free(test);
-		}
-		//#endif
 
 		// Replace the loop in cGame::UpdateNodes()
 		// with a hand-written 3-instruction replacement.
@@ -98,15 +114,26 @@ struct ExpPatch : public Patch {
 		// basic function prologue
 		constexpr static std::uint32_t subroutine_prologue_template[] {
 			0x27BDFFFC, // addiu sp, sp, -0x4
-			0xFFB00000	// sd s0, 0x0(sp) (save the old value of s0)
+			0xFFB00000	// sd s0, 0x0(sp) ; save the old value of s0 as the first
 		};
 
 		constexpr static std::uint32_t subroutine_epilogue_template[] {
-			// Restore registers
-			0xDFB00000, // ld s0, 0x0(sp) (load the old value of s0)
+			// ; Restore registers to what they were before
+			0xDFB00000, // ld s0, 0x0(sp) ; load the old value of s0
 			0x03E00008, // jr ra
-			0x27BD0004	// addiu sp, sp, 0x4 (executed as a branch delay side effect)
+			0x27BD0004	// addiu sp, sp, 0x4 ; This instruction is executed the same time as the jr as a pipeline side effect
 		};
+
+		// Load all the erls, collect their function pointers, and then
+		// get the length of said
+
+		auto* erl = erl::LoadErl("host:test.erl");
+		if(erl) {
+			auto sym = erl->ResolveSymbol("elfldr_get_functions");
+			util::DebugOut("sym is @ %p", sym); //
+
+			DestroyErl(erl);
+		}
 	}
 };
 

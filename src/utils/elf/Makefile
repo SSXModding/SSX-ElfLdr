@@ -1,10 +1,15 @@
-# Makefile for libutils
+# Makefile for libutils (ELF variant)
 
 # libutils objects
 OBJS = $(OBJDIR)/codeutils.o \
 	   $(OBJDIR)/assert.o \
 	   $(OBJDIR)/fnv.o \
 	   $(OBJDIR)/debugout.o \
+	   $(OBJDIR)/FioFile.o \
+	   $(OBJDIR)/Allocator.o \
+
+# We do not use newlib file IO routines.
+EXTRADEFS = -DNEWLIB_PORT_AWARE
 
 # Define a custom vpath to make this build still work.
 # I am SO goddamn sorry.

@@ -3,8 +3,8 @@
 
 #include "patch.h"
 
-#include <utils.h>
-#include <codeutils.h>
+#include <utils/utils.h>
+#include <utils/codeutils.h>
 
 #include "GameVersion.h"
 

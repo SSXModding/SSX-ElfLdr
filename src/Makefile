@@ -17,7 +17,7 @@ EELIBC = c_nano
 	  
 # Link libutils (elf version), and some other
 # fancy ps2sdk libs we need
-LIBS = -lutils-elf -lkernel -lps2sdkc 
+LIBS = -lutils-elf -lkernel -lps2sdkc -lerl-loader
 
 BIN = ssx_elfldr
 
@@ -28,7 +28,7 @@ OBJS += $(OBJDIR)/patch_experimental.o
 EXTRADEFS += -DEXPERIMENTAL
 endif
 
-# OG objects
+# Misc patch objects
 OBJS += $(OBJDIR)/patch_hostfs.o \
 	   $(OBJDIR)/patch_memory.o
 

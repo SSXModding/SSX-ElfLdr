@@ -11,8 +11,8 @@
 // just like all the other addresses I have.
 //
 
-#include <utils.h>
-#include <codeutils.h>
+#include <utils/utils.h>
+#include <utils/codeutils.h>
 //#include <structs.h>
 
 namespace bx {

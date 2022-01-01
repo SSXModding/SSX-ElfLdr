@@ -22,8 +22,8 @@
 
 #include "patch.h"
 
-#include <utils.h>
-#include <codeutils.h>
+#include <utils/utils.h>
+#include <utils/codeutils.h>
 
 #include "GameVersion.h"
 
@@ -94,6 +94,12 @@ struct HostFsPatch : public Patch {
 				// *unbigs your files*
 				// (i could patch bxMain() but cApplication::Run() never returns in release.)
 				//util::NopFill<36>(util::Ptr(0x00183b68));
+				
+				// replace beq with bne, i hope this works LUL
+				//util::MemRefTo<std::uint32_t>(util::Ptr(0x00238800)) = 0x14400017;
+				
+				// replace li 0x2 with 0x0
+				//util::MemRefTo<std::uint32_t>(util::Ptr(0x00238770)) = 0x24120000;
 
 				// Rewrite most of the cWorld path strings to remove the |.
 				// This allows world files to either be loose or inside of the venue BIG files

@@ -1,7 +1,7 @@
 // implementation tu for a couple things I found kinda bloaty
 // to be inlines
 
-#include <codeutils.h>
+#include <utils/codeutils.h>
 
 namespace elfldr::util {
 

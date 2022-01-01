@@ -4,7 +4,7 @@
 // std::hash like primitive
 
 #include <utils/fnv.h>
-#include <utils.h>
+#include <utils/utils.h>
 
 #include <String.h>
 
@@ -12,6 +12,7 @@ namespace elfldr::util {
 
 	template <class T>
 	struct Hash {
+		// Hash:
 		//static std::uint32_t hash(const T&);
 	};
 

@@ -3,13 +3,14 @@
 
 #include <cstdint>
 
-#include <utils.h>
+#include <utils/utils.h>
 #include <utils/Hash.h>
 
 namespace elfldr::erl {
 
 	// TODO:
 	// multi dim buckets for hash collisions maybe
+	// (I may just throw out a ERL which does that.)
 
 	template <class Key, class Value, class Hasher = util::Hash<Key>>
 	struct HashTable {
@@ -87,4 +88,4 @@ namespace elfldr::erl {
 
 } // namespace elfldr::erl
 
-#endif // HashTable.h
+#endif // HASHTABLE_H

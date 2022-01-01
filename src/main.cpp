@@ -1,13 +1,13 @@
 // Patching ELF loader for (right now) SSX OG
 // 2021 modeco80
 
-#include <utils.h>
+#include <utils/utils.h>
 
 #include "patch.h"
 #include <ElfLoader.h>
 
 // is this include needed?
-#include <codeutils.h>
+#include <utils/codeutils.h>
 
 // stuff.
 #include <erl/ErlLoader.h>

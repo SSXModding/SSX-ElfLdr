@@ -58,21 +58,7 @@ namespace elfldr::erl {
 		virtual Symbol ResolveSymbol(const char* symbolName) = 0;
 	};
 
-	/**
-	 * malloc() callback type for the ERL loader.
-	 */
-	using Malloc = void* (*)(std::uint32_t);
 
-	/**
-	 * free() callback type for the ERL loader.
-	 */
-	using Free = void (*)(void*);
-
-	/**
-	 * Set the ERL loader's memory allocation/deallocation
-	 * functions.
-	 */
-	void SetAllocationFunctions(Malloc erlmalloc, Free erlfree);
 
 	/**
 	 * Load and relocate a .erl file.

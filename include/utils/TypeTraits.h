@@ -20,13 +20,16 @@ namespace elfldr::util {
 	 * \tparam constant Constant
 	 */
 	template <auto constant>
-	struct CompileTimeConstant : public TypeConstant<decltype(constant)> {
+	struct CompileTimeConstant {
+		using type = decltype(constant);
+
 		static constexpr type value = constant;
 
-		constexpr operator type() {
+		constexpr operator type () {
 			return value;
 		}
-		constexpr type operator()() {
+
+		constexpr auto operator()() -> type {
 			return value;
 		}
 	};

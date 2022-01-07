@@ -13,6 +13,11 @@ namespace elfldr::erl {
 #define PROGBITS 1
 #define NOBITS 8
 #define REL 9
+
+// New-style absoulte relocations,
+// seemingly emitted now by gcc11.
+#define RELA 4
+
 #define GLOBAL 1
 #define WEAK 2
 #define NOTYPE 0
@@ -23,6 +28,13 @@ namespace elfldr::erl {
 #define R_MIPS_26 4
 #define R_MIPS_HI16 5
 #define R_MIPS_LO16 6
+
+	using Half = std::uint16_t;
+	using Addr = std::uint32_t;
+	using Word = std::uint32_t;
+	using SWord = std::uint32_t;
+	using XWord = std::uint64_t;
+	using Sxword = std::uint64_t;
 
 	struct elf_header_t {
 		union { // is there a reason why this is a union?
@@ -35,46 +47,53 @@ namespace elfldr::erl {
 			} cook;
 		} e_ident;
 
-		std::uint16_t e_type;
-		std::uint16_t e_machine;
-		std::uint32_t e_version;
-		std::uint32_t e_entry;
-		std::uint32_t e_phoff;
-		std::uint32_t e_shoff;
-		std::uint32_t e_flags;
-		std::uint16_t e_ehsize;
-		std::uint16_t e_phentsize;
-		std::uint16_t e_phnum;
-		std::uint16_t e_shentsize;
-		std::uint16_t e_shnum;
-		std::uint16_t e_shstrndx;
+		Half e_type;
+		Half e_machine;
+		Word e_version;
+		Word e_entry;
+		Word e_phoff;
+		Word e_shoff;
+		Word e_flags;
+		Half e_ehsize;
+		Half e_phentsize;
+		Half e_phnum;
+		Half e_shentsize;
+		Half e_shnum;
+		Half e_shstrndx;
 	};
 
 	struct elf_section_t {
-		std::uint32_t sh_name;
-		std::uint32_t sh_type;
-		std::uint32_t sh_flags;
-		std::uint32_t sh_addr;
-		std::uint32_t sh_offset;
-		std::uint32_t sh_size;
-		std::uint32_t sh_link;
-		std::uint32_t sh_info;
-		std::uint32_t sh_addralign;
-		std::uint32_t sh_entsize;
+		Word sh_name;
+		Word sh_type;
+		Word sh_flags;
+		Word sh_addr;
+		Word sh_offset;
+		Word sh_size;
+		Word sh_link;
+		Word sh_info;
+		Word sh_addralign;
+		Word sh_entsize;
 	};
 
 	struct elf_symbol_t {
-		std::uint32_t st_name;
-		std::uint32_t st_value;
-		std::uint32_t st_size;
+		Word st_name;
+		Word st_value;
+		Word st_size;
 		std::uint8_t st_info;
 		std::uint8_t st_other;
-		std::uint16_t st_shndx;
+		Half st_shndx;
 	};
 
 	struct elf_reloc_t {
-		std::uint32_t r_offset;
-		std::uint32_t r_info;
+		Addr r_offset;
+		Word r_info;
+	};
+
+	// new style RELA relocation
+	struct elf_reloca_t {
+		Addr r_offset;
+		Word r_info;
+		Word r_addend; // Fun fact, binutils always emits 0 for this lol
 	};
 
 } // namespace elfldr::erl

@@ -12,6 +12,10 @@ namespace elfldr::util {
 
 	namespace detail {
 
+		/**
+		 * A safe deferred container for class types.
+		 * Performs no heap allocations.
+		 */
 		template <class T>
 		struct DeferredHolderFor {
 			constexpr ~DeferredHolderFor() {
@@ -54,7 +58,7 @@ namespace elfldr::util {
 				}
 			}
 
-			constexpr bool IsConstructed() const {
+			[[nodiscard]] constexpr bool IsConstructed() const {
 				return constructed;
 			}
 
@@ -83,6 +87,11 @@ namespace elfldr::util {
 
 	} // namespace detail
 
+	/**
+	 * A class template for working with deterministic errors.
+	 * \tparam T Retty. Can be void
+	 * \tparam E Error type.
+	 */
 	template <class T, class E>
 	struct Expected {
 

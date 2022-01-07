@@ -9,3 +9,5 @@ bin/
 bin/*.elf
 bin/*.a
 bin/*.erl
+
+/publish.sh

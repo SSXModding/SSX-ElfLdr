@@ -41,7 +41,6 @@ void operator delete[](void* ptr) noexcept;
 
 // Placement new/new[]/delete/delete[]
 void* operator new(std::size_t, void* p) noexcept;
-
 void* operator new[](std::size_t, void* p) noexcept;
 void operator delete(void*, void*) noexcept;
 void operator delete[](void*, void*) noexcept;

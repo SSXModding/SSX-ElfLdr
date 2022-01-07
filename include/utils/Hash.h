@@ -6,7 +6,7 @@
 #include <utils/fnv.h>
 #include <utils/utils.h>
 
-#include <String.h>
+#include <utils/String.h>
 
 namespace elfldr::util {
 

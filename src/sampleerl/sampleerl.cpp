@@ -16,24 +16,27 @@
 // A sample function run every game frame,
 // called by elfldr's injection of cGame::UpdateNodes().
 ELFLDR_HIDDEN void SampleFunction() {
-	// sorry for using windbg notation.
-	bx::printf("the game is calling sample_erl!SampleFunction(), woohoo!\n");
+	bx::printf("sample_erl!SampleFunction()");
 }
 
 // Function table
 ELFLDR_HIDDEN elfldr::FunctionEntry entryTable[] {
+	// clang-format off
 
 	// sample cGame::UpdateNodes() hook
 	{
-	.type = elfldr::FunctionType::GameFrame,
-	.fnPtr = &SampleFunction }
+		.type = elfldr::FunctionType::GameFrame,
+		.fnPtr = &SampleFunction
+	}
+
+	// clang-format on
 };
 
 // example implementation of the only needed ERL call,
 // "elfldr_get_functions". You don't really need to change this,
 // unless you wanna do some stuff before Elfldr knows your stuff.
 
-extern "C" bool elfldr_get_functions(elfldr::ErlGetFunctionReturn* ret) {
+extern "C" ELFLDR_HIDDEN bool elfldr_get_functions(elfldr::ErlGetFunctionReturn* ret) {
 	// If the return pointer is invalid,
 	// there's probably worse issues.
 	if(!ret)
@@ -45,9 +48,8 @@ extern "C" bool elfldr_get_functions(elfldr::ErlGetFunctionReturn* ret) {
 	return true;
 }
 
-// Dummy entry point.
-// Code could be put here, if you *really* wanted,
-// but that wouldn't really be worth it.
-extern "C" int _start(int argc, char** argv) {
+extern "C" ELFLDR_HIDDEN int _start() {
+	// TMP
+	bx::printf("Hi, world?\n");
 	return 0;
 }

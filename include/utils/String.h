@@ -18,6 +18,59 @@
 
 namespace elfldr {
 
+	/**
+	 * A "view" of a string. Does not own the memory,
+	 * and when copied, simply copies its pointer/length.
+	 * Essentially a special-cased span for strings,
+	 * to avoid heap-allocating tons of temporary String objects
+	 */
+	template <class T>
+	struct BasicStringView {
+		constexpr BasicStringView()
+		 : data_ptr(nullptr),
+		   len(0) {}
+
+		// Permit the compiler to force generate a trivial
+		// copy constructor.
+		constexpr BasicStringView(const BasicStringView&) = default;
+
+		constexpr BasicStringView(const T* ptr)
+			: data_ptr(ptr),
+			  len(strlen(ptr)) {
+		}
+
+		constexpr BasicStringView(T* ptr, size_t len)
+			: data_ptr(ptr),
+			  len(len) {
+		}
+
+		constexpr const T* Data() const {
+			return data_ptr;
+		}
+
+		constexpr const T* CStr() const {
+			return data_ptr;
+		}
+
+		constexpr const T& operator[](std::size_t index) const {
+			return &data_ptr[index];
+		}
+
+		friend constexpr bool operator==(const BasicStringView& lhs, const BasicStringView& rhs) {
+			// would probably need some work for introducing U8StringView
+			return !strcmp(lhs.data_ptr, rhs.data_ptr);
+		}
+
+		friend constexpr bool operator!=(const BasicStringView& lhs, const BasicStringView& rhs) {
+			return !(lhs == rhs);
+		}
+
+	   private:
+		const T* data_ptr;
+		size_t len;
+	};
+
+
 	template <class T>
 	struct BasicString {
 		using CharType = T;
@@ -54,6 +107,15 @@ namespace elfldr {
 			// new buffer.
 			Resize(source.len);
 			memcpy(&memory[0], &source.memory[0], source.len * sizeof(T));
+		}
+
+		inline BasicString& operator=(const BasicString& copy) {
+			if(this == &copy)
+				return *this;
+
+			// call Zecopyctor
+			new (this) BasicString(copy);
+			return *this;
 		}
 
 		inline ~BasicString() {
@@ -118,6 +180,35 @@ namespace elfldr {
 		//
 		// BasicString substr(SizeType pos, SizeType len) - Returns a new allocated substring of this source string
 
+		inline BasicString substr(SizeType pos, SizeType len = -1) {
+			if(pos > this->len)
+				return "";
+
+			if(len != -1) {
+				if((pos + len) > this->len)
+					return "";
+			} else {
+				len = 0;
+
+				auto d = &data()[pos];
+
+				// let's try to find a null terminator
+				while(*d != '\0') {
+					// If we weren't able to find the terminator, then give up,
+					// and just say it's the end of the string.
+					if(d == &data()[this->len]) {
+						len = pos - this->len;
+						break;
+					}
+
+					++len;
+					++d;
+				}
+			}
+
+			return BasicString(&data()[pos], len);
+		}
+
 		// equality operators
 		// operator== might need some work done to it.
 
@@ -128,6 +219,10 @@ namespace elfldr {
 
 		friend inline bool operator!=(const BasicString& lhs, const BasicString& rhs) {
 			return !(lhs == rhs);
+		}
+
+		explicit operator BasicStringView<T>() {
+			return BasicStringView<T>(data(), length());
 		}
 
 	   private:
@@ -145,11 +240,12 @@ namespace elfldr {
 		SizeType len {};
 	};
 
-	// basic string type.
 	using String = BasicString<char>;
+	using StringView = BasicStringView<char>;
 
-	// basic string type - safe for UTF-8 TODO
-	// using U8String = BasicString<std::uint8_t>;
+	// safe for UTF-8
+	// using U8String = BasicString<char8_t>;
+	// using U8StringView = BasicStringView<char8_t>;
 } // namespace elfldr
 
 #endif

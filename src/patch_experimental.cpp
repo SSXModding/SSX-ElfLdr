@@ -7,6 +7,8 @@
 #include <GameApi.h>
 #include <structs.h>
 
+#include <ErlAbi.h>
+
 #include <erl/ErlLoader.h>
 
 #include "GameVersion.h"
@@ -68,13 +70,16 @@ struct ExpPatch : public Patch {
 	void Apply() override {
 		FlushCaches();
 
+		// TODO: This should be done when the elf is loaded rather than here,
+		// so we can PROBABLY relax REAL stuff
+
 		// clang-format off
 		util::SetAllocationFunctions([](std::uint32_t c) {
 			return bx::real::MEM_alloc("Lily <3", c, 0x0 /* i forgor mbflags :( */);
 		}, [](void* p) {
-						if(p)
-						bx::real::MEM_free(p);
-		 }, AlignedBxMalloc, AlignedBxFree);
+			if(p)
+				bx::real::MEM_free(p);
+		}, AlignedBxMalloc, AlignedBxFree);
 		// clang-format on
 
 		// maybe this should be a function in gameapi.h?
@@ -125,16 +130,32 @@ struct ExpPatch : public Patch {
 		};
 
 		// Load all the erls, collect their function pointers, and then
-		// get the length of said
-
-		auto* erl = erl::LoadErl("host:test.erl");
+		// get the length of sai
+		auto* erl = erl::LoadErl("host:sample_erl.erl");
 		if(erl) {
+			//try to resolve a simple symbol,
 			auto sym = erl->ResolveSymbol("elfldr_get_functions");
-			util::DebugOut("sym is @ %p", sym); //
+			util::DebugOut("sym is @ %p", sym);
 
-			DestroyErl(erl);
+			if(sym == -1) {
+				util::DebugOut("invalid ERL!!!!");//
+				erl::DestroyErl(erl);
+			}
+
+			ErlGetFunctionReturn egr;
+			auto fun = util::UBCast<bool(*)(elfldr::ErlGetFunctionReturn*)>(sym);
+
+			if(!fun(&egr)) {
+				util::DebugOut("huh?");
+			} else {
+				util::DebugOut("%d functions", egr.nrFunctions);
+				for(int i = 0; i < egr.nrFunctions; ++i)
+					util::DebugOut("type %d, ptr %08x", egr.functions[i].type, egr.functions[i].fnPtr);
+			}
+
 		}
 	}
+	// p[enis
 };
 
 // Register the patch into the patch system

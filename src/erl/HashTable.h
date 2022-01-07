@@ -12,6 +12,9 @@ namespace elfldr::erl {
 	// multi dim buckets for hash collisions maybe
 	// (I may just throw out a ERL which does that.)
 
+	/**
+	 * A simple hash table.
+	 */
 	template <class Key, class Value, class Hasher = util::Hash<Key>>
 	struct HashTable {
 		inline HashTable() = default;
@@ -29,24 +32,37 @@ namespace elfldr::erl {
 		/**
 		 * Add a value to the hash table.
 		 */
-		void Set(const Key& key, const Value& value) {
+		void Set(const Key& key, Value value) {
 			auto* bucket = MaybeGetBucket(key);
 
 			if(!bucket)
 				return;
+
+			//util::DebugOut("hashTable chose bucket %d", (bucket - &buckets[0]));
 
 			// maybe util::Move both these values?
 			bucket->key = key;
 			bucket->value = value;
 		}
 
-		bool HasKey(const Key& key) const {
+		bool HasKey(const Key& key)  {
 			auto* bucket = MaybeGetBucket(key);
 
 			if(!bucket)
 				return false;
 
 			return bucket->key == key;
+		}
+
+		Value* MaybeGet(const Key& key) {
+			if(!HasKey(key))
+				return nullptr;
+			auto* bucket = MaybeGetBucket(key);
+
+			//util::DebugOut("hashTable chose bucket %d", (bucket - &buckets[0]));
+			//util::DebugOut("hashTable key is %s, value is %08x", bucket->key.c_str(), bucket->value);
+
+			return &bucket->value;
 		}
 
 	   private:

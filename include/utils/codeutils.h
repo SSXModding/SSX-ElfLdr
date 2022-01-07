@@ -137,6 +137,9 @@ namespace elfldr::util {
 		return (UBCast<FuncT>(ptr))(args...);
 	}
 
+	// TODO: Should there be a runtime version of this which stores an address
+	//  or pair of addresses depending on game/release/region?
+
 	/**
 	 * A basic boilerplate function wrapper object,
 	 * making it possible for relatively zero-maintainance,

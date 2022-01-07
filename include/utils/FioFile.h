@@ -9,11 +9,11 @@
 
 namespace elfldr::util {
 
-	// FIXME: This should definitely be moved into the utils library.
-
 	/**
 	 * Helper class for using PS2SDK FIO in a way which isn't garbage.
 	 * Automatically closes, provides sane state management, all that.
+	 * (We aren't using C file IO because we're trying to use nano newlib,
+	 * and we don't wanna bring it entirely in)
 	 */
 	struct FioFile {
 		/**
@@ -24,7 +24,7 @@ namespace elfldr::util {
 		FioFile() = default;
 
 		/**
-		 * Initalize this FioFile with an existing file descriptor.
+		 * Initialize this FioFile with an existing file descriptor.
 		 *
 		 * \param[in] fd An existing fd returned by fio* functions
 		 */
@@ -34,8 +34,16 @@ namespace elfldr::util {
 
 		~FioFile();
 
+		/**
+		 * Get if this file is good or not.
+		 * \return true if the file is good, false if not
+		 */
 		bool Good() const;
 
+		/**
+		 * Good() shorthand
+		 * \see FioFile::Good()
+		 */
 		operator bool() const;
 
 		/**

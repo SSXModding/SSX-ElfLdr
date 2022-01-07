@@ -3,14 +3,14 @@
 
 #include <cstdint>
 
-// The API for Liberl.
+// The public API surface for Liberl.
 //
 // Liberl is a C++ replacement library for the PS2SDK ERL
 // loader library, designed to be lean (which unfortunately means
 // a minor sacrifice of features.).
 //
-// Liberl has no support for imports (from either the Elfldr executable, or another ERL),
-// no support for dependencies (which is intentional, seeing how that would be a pain),
+// Liberl currently has no support for imports (from either the Elfldr executable, or another ERL),
+// no support for dependencies (which is intentional to ease dependency),
 // no support for "global" symbols, and generally,
 // is written to just be enough to work for my usage and not much more.
 //

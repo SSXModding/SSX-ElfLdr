@@ -64,13 +64,12 @@ $(OBJDIR)/%.o: %.c
 	$(info Compiling C source file $<)
 	$(EECC) $(EECFLAGS) $(EEDEPGEN) -c $< -o $@
 
-# TODO: generate .d files in $(OBJDIR)/ and include them here
-
 $(OBJDIR)/%.o: %.cpp
 	$(info Compiling C++ source file $<)
 	$(EECXX) $(EECXXFLAGS) $(EEDEPGEN) -c $< -o $@
-	
-# mark our psuedotargets *as* psuedotargets
+
+
+# mark our pseudo-targets *as* pseudo-targets
 .PHONY: all clean
 
 # These ifneq's seem weird, but.. this make include file actually provides
@@ -89,7 +88,7 @@ $(OBJDIR)/%.o: %.cpp
 ifneq ($(LIB),)
 # include rules for building a static library
 # TODO: LIB should only contain a name,
-# we should gnuize/compose a filename here.
+# we should GNU-ize/compose a filename here.
 
 all: $(OBJDIR)/ $(BINDIR)/$(LIB)
 
@@ -140,7 +139,7 @@ clean:
 	
 $(BINDIR)/$(ERL)$(BUILDSUFFIX).erl: $(OBJS)
 	$(info Linking ERL $@)
-	$(EECC) $(EECCFLAGS) $(EELDFLAGS) -nostartfiles -nodefaultlibs -o $@ $(OBJS) $(LIBS) -Wl,-r
+	$(EECC) $(EECCFLAGS) $(EELDFLAGS) -nostartfiles -nodefaultlibs -o $@ $(OBJS) $(LIBS) -Wl,-r -Wl,-d
 ifneq ($(DEBUG),1)
 	$(info Stripping ERL $@ since this is a release build)
 	$(EESTRIP) --strip-unneeded -R .mdebug.eabi64 -R .reginfo -R .comment $@

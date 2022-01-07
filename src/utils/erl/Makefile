@@ -1,5 +1,7 @@
 # Makefile for libutils
 
+# TODO: allow ERL LibUtils to use allocation facilities?
+
 # libutils objects
 OBJS = $(OBJDIR)/codeutils.o \
 	   $(OBJDIR)/assert.o \

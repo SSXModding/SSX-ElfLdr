@@ -27,7 +27,7 @@ all: $(BINDIR)/
 # Run publish.sh if it exists in the repository root.
 # This aforementioned script allows you to publish elfldr
 # to your game roots if you're a developer and want rapid test cycles
-	[ -f "$(TOP)/publish.sh" ] && $(TOP)/publish.sh
+	@[ -f "$(TOP)/publish.sh" ] && $(TOP)/publish.sh
 clean:
 	$(call do_submake,src/utils/elf,clean)
 	$(call do_submake,src/erl,clean)

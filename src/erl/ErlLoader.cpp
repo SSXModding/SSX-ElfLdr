@@ -9,7 +9,7 @@
 #include <utils/FioFile.h>
 #include <ElfLoader.h>
 
-//#define DEBUG
+#define DEBUG
 
 #define ERL_RELEASE_PRINTF(format, ...) elfldr::util::DebugOut("[LibERL] " format, ##__VA_ARGS__)
 
@@ -63,43 +63,6 @@ namespace elfldr::erl {
 		return alignment_value;
 	}
 
-	static int ApplyMipsReloc(std::uint8_t* reloc, int type, std::uint32_t addr) {
-		std::uint32_t u_current_data;
-		std::int32_t s_current_data;
-		std::uint32_t newstate;
-
-		if(((std::uintptr_t)reloc) & 0x3) {
-			// printf("Unaligned reloc (%p) type=%d!\n", reloc, type);
-			ERL_DEBUG_PRINTF("Unaligned relocation (%p), type %d ! Kinda sussy :)", reloc, type);
-		}
-
-		memcpy(&u_current_data, reloc, sizeof(std::uintptr_t));
-		memcpy(&s_current_data, reloc, 4);
-
-		switch(type) {
-			case R_MIPS_32:
-				newstate = s_current_data + addr;
-				break;
-			case R_MIPS_26:
-				newstate = (u_current_data & 0xfc000000) | (((u_current_data & 0x03ffffff) + (addr >> 2)) & 0x3ffffff);
-				break;
-			case R_MIPS_HI16:
-				newstate = (u_current_data & 0xffff0000) | ((((s_current_data << 16) >> 16) + (addr >> 16) + ((addr & 0xffff) >= 0x8000 ? 1 : 0)) & 0xffff);
-				break;
-			case R_MIPS_LO16:
-				newstate = (u_current_data & 0xffff0000) | ((((s_current_data << 16) >> 16) + (addr & 0xffff)) & 0xffff);
-				break;
-			default:
-				return -1;
-		}
-
-		memcpy(reloc, &newstate, sizeof(std::uint32_t));
-
-		// dprintf("Changed data at %08X from %08X to %08X.\n", reloc, u_current_data, newstate);
-		ERL_DEBUG_PRINTF("Changed %08X data from %08X to %08X.", reloc, u_current_data, newstate);
-		return 0;
-	}
-
 	/**
 	 * This class is actually what we allocate
 	 * when we give an Image* to people.
@@ -114,11 +77,48 @@ namespace elfldr::erl {
 			// destroy code and everything
 			// This should only be done if the ERL isn't needed
 
-			if(bytes)
-				delete[] bytes;
+			delete[] bytes;
+			delete[] symtab;
+		}
 
-			if(symtab)
-				delete[] symtab;
+		// FIXME: Refactor this function to just take the elf_reloca_t&
+		int ApplyRelocation(std::size_t offset, int type, std::uint32_t addr, std::uint32_t addend) {
+			std::uint32_t u_current_data;
+			std::int32_t s_current_data;
+			std::uint32_t newstate;
+
+			if(((std::uintptr_t)&bytes[offset]) & 0x3) {
+				// printf("Unaligned reloc (%p) type=%d!\n", reloc, type);
+				ERL_DEBUG_PRINTF("Unaligned relocation (at %p), type %d ! Kinda sussy :)", &bytes[offset], type);
+			}
+
+			// FIXME: Refactor this attempt at mu-optimization which would be better
+			//  as a reinterpret_cast assignment copy
+
+			memcpy(&u_current_data, &bytes[offset], sizeof(std::uintptr_t));
+			memcpy(&s_current_data, &bytes[offset], 4);
+
+			switch(type) {
+				case R_MIPS_32:
+					newstate = s_current_data + addr;
+					break;
+				case R_MIPS_26:
+					newstate = (u_current_data & 0xfc000000) | (((u_current_data & 0x03ffffff) + (addr >> 2)) & 0x3ffffff);
+					break;
+				case R_MIPS_HI16:
+					newstate = (u_current_data & 0xffff0000) | ((((s_current_data << 16) >> 16) + (addr >> 16) + ((addr & 0xffff) >= 0x8000 ? 1 : 0)) & 0xffff);
+					break;
+				case R_MIPS_LO16:
+					newstate = (u_current_data & 0xffff0000) | ((((s_current_data << 16) >> 16) + (addr & 0xffff)) & 0xffff);
+					break;
+				default:
+					return -1;
+			}
+
+			memcpy(&bytes[offset], &newstate, sizeof(std::uint32_t));
+
+			ERL_DEBUG_PRINTF("Changed 0x%08X data from %08X to %08X.", &bytes[offset], u_current_data, newstate);
+			return 0;
 		}
 
 		ErlResult<void> Load(const char* path) {
@@ -190,7 +190,7 @@ namespace elfldr::erl {
 					fullsize += section.sh_size;
 				}
 
-				ERL_DEBUG_PRINTF("Section %s: Offset %08X Size %08X Type %5i Link %5i Info %5i Align %5i EntSize %5i LoadAddr %08X", sectionName.CStr(), section.sh_offset, section.sh_size, section.sh_type, section.sh_link, section.sh_info, section.sh_addralign, section.sh_entsize, section.sh_addr);
+				ERL_DEBUG_PRINTF("Section %s: Offset 0x%08X Size 0x%08X Type %5i Link %5i Info %5i Align %5i EntSize %5i LoadAddr %08X", sectionName.CStr(), section.sh_offset, section.sh_size, section.sh_type, section.sh_link, section.sh_info, section.sh_addralign, section.sh_entsize, section.sh_addr);
 			}
 
 			// Sanity checks
@@ -217,7 +217,7 @@ namespace elfldr::erl {
 			// Initalize the symbol hash table, so we can
 			symbol_table.Init(64);
 
-			ERL_RELEASE_PRINTF("ERL Base Address: %08X", bytes);
+			ERL_RELEASE_PRINTF("ERL Base Address: 0x%08X", bytes);
 
 			// Load in sections initially
 			// PROGBITS and NOBITS
@@ -242,7 +242,7 @@ namespace elfldr::erl {
 #endif
 				}
 
-				ERL_DEBUG_PRINTF("Processed section %s (at %08X)", sectionName.CStr(), &bytes[section.sh_addr]);
+				ERL_DEBUG_PRINTF("Processed section %s (at 0x%08X)", sectionName.CStr(), &bytes[section.sh_addr]);
 			}
 
 			// Load .strtab
@@ -289,7 +289,7 @@ namespace elfldr::erl {
 					int symbol_number = r.r_info >> 8;
 					auto& sym = symtab[symbol_number];
 
-					ERL_DEBUG_PRINTF("RelaEntry %3i: %08X %d Addend: %d sym: %d (%s): ", j, r.r_offset, r.r_info & 255, r.r_addend, symbol_number, StringView(&strtab_names[symtab[symbol_number].st_name]).CStr());
+					ERL_DEBUG_PRINTF("RelaEntry %3i: 0x%08X Type %d Addend: %d sym: %d (%s): ", j, r.r_offset, r.r_info & 255, r.r_addend, symbol_number, StringView(&strtab_names[symtab[symbol_number].st_name]).CStr());
 
 					switch(sym.st_info & 15) {
 						case NOTYPE:
@@ -300,7 +300,7 @@ namespace elfldr::erl {
 							auto offset = relocating_section.sh_addr + r.r_offset;
 							auto addr = reinterpret_cast<std::uintptr_t>(&bytes[sections[sym.st_shndx].sh_addr]);
 
-							if(ApplyMipsReloc(&bytes[offset], r.r_info & 255, addr) < 0) {
+							if(ApplyRelocation(offset, r.r_info & 255, addr, r.r_addend) < 0) {
 								ERL_DEBUG_PRINTF("Error relocating");
 								// cleanup
 								delete[] reloc;
@@ -308,20 +308,17 @@ namespace elfldr::erl {
 							}
 						} break;
 						case OBJECT:
-						case FUNC: {
+						case FUNC:
 							// TODO: Should probably implement dedupe, but whateverrrrrrrrrr
-
 							ERL_DEBUG_PRINTF("Internal symbol relocation to %s", StringView(strtab_names.data() + sym.st_name).CStr());
-							auto offset = relocating_section.sh_addr + sym.st_value;
-							auto addr = reinterpret_cast<std::uintptr_t>(bytes + offset);
-							ERL_DEBUG_PRINTF("Relocating at address %08X", addr);
-							if(ApplyMipsReloc(&bytes[offset], r.r_info & 255, addr) < 0) {
+							ERL_DEBUG_PRINTF("Relocating at address 0x%08X", reinterpret_cast<std::uintptr_t>(bytes + relocating_section.sh_addr + sym.st_value));
+							if(ApplyRelocation(relocating_section.sh_addr + sym.st_value, r.r_info & 255, reinterpret_cast<std::uintptr_t>(bytes + relocating_section.sh_addr + sym.st_value), r.r_addend) < 0) {
 								ERL_DEBUG_PRINTF("Error relocating");
 								// cleanup
 								delete[] reloc;
 								return ErlLoadError::RelocationError;
 							}
-						} break;
+							break;
 						default:
 							ERL_DEBUG_PRINTF("unknown relocation.");
 							break;
@@ -339,10 +336,10 @@ namespace elfldr::erl {
 						// get stuff
 						String name(&strtab_names[symtab[i].st_name]);
 						auto offset = sections[symtab[i].st_shndx].sh_addr + symtab[i].st_value;
-						auto addr = reinterpret_cast<std::uintptr_t>(bytes + offset);
+						auto address = reinterpret_cast<std::uintptr_t>(bytes + offset);
 
-						ERL_RELEASE_PRINTF("Exporting symbol %s @ %08X", name.c_str(), addr);
-						symbol_table.Set(name, addr);
+						ERL_RELEASE_PRINTF("Exporting ERL symbol %s @ 0x%08X", name.c_str(), address);
+						symbol_table.Set(name, address);
 					}
 				}
 			}
@@ -361,8 +358,10 @@ namespace elfldr::erl {
 		}
 
 		Symbol ResolveSymbol(const char* symbolName) override {
-			// potential FIXME: Does this need to construct a temporary string *EVERY* time it gets called?
-			//              that's a new[], memcpy(), and delete[] just to look up a symbol
+			// FIXME: Does this need to construct a temporary string *EVERY* time it gets called?
+			//        that's a new[], memcpy(), and delete[] just to look up a symbol,
+			//        and that's kind of too expensive for my liking.
+
 			if(auto sym = symbol_table.MaybeGet(String(symbolName)); sym != nullptr) {
 				return *sym;
 			}

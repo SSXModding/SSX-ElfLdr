@@ -63,11 +63,11 @@ namespace elfldr {
 
 			return entry;
 		}
-		
+
 		constexpr TKey* GetKeys() {
 			return &Keys[0];
 		}
-		
+
 		/**
 		 * Retrieve all values.
 		 * This can be used to get all contained values.

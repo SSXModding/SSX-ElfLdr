@@ -18,7 +18,7 @@ namespace elfldr {
 		virtual const char* GetIdentifier() const = 0;
 
 		/**
-		 * Get whether or not this patch is 
+		 * Get whether or not this patch is
 		 * compatiable with the current detected game.
 		 *
 		 * \returns true if compatiable, false otherwise
@@ -71,7 +71,7 @@ namespace elfldr {
 	 */
 	Patch* GetPatchById(PatchId id);
 
-	//Patch* GetPatchByIdentifier(const char* ident);
+	// Patch* GetPatchByIdentifier(const char* ident);
 
 } // namespace elfldr
 

@@ -2,10 +2,10 @@
 #ifndef STRUCTS_H
 #define STRUCTS_H
 
-#include <cstdint>
-
-#include <utils/utils.h>
 #include <utils/codeutils.h>
+#include <utils/utils.h>
+
+#include <cstdint>
 
 namespace bx {
 	// ghidra typedefs used
@@ -1798,4 +1798,4 @@ namespace bx {
 
 } // namespace bx
 
-#endif //STRUCTS_H
+#endif // STRUCTS_H

@@ -1,7 +1,5 @@
 // Fun code utilities, provided by the "libutils" library.
 
-// TODO: move to utils/
-
 #ifndef CODEUTILS_H
 #define CODEUTILS_H
 
@@ -65,6 +63,8 @@ namespace elfldr::util {
 	 * \param[in] string String to write.
 	 */
 	void WriteString(void* addr, const char* string);
+
+	bool IsInstructionAligned(void* addr);
 
 	/**
 	 * Patches the 4 instructions pointed to by code to something like:

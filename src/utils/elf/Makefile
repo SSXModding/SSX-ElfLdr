@@ -3,7 +3,7 @@
 # libutils objects
 OBJS = $(OBJDIR)/codeutils.o \
 	   $(OBJDIR)/assert.o \
-	   $(OBJDIR)/fnv.o \
+	   $(OBJDIR)/Fnv1a.o \
 	   $(OBJDIR)/debugout.o \
 	   $(OBJDIR)/FioFile.o \
 	   $(OBJDIR)/Allocator.o \

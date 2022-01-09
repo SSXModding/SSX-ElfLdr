@@ -3,10 +3,8 @@
 
 // std::hash like primitive
 
-#include <utils/fnv.h>
+#include <utils/Fnv1a.h>
 #include <utils/utils.h>
-
-#include <utils/String.h>
 
 namespace elfldr::util {
 
@@ -16,12 +14,6 @@ namespace elfldr::util {
 		//static std::uint32_t hash(const T&);
 	};
 
-	template <>
-	struct Hash<String> {
-		inline static std::uint32_t hash(const String& str) {
-			return util::fnv1a_hash(UBCast<void*>(str.data()), str.length(), 0);
-		}
-	};
 
 	// TODO: more specializations.
 

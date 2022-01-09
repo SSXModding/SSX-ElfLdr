@@ -130,20 +130,21 @@ struct ExpPatch : public Patch {
 		};
 
 		// Load all the erls, collect their function pointers, and then
-		// get the length of sai
+		// get the length of said collection grouped by type
+
 		auto* erl = erl::LoadErl("host:sample_erl.erl");
 		if(erl) {
-			//try to resolve a simple symbol,
 			auto sym = erl->ResolveSymbol("elfldr_get_functions");
+			auto* fun = util::UBCast<GetFunctions_t>(sym);
+
 			util::DebugOut("sym is @ %p", sym);
 
-			if(sym == -1) {
-				util::DebugOut("invalid ERL!!!!");//
+			if(util::UBCast<int>(sym) == -1) {
+				util::DebugOut("invalid ERL!");
 				erl::DestroyErl(erl);
 			}
 
-			ErlGetFunctionReturn egr;
-			auto fun = util::UBCast<bool(*)(elfldr::ErlGetFunctionReturn*)>(sym);
+			ErlGetFunctionReturn egr{};
 
 			if(!fun(&egr)) {
 				util::DebugOut("huh?");

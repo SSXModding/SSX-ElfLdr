@@ -14,6 +14,12 @@ namespace elfldr::util {
 	std::uint8_t gTabLevel = 0;
 #endif
 
+	// Some macro (:() helpers
+	// to make this a bit less garbage
+#define LITERAL_STRLEN(lit) (sizeof(lit)-1)
+#define LITERAL_STRCPY(dst, lit) __builtin_memcpy(dst, lit, LITERAL_STRLEN(lit))
+#define VSNPRINTF_OFFSET(buf, size, offset) __builtin_vsnprintf(&buf[offset], (size - offset), format, val)
+
 	// This code is messy since it needs to only use gcc builtins
 	// to work across erl/elf boundaries, alongside some Platform Soup
 	// to use bx::printf for the ERL.
@@ -30,8 +36,8 @@ namespace elfldr::util {
 		// pain. there's a way better way to write this,
 		// but honestly, I'm too lazy too, and this *should* work regardless
 
-		__builtin_memcpy(&buf[0], "[ElfLdr] ", sizeof("[ElfLdr]"));
-		__builtin_vsnprintf(&buf[sizeof("[ElfLdr]")], (sizeof(buf) - sizeof("[ElfLdr]") - 1), format, val);
+		LITERAL_STRCPY(&buf[0], "[ElfLdr] ");
+		VSNPRINTF_OFFSET(buf, sizeof(buf), LITERAL_STRLEN("[ElfLdr] "));
 
 #ifndef ERL
 		// Tab level handling

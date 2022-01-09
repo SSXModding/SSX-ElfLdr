@@ -1,9 +1,9 @@
 #include "GameVersion.h"
+
+#include <fileio.h>
 #include <utils/utils.h>
 
 #include <cstring>
-
-#include <fileio.h>
 
 // in main.cpp
 extern const char* gHostFsPath;
@@ -25,6 +25,8 @@ if(auto fd = fioDopen("host:"); fd != -1) {
 
 // Global copy of game version data.
 static elfldr::GameVersionData gGameVersionData {};
+
+// TODO: Refactor to use util::FioFile
 
 namespace elfldr {
 

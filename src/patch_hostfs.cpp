@@ -20,12 +20,11 @@
 //	- SSX Tricky (dubbed SSXDVD in code)
 //
 
-#include "patch.h"
-
-#include <utils/utils.h>
 #include <utils/codeutils.h>
+#include <utils/utils.h>
 
 #include "GameVersion.h"
+#include "patch.h"
 
 // in main.cpp
 extern const char* gHostFsPath;
@@ -55,6 +54,9 @@ struct HostFsPatch : public Patch {
 
 	void Apply() override {
 		const auto& data = GetGameVersionData();
+
+		// how'd you even get here?
+		ELFLDR_VERIFY((data.game != Game::Invalid));
 
 		switch(data.game) {
 			case Game::SSXOG: {
@@ -93,13 +95,13 @@ struct HostFsPatch : public Patch {
 				// you know what? fuck you
 				// *unbigs your files*
 				// (i could patch bxMain() but cApplication::Run() never returns in release.)
-				//util::NopFill<36>(util::Ptr(0x00183b68));
-				
+				// util::NopFill<36>(util::Ptr(0x00183b68));
+
 				// replace beq with bne, i hope this works LUL
-				//util::MemRefTo<std::uint32_t>(util::Ptr(0x00238800)) = 0x14400017;
-				
+				// util::MemRefTo<std::uint32_t>(util::Ptr(0x00238800)) = 0x14400017;
+
 				// replace li 0x2 with 0x0
-				//util::MemRefTo<std::uint32_t>(util::Ptr(0x00238770)) = 0x24120000;
+				// util::MemRefTo<std::uint32_t>(util::Ptr(0x00238770)) = 0x24120000;
 
 				// Rewrite most of the cWorld path strings to remove the |.
 				// This allows world files to either be loose or inside of the venue BIG files

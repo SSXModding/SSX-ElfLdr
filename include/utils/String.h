@@ -16,19 +16,25 @@
 #include <cstdint>
 #include <cstring>
 
+#include <utils/Allocator.h>
+
+// :(
+#include <utils/Hash.h>
+
 namespace elfldr {
 
 	/**
 	 * A "view" of a string. Does not own the memory,
 	 * and when copied, simply copies its pointer/length.
 	 * Essentially a special-cased span for strings,
-	 * to avoid heap-allocating tons of temporary String objects
+	 * to avoid creating tons of String objects which manage their memory on the heap.
 	 */
 	template <class T>
 	struct BasicStringView {
 		constexpr BasicStringView()
-		 : data_ptr(nullptr),
-		   len(0) {}
+			: data_ptr(nullptr),
+			  len(0) {
+		}
 
 		// Permit the compiler to force generate a trivial
 		// copy constructor.
@@ -42,6 +48,10 @@ namespace elfldr {
 		constexpr BasicStringView(T* ptr, size_t len)
 			: data_ptr(ptr),
 			  len(len) {
+		}
+
+		constexpr size_t Length() const {
+			return len;
 		}
 
 		constexpr const T* Data() const {
@@ -69,7 +79,6 @@ namespace elfldr {
 		const T* data_ptr;
 		size_t len;
 	};
-
 
 	template <class T>
 	struct BasicString {
@@ -114,7 +123,7 @@ namespace elfldr {
 				return *this;
 
 			// call Zecopyctor
-			new (this) BasicString(copy);
+			new(this) BasicString(copy);
 			return *this;
 		}
 
@@ -240,12 +249,32 @@ namespace elfldr {
 		SizeType len {};
 	};
 
+	// Hash<T> specializations for string stuff,
+	// this'll automatically work with U8String and co
+
+	template <class CharT>
+	struct util::Hash<BasicString<CharT>> {
+		inline static std::uint32_t hash(const BasicString<CharT>& str) {
+			return util::fnv1a_hash(UBCast<void*>(str.data()), str.length() * sizeof(CharT), 0);
+		}
+	};
+
+	template <class CharT>
+	struct util::Hash<BasicStringView<CharT>> {
+		inline static std::uint32_t hash(const BasicStringView<CharT>& str) {
+			return util::fnv1a_hash(UBCast<void*>(str.Data()), str.Length() * sizeof(CharT), 0);
+		}
+	};
+
+
 	using String = BasicString<char>;
 	using StringView = BasicStringView<char>;
 
-	// safe for UTF-8
+	// safe for UTF-8 (?)
 	// using U8String = BasicString<char8_t>;
 	// using U8StringView = BasicStringView<char8_t>;
+
+
 } // namespace elfldr
 
 #endif

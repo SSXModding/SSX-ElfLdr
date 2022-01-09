@@ -27,9 +27,9 @@ namespace elfldr::util {
 	 * The worst casting function ever.
 	 * It works, though.
 	 *
-	 * The name of this function sums it up well. 
+	 * The name of this function sums it up well.
 	 * This is UB, and I'm only doing this because it works.
-	 * It lets my code funging with pointers 
+	 * It lets my code funging with pointers
 	 * be constexpr and boil away very quickly, so I'm happy.
 	 *
 	 * \tparam Dest Destination cast type.
@@ -65,7 +65,7 @@ namespace elfldr::util {
 		return u.dst;
 	}
 
-#ifndef ERL	
+#ifndef ERL
 	/**
 	 * Global tab level.
 	 */
@@ -88,15 +88,23 @@ namespace elfldr::util {
 } // namespace elfldr::util
 
 #ifdef DEBUG
-	#define ELFLDR_ASSERT(x) \
-		if(!x)               \
-		elfldr::util::_AssertFailed(#x, __FILE__, __LINE__)
+	#define ELFLDR_ASSERT(x)                                         \
+		do {                                                         \
+			if(!x) {                                                 \
+				elfldr::util::_AssertFailed(#x, __FILE__, __LINE__); \
+				__builtin_unreachable();                             \
+			}                                                        \
+		} while(0)
 #else
 	#define ELFLDR_ASSERT(x)
 #endif
 
-#define ELFLDR_VERIFY(x) \
-	if(!x)               \
-	elfldr::util::_VerifyFailed(#x, __FILE__, __LINE__)
+#define ELFLDR_VERIFY(x)                                         \
+	do {                                                         \
+		if(!x) {                                                 \
+			elfldr::util::_VerifyFailed(#x, __FILE__, __LINE__); \
+			__builtin_unreachable();                             \
+		}                                                        \
+	} while(0)
 
 #endif // UTILS_H

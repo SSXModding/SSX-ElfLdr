@@ -1,4 +1,5 @@
 #include "patch.h"
+
 #include "BinaryMap.h"
 
 // This is the max amount of patches the system can take.
@@ -34,11 +35,11 @@ namespace elfldr {
 	Patch* GetPatchByIdentifier(const char* ident) {
 		// ident must be a valid string pointer
 		ELFLDR_ASSERT(ident);
-		
+
 		auto** patches = gPatchMap.GetValues();
-		
+
 		for(int i = 0; i < gPatchMap.GetCount(); ++i)
-			
+
 		return nullptr;
 	}
 	*/

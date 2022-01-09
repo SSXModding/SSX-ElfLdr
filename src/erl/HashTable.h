@@ -1,19 +1,22 @@
 #ifndef HASHTABLE_H
 #define HASHTABLE_H
 
-#include <cstdint>
-
-#include <utils/utils.h>
 #include <utils/Hash.h>
+#include <utils/utils.h>
+
+#include <cstdint>
 
 namespace elfldr::erl {
 
 	// TODO:
-	// multi dim buckets for hash collisions maybe
-	// (I may just throw out a ERL which does that.)
+	// - multi dim buckets for hash collisions maybe
+	//  (I may just throw out a ERL which does that.)
+	// - (should really do) dynamic growing, as needed
+	//      Will be done probably after the Allocator API is finalized
 
 	/**
-	 * A simple hash table.
+	 * A simple hash table. Doesn't handle collisions,
+	 * and is probably boneheaded in design. It works though.
 	 */
 	template <class Key, class Value, class Hasher = util::Hash<Key>>
 	struct HashTable {
@@ -38,14 +41,14 @@ namespace elfldr::erl {
 			if(!bucket)
 				return;
 
-			//util::DebugOut("hashTable chose bucket %d", (bucket - &buckets[0]));
+			// util::DebugOut("hashTable chose bucket %d", (bucket - &buckets[0]));
 
 			// maybe util::Move both these values?
 			bucket->key = key;
 			bucket->value = value;
 		}
 
-		bool HasKey(const Key& key)  {
+		bool HasKey(const Key& key) {
 			auto* bucket = MaybeGetBucket(key);
 
 			if(!bucket)
@@ -59,16 +62,27 @@ namespace elfldr::erl {
 				return nullptr;
 			auto* bucket = MaybeGetBucket(key);
 
-			//util::DebugOut("hashTable chose bucket %d", (bucket - &buckets[0]));
-			//util::DebugOut("hashTable key is %s, value is %08x", bucket->key.c_str(), bucket->value);
+			// util::DebugOut("hashTable chose bucket %d", (bucket - &buckets[0]));
+			// util::DebugOut("hashTable key is %s, value is %08x", bucket->key.c_str(), bucket->value);
 
 			return &bucket->value;
+		}
+
+		/**
+		 * Array subscript operator.
+		 * Key must exist in the hash table beforehand
+		 */
+		Value& operator[](const Key& k) {
+			if(auto* val = MaybeGet(k); val != nullptr)
+				return *val;
+			ELFLDR_VERIFY(false);
 		}
 
 	   private:
 		struct Bucket {
 			Key key;
 			Value value;
+			bool used;
 		};
 
 		std::uint32_t HashKey(const Key& key) {

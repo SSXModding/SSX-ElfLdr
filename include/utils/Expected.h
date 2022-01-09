@@ -6,6 +6,7 @@
 #define ELFLDR_EXPECTED_H
 
 #include <cstdint>
+
 #include "utils.h"
 
 namespace elfldr::util {
@@ -82,7 +83,7 @@ namespace elfldr::util {
 			}
 
 			bool constructed { false };
-			alignas(T) std::uint8_t storage[sizeof(T)]{};
+			alignas(T) std::uint8_t storage[sizeof(T)] {};
 		};
 
 	} // namespace detail
@@ -94,17 +95,14 @@ namespace elfldr::util {
 	 */
 	template <class T, class E>
 	struct Expected {
-
 		constexpr Expected() = default;
 
 		constexpr Expected(const T& t)
 			: t(t) {
-
 		}
 
 		constexpr Expected(const E& e)
 			: e(e) {
-
 		}
 
 		constexpr Expected& operator=(const T& t) {
@@ -171,12 +169,10 @@ namespace elfldr::util {
 
 	template <class E>
 	struct Expected<void, E> {
-
 		constexpr Expected() = default;
 
 		constexpr Expected(const E& e)
 			: e(e) {
-
 		}
 
 		constexpr Expected& operator=(const E& e) {
@@ -218,7 +214,7 @@ namespace elfldr::util {
 	// Nicer syntax for returning no error from
 	// VoidExpected<E> retty-functions
 	template <class E>
-	constexpr static VoidExpected<E> NO_ERROR{};
+	constexpr static VoidExpected<E> NO_ERROR {};
 
 } // namespace elfldr::util
 

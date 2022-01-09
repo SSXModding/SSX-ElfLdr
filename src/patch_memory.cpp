@@ -1,12 +1,11 @@
 // MemClr patch - relatively useless,
 // disables memory clearing done by the game.
 
-#include "patch.h"
-
-#include <utils/utils.h>
 #include <utils/codeutils.h>
+#include <utils/utils.h>
 
 #include "GameVersion.h"
+#include "patch.h"
 
 using namespace elfldr;
 

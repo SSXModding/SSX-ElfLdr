@@ -6,6 +6,9 @@
 
 #include <cstdint>
 
+/**
+ * Declare a symbol as hidden
+ */
 #define ELFLDR_HIDDEN __attribute__((visibility("hidden")))
 
 namespace elfldr {

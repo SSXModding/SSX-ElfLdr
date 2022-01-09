@@ -44,12 +44,11 @@ extern "C" ELFLDR_HIDDEN bool elfldr_get_functions(elfldr::ErlGetFunctionReturn*
 
 	// Give elfldr the information it needs and then return success.
 	ret->nrFunctions = sizeof(entryTable) / sizeof(entryTable[0]);
-	ret->functions = &entryTable[0];
+	ret->functions = reinterpret_cast<elfldr::FunctionEntry*>(&entryTable);
 	return true;
 }
 
 extern "C" ELFLDR_HIDDEN int _start() {
-	// TMP
 	bx::printf("Hi, world?\n");
 	return 0;
 }

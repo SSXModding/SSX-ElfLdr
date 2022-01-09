@@ -4,7 +4,7 @@
 namespace elfldr::util {
 
 	/**
-	 * FNV1a hash. Pretty self explanatory
+	 * FNV1a hash. Pretty self explanatory.
 	 *
 	 * \returns u32 hash value.
 	 * \param[in] input The input data to hash

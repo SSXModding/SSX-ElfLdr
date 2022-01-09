@@ -10,7 +10,6 @@
 #include <ElfLoader.h>
 
 #include <utils/utils.h>
-#include <utils/codeutils.h>
 
 namespace elfldr {
 
@@ -50,12 +49,13 @@ namespace elfldr {
 		SifInitIopHeap();
 		SifLoadFileInit();
 
-		// Load some ROM modules.
-		SifLoadModule("rom0:SIO2MAN", 0, NULL);
-		SifLoadModule("rom0:MCMAN", 0, NULL);
-		SifLoadModule("rom0:MCSERV", 0, NULL);
-		SifLoadModule("rom0:PADMAN", 0, NULL);
+		// Load ROM IOP modules.
+		SifLoadModule("rom0:SIO2MAN", 0, nullptr);
+		SifLoadModule("rom0:MCMAN", 0, nullptr);
+		SifLoadModule("rom0:MCSERV", 0, nullptr);
+		SifLoadModule("rom0:PADMAN", 0, nullptr);
 
+		// init fio as we use it independently of C file io routines
 		fioInit();
 	}
 

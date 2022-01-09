@@ -1,13 +1,14 @@
+#include <ElfLoader.h>
 #include <erl/ErlLoader.h>
-
-#include "elf.h"
-
-#include "utils/Allocator.h"
-#include "HashTable.h"
-
+#include <utils/Allocator.h>
+#include <utils/codeutils.h>
 #include <utils/Expected.h>
 #include <utils/FioFile.h>
-#include <ElfLoader.h>
+#include <utils/ScopeExitGuard.h>
+#include <utils/String.h>
+
+#include "elf.h"
+#include "HashTable.h"
 
 #define DEBUG
 
@@ -54,7 +55,7 @@ namespace elfldr::erl {
 	template <class T>
 	using ErlResult = util::Expected<T, ErlLoadError>;
 
-	inline std::uint32_t Align(std::uint32_t alignment_value, int align) {
+	constexpr std::uint32_t Align(std::uint32_t alignment_value, int align) {
 		align--;
 		if(alignment_value & align) {
 			alignment_value |= align;
@@ -73,23 +74,20 @@ namespace elfldr::erl {
 	struct ImageImpl : public Image {
 		~ImageImpl() override {
 			ERL_DEBUG_PRINTF("~ImageImpl()");
-
-			// destroy code and everything
-			// This should only be done if the ERL isn't needed
-
 			delete[] bytes;
-			delete[] symtab;
 		}
 
 		// FIXME: Refactor this function to just take the elf_reloca_t&
-		int ApplyRelocation(std::size_t offset, int type, std::uint32_t addr, std::uint32_t addend) {
+		/**
+		 * Apply a ELF relocation for this image.
+		 */
+		bool ApplyRelocation(std::size_t offset, int type, std::uint32_t addr, std::uint32_t addend) {
 			std::uint32_t u_current_data;
 			std::int32_t s_current_data;
 			std::uint32_t newstate;
 
-			if(((std::uintptr_t)&bytes[offset]) & 0x3) {
-				// printf("Unaligned reloc (%p) type=%d!\n", reloc, type);
-				ERL_DEBUG_PRINTF("Unaligned relocation (at %p), type %d ! Kinda sussy :)", &bytes[offset], type);
+			if(util::IsInstructionAligned(&bytes[offset])) {
+				ERL_DEBUG_PRINTF("Unaligned relocation (at %p), type %d", &bytes[offset], type);
 			}
 
 			// FIXME: Refactor this attempt at mu-optimization which would be better
@@ -97,6 +95,9 @@ namespace elfldr::erl {
 
 			memcpy(&u_current_data, &bytes[offset], sizeof(std::uintptr_t));
 			memcpy(&s_current_data, &bytes[offset], 4);
+
+			if(addend != 0)
+				addr += addend;
 
 			switch(type) {
 				case R_MIPS_32:
@@ -112,13 +113,14 @@ namespace elfldr::erl {
 					newstate = (u_current_data & 0xffff0000) | ((((s_current_data << 16) >> 16) + (addr & 0xffff)) & 0xffff);
 					break;
 				default:
-					return -1;
+					ERL_DEBUG_PRINTF("Unknown relocation type %d", type);
+					return false;
 			}
 
 			memcpy(&bytes[offset], &newstate, sizeof(std::uint32_t));
 
 			ERL_DEBUG_PRINTF("Changed 0x%08X data from %08X to %08X.", &bytes[offset], u_current_data, newstate);
-			return 0;
+			return true;
 		}
 
 		ErlResult<void> Load(const char* path) {
@@ -143,8 +145,8 @@ namespace elfldr::erl {
 			if(header.e_type != REL_TYPE)
 				return ErlLoadError::NotRelocatable;
 
-			// FIXME: Guard for r5900 mips ELF's.
-			//  ORIGINAL ERL LIBRARY DOES NOT DO THIS!!!!!
+			// NOTE: Guard for r5900 mips ELF's.
+			//  ORIGINAL ERL LIBRARY DOES NOT DO THIS, so it'd be a huge improvement.
 
 			if(sizeof(elf_section_t) != header.e_shentsize)
 				return ErlLoadError::SizeMismatch;
@@ -173,7 +175,8 @@ namespace elfldr::erl {
 			file.Seek(sections[header.e_shstrndx].sh_offset, FIO_SEEK_SET);
 			file.Read(shstrtab.data(), shstrtab.length());
 
-			for(int i = 1; i < header.e_shnum; ++i) {
+			// Dump all the sections, doing some important stuff to them while doing so.
+			for(Half i = 1; i < header.e_shnum; ++i) {
 				auto& section = sections[i];
 				StringView sectionName(&shstrtab[section.sh_name]);
 
@@ -207,14 +210,15 @@ namespace elfldr::erl {
 			if(sizeof(elf_symbol_t) != sections[symtab_index].sh_entsize)
 				return ErlLoadError::SizeMismatch;
 
-			// Allocate byte buffer for the ERL data
+			// Allocate buffer for the ERL code + data to go.
 			this->fullsize = fullsize;
 			bytes = new std::uint8_t[fullsize];
 
 			if(!bytes)
 				return ErlLoadError::OomHit;
 
-			// Initalize the symbol hash table, so we can
+			// Initialize the symbol hash table, so we can export symbols
+			// using it.
 			symbol_table.Init(64);
 
 			ERL_RELEASE_PRINTF("ERL Base Address: 0x%08X", bytes);
@@ -246,13 +250,14 @@ namespace elfldr::erl {
 			}
 
 			// Load .strtab
+			String strtab_names;
 			strtab_names.Resize(sections[strtab_index].sh_size);
 
 			file.Seek(sections[strtab_index].sh_offset, FIO_SEEK_SET);
 			file.Read(strtab_names.data(), strtab_names.length());
 
 			// Load .symtab
-			symtab = new elf_symbol_t[sections[symtab_index].sh_size / sizeof(elf_symbol_t)];
+			elf_symbol_t* symtab = new elf_symbol_t[sections[symtab_index].sh_size / sizeof(elf_symbol_t)];
 			if(!symtab)
 				return ErlLoadError::OomHit;
 
@@ -284,9 +289,9 @@ namespace elfldr::erl {
 				file.Seek(section.sh_offset, FIO_SEEK_SET);
 				file.Read(reloc, section.sh_size);
 
-				for(int j = 0; j < (section.sh_size / section.sh_entsize); ++j) {
+				for(Word j = 0; j < (section.sh_size / section.sh_entsize); ++j) {
 					auto& r = reloc[j];
-					int symbol_number = r.r_info >> 8;
+					Word symbol_number = r.r_info >> 8;
 					auto& sym = symtab[symbol_number];
 
 					ERL_DEBUG_PRINTF("RelaEntry %3i: 0x%08X Type %d Addend: %d sym: %d (%s): ", j, r.r_offset, r.r_info & 255, r.r_addend, symbol_number, StringView(&strtab_names[symtab[symbol_number].st_name]).CStr());
@@ -300,7 +305,7 @@ namespace elfldr::erl {
 							auto offset = relocating_section.sh_addr + r.r_offset;
 							auto addr = reinterpret_cast<std::uintptr_t>(&bytes[sections[sym.st_shndx].sh_addr]);
 
-							if(ApplyRelocation(offset, r.r_info & 255, addr, r.r_addend) < 0) {
+							if(!ApplyRelocation(offset, r.r_info & 255, addr, r.r_addend)) {
 								ERL_DEBUG_PRINTF("Error relocating");
 								// cleanup
 								delete[] reloc;
@@ -312,7 +317,7 @@ namespace elfldr::erl {
 							// TODO: Should probably implement dedupe, but whateverrrrrrrrrr
 							ERL_DEBUG_PRINTF("Internal symbol relocation to %s", StringView(strtab_names.data() + sym.st_name).CStr());
 							ERL_DEBUG_PRINTF("Relocating at address 0x%08X", reinterpret_cast<std::uintptr_t>(bytes + relocating_section.sh_addr + sym.st_value));
-							if(ApplyRelocation(relocating_section.sh_addr + sym.st_value, r.r_info & 255, reinterpret_cast<std::uintptr_t>(bytes + relocating_section.sh_addr + sym.st_value), r.r_addend) < 0) {
+							if(!ApplyRelocation(relocating_section.sh_addr + sym.st_value, r.r_info & 255, reinterpret_cast<std::uintptr_t>(bytes + relocating_section.sh_addr + sym.st_value), r.r_addend)) {
 								ERL_DEBUG_PRINTF("Error relocating");
 								// cleanup
 								delete[] reloc;
@@ -330,7 +335,7 @@ namespace elfldr::erl {
 
 			// Let's export all symbols which should be exported.
 
-			for(int i = 0; i < (sections[symtab_index].sh_size / sections[symtab_index].sh_entsize); ++i) {
+			for(Word i = 0; i < (sections[symtab_index].sh_size / sections[symtab_index].sh_entsize); ++i) {
 				if(((symtab[i].st_info >> 4) == GLOBAL) || ((symtab[i].st_info >> 4) == WEAK)) {
 					if((symtab[i].st_info & 15) != NOTYPE) {
 						// get stuff
@@ -344,6 +349,9 @@ namespace elfldr::erl {
 				}
 			}
 
+			// ELF symbol table copy is no longer needed
+			delete[] symtab;
+
 			for(int i = 0; i < 4; ++i)
 				elfldr::FlushCaches();
 
@@ -351,6 +359,10 @@ namespace elfldr::erl {
 			auto start = reinterpret_cast<int (*)()>(ResolveSymbol("_start"));
 			int res = start();
 
+			// use res in release builds to avoid funny compiler warning
+#ifndef DEBUG
+			(void)res;
+#endif
 			ERL_DEBUG_PRINTF("erl's _start() returned %d", res);
 
 			// No error occurred!
@@ -359,8 +371,8 @@ namespace elfldr::erl {
 
 		Symbol ResolveSymbol(const char* symbolName) override {
 			// FIXME: Does this need to construct a temporary string *EVERY* time it gets called?
-			//        that's a new[], memcpy(), and delete[] just to look up a symbol,
-			//        and that's kind of too expensive for my liking.
+			//        that's a new[], memcpy(), and delete[] just to look up a symbol.
+			//        Too expensive for my liking, but it shouldn't happen frequently.
 
 			if(auto sym = symbol_table.MaybeGet(String(symbolName)); sym != nullptr) {
 				return *sym;
@@ -369,56 +381,34 @@ namespace elfldr::erl {
 			return -1;
 		}
 
-		// IMPLEMENTATION DATA!!!!!!!!!!!!!!!!!!!!
+		const char* GetFileName() const override {
+			return filename.c_str();
+		}
 
+		// Implementation data
+
+		/**
+		 * The ERL symbol table
+		 */
 		HashTable<String, Symbol> symbol_table;
+		String filename;
 
 		// TODO: Array<std::uint8_t>?
 		std::uint8_t* bytes {};
 		std::uint32_t fullsize {};
-
-		String strtab_names;
-		elf_symbol_t* symtab {};
-	};
-
-	// TODO: put this in utils? it might be ok to have round
-
-	template <class ScopeExitT>
-	struct ScopeExitGuard {
-		constexpr ScopeExitGuard(ScopeExitT se)
-			: scope_exited(util::Move(se)) {
-		}
-
-		// call the exit functor if we should
-		constexpr ~ScopeExitGuard() {
-			if(should_call)
-				scope_exited();
-		}
-
-		/**
-		 * Make this ScopeExitGuard not call the attached
-		 * function on exit. This can be done for instance,
-		 * if a function is successfully returning some heap
-		 * value and doesn't need to free it anymore.
-		 */
-		void DontCall() {
-			should_call = false;
-		}
-
-	   private:
-		ScopeExitT scope_exited;
-		bool should_call { true };
 	};
 
 	Image* LoadErl(const char* path) {
 		auto* image = new ImageImpl();
 
 		// This guard frees the image in case of a load error.
-		ScopeExitGuard guard([&]() {
+		util::ScopeExitGuard guard([&]() {
 			delete image;
 		});
 
 		ERL_DEBUG_PRINTF("Attempting to load ERL \"%s\"", path);
+
+		image->filename = path;
 
 		auto res = image->Load(path);
 		if(res.HasError()) {

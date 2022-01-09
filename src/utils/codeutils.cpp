@@ -5,6 +5,23 @@
 
 namespace elfldr::util {
 
+	// accessor type for both halves of a word individually.
+	// this makes the code for AddUnlimitedCallVoid a lot less stupid
+	union SeperatedWord {
+		std::uint32_t Word;
+
+		struct {
+			std::uint16_t top_half;
+			std::uint16_t bottom_half;
+		};
+
+		void Dump() const {
+			DebugOut("SeperatedDword @ %p:", this);
+			DebugOut("top half : 0x%04x", top_half);
+			DebugOut("bottom half: 0x%04x", bottom_half);
+		}
+	};
+
 	// This is kinda wasteful, but it should work.
 
 	constexpr static std::uint32_t SubroutineCallTemplate[] {
@@ -20,16 +37,7 @@ namespace elfldr::util {
 	// size of the above template in bytes
 	constexpr static std::size_t SubroutineCallTemplate_Size = sizeof(SubroutineCallTemplate) / sizeof(std::uint32_t);
 
-	// accessor for both words of a dword individually.
-	// this makes the code for AddUnlimitedCallVoid a lot less stupid
-	union SeperatedDword {
-		std::uint32_t dword;
 
-		struct {
-			std::uint16_t top_word;
-			std::uint16_t bottom_word;
-		};
-	};
 
 	void ReplaceString(void* addr, const char* string) {
 		DebugOut("Replacing string \"%s\" at %p: \"%s\"...", UBCast<char*>(addr), addr, string);
@@ -41,17 +49,29 @@ namespace elfldr::util {
 		__builtin_memcpy(addr, string, strlen(string) + 1);
 	}
 
-	void WriteUnlimitedCallVoid(void* code, void* subroutine) {
-		auto* codeptr = UBCast<SeperatedDword*>(code);
-		const auto subrdword = UBCast<SeperatedDword>(subroutine);
+	bool IsInstructionAligned(void* p) {
+		return UBCast<std::uintptr_t>(p) & 0x3;
+	}
 
-		// copy the template instructions...
+	void WriteUnlimitedCallVoid(void* code, void* subroutine) {
+		auto* codeptr = UBCast<SeperatedWord*>(code);
+		const auto subrdword = UBCast<SeperatedWord>(subroutine);
+
+		// We assume the address is word aligned,
+		// so we should probably keep that assumption
+		ELFLDR_VERIFY(IsInstructionAligned(code));
+
+		subrdword.Dump();
+		codeptr->Dump();
+		codeptr[1].Dump();
+
+		// copy the template instructions
 		__builtin_memcpy(codeptr, SubroutineCallTemplate, SubroutineCallTemplate_Size);
 
-		// change the template's nil values
-		// to each word of the subroutine.
-		codeptr[0].bottom_word = subrdword.top_word;
-		codeptr[1].bottom_word = subrdword.bottom_word;
+		// change the template values
+		// to point to the subroutine
+		codeptr[0].bottom_half = subrdword.top_half;
+		codeptr[1].bottom_half = subrdword.bottom_half;
 	}
 
 } // namespace elfldr::util

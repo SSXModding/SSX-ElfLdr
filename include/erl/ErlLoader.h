@@ -56,6 +56,8 @@ namespace elfldr::erl {
 		 * \param[in] symbolName The name of the symbol to resolve.
 		 */
 		virtual Symbol ResolveSymbol(const char* symbolName) = 0;
+
+		virtual const char* GetFileName() const = 0;
 	};
 
 

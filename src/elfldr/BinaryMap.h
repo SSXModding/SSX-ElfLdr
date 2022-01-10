@@ -1,12 +1,11 @@
-// TODO: Is this worth using in other bits of elfldr?
-// if not, move to src/
-
 #ifndef BINMAP_H
 #define BINMAP_H
 
 #include <cstdint>
 
 namespace elfldr {
+
+	// This file will probably be deprecated soon
 
 	/**
 	 * A static compile-time map which can only hold a max amount of elements.

@@ -13,7 +13,7 @@
 
 #include <utils/codeutils.h>
 #include <utils/utils.h>
-//#include <structs.h>
+//#include <elfldr/structs.h>
 
 namespace bx {
 

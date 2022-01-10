@@ -1,17 +1,17 @@
 // Patching ELF loader for (right now) SSX OG
 // 2021 modeco80
 
+#include <elfldr/ElfLoader.h>
 #include <utils/utils.h>
 
 #include "patch.h"
-#include <ElfLoader.h>
 
 // is this include needed?
 #include <utils/codeutils.h>
 
 // stuff.
+#include <elfldr/GameApi.h>
 #include <erl/ErlLoader.h>
-#include <GameApi.h>
 
 #include "GameVersion.h"
 

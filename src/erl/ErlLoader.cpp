@@ -1,4 +1,4 @@
-#include <ElfLoader.h>
+#include <elfldr/ElfLoader.h>
 #include <erl/ErlLoader.h>
 #include <utils/Allocator.h>
 #include <utils/codeutils.h>
@@ -286,7 +286,7 @@ namespace elfldr::erl {
 							ERL_DEBUG_PRINTF("Not handling NOTYPE for now cause it seems to be a dependent symbol thingy, and we're not doing that :)");
 							break;
 						case SECTION: {
-							ERL_DEBUG_PRINTF("Internal reloc to section %d strndx %d (%s)", sym, sections[sym.st_shndx].sh_name, StringView(shstrtab.data() + sections[sym.st_shndx].sh_name).CStr());
+							//ERL_DEBUG_PRINTF("Internal reloc to section %d strndx %d (%s)", sym, sections[sym.st_shndx].sh_name, StringView(&shstrtab[sections[sym.st_shndx].sh_name]).CStr());
 							auto offset = relocating_section.sh_addr + r.r_offset;
 							auto addr = reinterpret_cast<std::uintptr_t>(&bytes[sections[sym.st_shndx].sh_addr]);
 

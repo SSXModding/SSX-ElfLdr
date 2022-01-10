@@ -1,7 +1,7 @@
 // Sample ERL for Elfldr
 
 // include the ABI header to get ABI structures.
-#include <ErlAbi.h>
+#include <elfldr/ErlAbi.h>
 
 // This defines replacements for libc functions (printf, malloc, free)
 // inside of the bx:: namespace, which call code in the game's executable.
@@ -11,7 +11,7 @@
 //
 // For memcpy, memset, and a couple other functions,
 // GCC provides built-in versions of these, which should be preferred.
-#include <GameApi.h>
+#include <elfldr/GameApi.h>
 
 // A sample function run every game frame,
 // called by elfldr's injection of cGame::UpdateNodes().
@@ -36,11 +36,15 @@ ELFLDR_HIDDEN elfldr::FunctionEntry entryTable[] {
 // "elfldr_get_functions". You don't really need to change this,
 // unless you wanna do some stuff before Elfldr knows your stuff.
 
-extern "C" ELFLDR_HIDDEN bool elfldr_get_functions(elfldr::ErlGetFunctionReturn* ret) {
+extern "C" bool elfldr_get_functions(elfldr::ErlGetFunctionReturn* ret) {
+	bx::printf("elfldr_get_functions(ret: %p)", ret);
+	bx::printf("function is @ %p", entryTable[0].fnPtr);
+
 	// If the return pointer is invalid,
 	// there's probably worse issues.
 	if(!ret)
 		return false;
+
 
 	// Give elfldr the information it needs and then return success.
 	ret->nrFunctions = sizeof(entryTable) / sizeof(entryTable[0]);
@@ -48,7 +52,7 @@ extern "C" ELFLDR_HIDDEN bool elfldr_get_functions(elfldr::ErlGetFunctionReturn*
 	return true;
 }
 
-extern "C" ELFLDR_HIDDEN int _start() {
+extern "C" int _start() {
 	bx::printf("Hi, world?\n");
 	return 0;
 }

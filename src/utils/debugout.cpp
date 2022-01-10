@@ -4,7 +4,7 @@
 #include <cstdio>
 
 #ifdef ERL
-	#include <GameApi.h>
+	#include <elfldr/GameApi.h>
 #endif
 
 namespace elfldr::util {

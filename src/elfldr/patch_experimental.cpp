@@ -1,17 +1,13 @@
-#include "patch.h"
-
-#include <utils/utils.h>
+#include <elfldr/ErlAbi.h>
+#include <elfldr/GameApi.h>
+#include <elfldr/structs.h>
+#include <erl/ErlLoader.h>
 #include <utils/Allocator.h>
 #include <utils/codeutils.h>
-
-#include <GameApi.h>
-#include <structs.h>
-
-#include <ErlAbi.h>
-
-#include <erl/ErlLoader.h>
+#include <utils/utils.h>
 
 #include "GameVersion.h"
+#include "patch.h"
 
 // addresses of some fun stuff
 constexpr static std::uintptr_t TheApp_Address = 0x002852f8;

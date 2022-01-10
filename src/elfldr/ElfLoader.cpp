@@ -1,15 +1,13 @@
+#include <elfldr/ElfLoader.h>
+#include <fileio.h>
 #include <iopcontrol.h>
 #include <iopheap.h>
 #include <kernel.h>
-#include <sifrpc.h>
 #include <loadfile.h>
-#include <fileio.h>
+#include <sifrpc.h>
+#include <utils/utils.h>
 
 #include <cassert>
-
-#include <ElfLoader.h>
-
-#include <utils/utils.h>
 
 namespace elfldr {
 

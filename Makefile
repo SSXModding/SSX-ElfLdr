@@ -18,7 +18,7 @@ endef
 all: $(BINDIR)/
 	$(call do_submake,src/utils/elf)
 	$(call do_submake,src/erl)
-	$(call do_submake,src)
+	$(call do_submake,src/elfldr)
 # Build the ERL flavor of LibUtils and
 # the sample ERL.
 # (any custom ERLs will for now need to be in tree :()
@@ -31,7 +31,7 @@ all: $(BINDIR)/
 clean:
 	$(call do_submake,src/utils/elf,clean)
 	$(call do_submake,src/erl,clean)
-	$(call do_submake,src,clean)
+	$(call do_submake,src/elfldr,clean)
 	$(call do_submake,src/utils/erl,clean)
 	$(call do_submake,src/sampleerl,clean)
 	rmdir $(BINDIR)

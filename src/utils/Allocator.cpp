@@ -40,11 +40,15 @@ namespace elfldr::util {
 } // namespace elfldr::util
 
 void* operator new(std::size_t size) {
-	return elfldr::util::Alloc(size);
+	auto* p = elfldr::util::Alloc(size);
+	ELFLDR_VERIFY(p != nullptr && "Alloc() returned nullptr!!!");
+	return p;
 }
 
 void* operator new[](std::size_t size) {
-	return elfldr::util::Alloc(size);
+	auto* p = elfldr::util::Alloc(size);
+	ELFLDR_VERIFY(p != nullptr && "Alloc() returned nullptr!!!");
+	return p;
 }
 
 void operator delete(void* ptr) noexcept {

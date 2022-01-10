@@ -90,7 +90,7 @@ namespace elfldr::util {
 #ifdef DEBUG
 	#define ELFLDR_ASSERT(x)                                         \
 		do {                                                         \
-			if(!x) {                                                 \
+			if(!(x)) {                                               \
 				elfldr::util::_AssertFailed(#x, __FILE__, __LINE__); \
 				__builtin_unreachable();                             \
 			}                                                        \
@@ -101,7 +101,7 @@ namespace elfldr::util {
 
 #define ELFLDR_VERIFY(x)                                         \
 	do {                                                         \
-		if(!x) {                                                 \
+		if(!(x)) {                                               \
 			elfldr::util::_VerifyFailed(#x, __FILE__, __LINE__); \
 			__builtin_unreachable();                             \
 		}                                                        \

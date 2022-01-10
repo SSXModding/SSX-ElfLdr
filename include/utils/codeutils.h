@@ -64,24 +64,30 @@ namespace elfldr::util {
 	 */
 	void WriteString(void* addr, const char* string);
 
+	/**
+	 * Check if the passed-in address is word aligned,
+	 * as MIPS instructions need to be word-aligned.
+	 *
+	 * \param[in] addr The address to check.
+	 */
 	bool IsInstructionAligned(void* addr);
 
 	/**
-	 * Patches the 4 instructions pointed to by code to something like:
+	 * Writes the 4 instructions pointed to by code to something like:
 	 * \code
 	 *  lui s0, 0x0018 ; top 16 bits
 	 *  ori s0, s0, 0xBADE ; lower 16 bits
 	 *  jalr s0
-	 *  nop ; branch delay problems SUCK
+	 *  nop ; branch delay
 	 * \code
 	 *
 	 * The given subroutine is called with no arguments.
 	 * The written code also assumes `s0` is a safe register (i.e: it is saved during the hook.).
 	 *
-	 * \param[out] Code address. 4 instructions space MUST be valid.
+	 * \param[out] Code address. 4 instructions space MUST be valid to write to.
 	 * \param[in] subroutine The subroutine address to call.
 	 */
-	void WriteUnlimitedCallVoid(void* code, void* subroutine);
+	void WriteRelocatableCall0(void* code, void* subroutine);
 
 	/**
 	 * Fill an aligned section with MIPS nop (all zeros.)
@@ -91,9 +97,7 @@ namespace elfldr::util {
 	 */
 	template <size_t N>
 	constexpr void NopFill(void* start) {
-		// TODO: static_assert for dword-alignment?
-		// if this is implemented,
-		// it should be a common "constexpr bool IsPtrInstructionAligned(const void* ptr)" thing
+		//ELFLDR_VERIFY(IsInstructionAligned(start));
 		memset(start, 0x0, N * sizeof(std::uint32_t));
 	}
 

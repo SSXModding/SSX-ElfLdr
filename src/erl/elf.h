@@ -15,7 +15,7 @@ namespace elfldr::erl {
 #define REL 9
 
 // New-style absoulte relocations,
-// seemingly emitted now by gcc11.
+// seemingly emitted now by new binutils.
 #define RELA 4
 
 #define GLOBAL 1
@@ -93,7 +93,7 @@ namespace elfldr::erl {
 	struct elf_reloca_t {
 		Addr r_offset;
 		Word r_info;
-		Word r_addend; // Fun fact, binutils always emits 0 for this lol
+		Word r_addend;
 	};
 
 } // namespace elfldr::erl

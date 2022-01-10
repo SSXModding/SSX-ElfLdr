@@ -2,6 +2,7 @@
 #define ERLLOADER_H
 
 #include <cstdint>
+#include <utils/utils.h>
 
 // The public API surface for Liberl.
 //
@@ -21,26 +22,33 @@ namespace elfldr::erl {
 	 * Symbol data type.
 	 * Must be pointer-sized.
 	 */
-	using Symbol = std::uintptr_t;
+	//using Symbol = std::uintptr_t;
 
-	/* maybe do this instead?
 	struct Symbol {
-		
-		constexpr bool IsValid() const {
-			return _ptr != 0x0;
+
+		constexpr Symbol() = default;
+
+		constexpr Symbol(std::uintptr_t p)
+			: _ptr(p) {
+
 		}
-		
-		// usage:
-		// auto sym = image->ResolveSymbol("my_function");
-		// auto fptr = sym.As<void(*)()>();
+
+		[[nodiscard]] constexpr bool IsValid() const {
+			return util::UBCast<int>(_ptr) != -1;
+		}
+
+		std::uintptr_t AsRaw() const {
+			return _ptr;
+		}
+
 		template<class T>
-		constexpr T* As() {
-			
+		constexpr T* As() const {
+			return util::UBCast<T*>(_ptr);
 		}
-		
+
+	   private:
 		std::uintptr_t _ptr;
 	};
-	*/
 
 	/**
 	 * An ERL image.

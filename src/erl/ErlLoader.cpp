@@ -12,11 +12,11 @@
 
 #define DEBUG
 
-#define ERL_RELEASE_PRINTF(format, ...) elfldr::util::DebugOut("[LibERL] " format, ##__VA_ARGS__)
+#define ERL_RELEASE_PRINTF(format, ...) elfldr::util::DebugOut("[ERL] " format, ##__VA_ARGS__)
 
 // if building debug, then we can afford to be a bit more chatty.
 #ifdef DEBUG
-	#define ERL_DEBUG_PRINTF(format, ...) elfldr::util::DebugOut("[LibERL] " format, ##__VA_ARGS__)
+	#define ERL_DEBUG_PRINTF(format, ...) elfldr::util::DebugOut("[ERL] " format, ##__VA_ARGS__)
 #else
 	#define ERL_DEBUG_PRINTF(format, ...)
 #endif
@@ -27,11 +27,10 @@ namespace elfldr::erl {
 	enum class ErlLoadError {
 		FileNotFound,	/** File does not exist on disk */
 		NotElf,			/** Not a ELF file */
-		NotMips,		/** ELF machine type is not MIPS R5900 */
+						//	NotMips,		/** ELF machine type is not MIPS R5900 */
 		SizeMismatch,	/** Some data structure size didn't match up our structures */
-		OomHit,			/** Could not allocate additional resources */
 		NotRelocatable, /** ELF is not relocatable */
-		NoSymbols,		/** No symbols */
+						//	NoSymbols,		/** No symbols */
 		RelocationError /** Internal error relocating symbol */
 	};
 
@@ -42,11 +41,10 @@ namespace elfldr::erl {
 		constexpr static const char* tab[] {
 			"ERL file not found",
 			"Not ELF file",
-			"Not MIPS",
+			//	"Not MIPS",
 			"Critical structure size mismatch",
-			"Out of memory (could not allocate structure)",
 			"Not a relocatable ELF",
-			"No symbols",
+			//	"No symbols",
 			"Internal error relocating symbol :("
 		};
 		return tab[static_cast<int>(e)];
@@ -81,7 +79,7 @@ namespace elfldr::erl {
 		/**
 		 * Apply a ELF relocation for this image.
 		 */
-		bool ApplyRelocation(std::size_t offset, int type, std::uint32_t addr, std::uint32_t addend) {
+		[[nodiscard]] bool ApplyRelocation(std::size_t offset, int type, std::uint32_t addr, std::uint32_t addend) const {
 			std::uint32_t u_current_data;
 			std::int32_t s_current_data;
 			std::uint32_t newstate;
@@ -89,9 +87,6 @@ namespace elfldr::erl {
 			if(util::IsInstructionAligned(&bytes[offset])) {
 				ERL_DEBUG_PRINTF("Unaligned relocation (at %p), type %d", &bytes[offset], type);
 			}
-
-			// FIXME: Refactor this attempt at mu-optimization which would be better
-			//  as a reinterpret_cast assignment copy
 
 			memcpy(&u_current_data, &bytes[offset], sizeof(std::uintptr_t));
 			memcpy(&s_current_data, &bytes[offset], 4);
@@ -151,7 +146,7 @@ namespace elfldr::erl {
 			if(sizeof(elf_section_t) != header.e_shentsize)
 				return ErlLoadError::SizeMismatch;
 
-			std::uint32_t fullsize {};
+			std::uint32_t fullDataSize {};
 
 			// Let's read the section table:
 			auto* sections = new elf_section_t[header.e_shnum];
@@ -161,18 +156,14 @@ namespace elfldr::erl {
 			int symtab_index {};
 			int linked_strtab_index {};
 
-			// If allocation failed, report so.
-			if(!sections)
-				return ErlLoadError::OomHit;
-
-			file.Seek(header.e_shoff, FIO_SEEK_SET);
+			file.Seek(util::UBCast<int>(header.e_shoff), FIO_SEEK_SET);
 			file.Read(sections, header.e_shnum * sizeof(elf_section_t));
 
 			// Let's read .shstrtab:
 			String shstrtab;
 			shstrtab.Resize(sections[header.e_shstrndx].sh_size);
 
-			file.Seek(sections[header.e_shstrndx].sh_offset, FIO_SEEK_SET);
+			file.Seek(util::UBCast<int>(sections[header.e_shstrndx].sh_offset), FIO_SEEK_SET);
 			file.Read(shstrtab.data(), shstrtab.length());
 
 			// Dump all the sections, doing some important stuff to them while doing so.
@@ -182,15 +173,15 @@ namespace elfldr::erl {
 
 				if(sectionName == ".symtab") {
 					symtab_index = i;
-					linked_strtab_index = section.sh_link;
+					linked_strtab_index = util::UBCast<int>(section.sh_link);
 				} else if(sectionName == ".strtab") {
 					strtab_index = i;
 				}
 
 				if(section.sh_type == PROGBITS || section.sh_type == NOBITS) {
-					fullsize = Align(fullsize, section.sh_addralign);
-					section.sh_addr = fullsize;
-					fullsize += section.sh_size;
+					fullDataSize = Align(fullDataSize, util::UBCast<int>(section.sh_addralign));
+					section.sh_addr = fullDataSize;
+					fullDataSize += section.sh_size;
 				}
 
 				ERL_DEBUG_PRINTF("Section %s: Offset 0x%08X Size 0x%08X Type %5i Link %5i Info %5i Align %5i EntSize %5i LoadAddr %08X", sectionName.CStr(), section.sh_offset, section.sh_size, section.sh_type, section.sh_link, section.sh_info, section.sh_addralign, section.sh_entsize, section.sh_addr);
@@ -211,11 +202,8 @@ namespace elfldr::erl {
 				return ErlLoadError::SizeMismatch;
 
 			// Allocate buffer for the ERL code + data to go.
-			this->fullsize = fullsize;
-			bytes = new std::uint8_t[fullsize];
-
-			if(!bytes)
-				return ErlLoadError::OomHit;
+			// this->fullsize = fullDataSize;
+			bytes = new std::uint8_t[fullDataSize];
 
 			// Initialize the symbol hash table, so we can export symbols
 			// using it.
@@ -232,7 +220,7 @@ namespace elfldr::erl {
 				switch(section.sh_type) {
 					case PROGBITS:
 						ERL_DEBUG_PRINTF("Reading section %s from ELF file", sectionName.CStr());
-						file.Seek(section.sh_offset, FIO_SEEK_SET);
+						file.Seek(util::UBCast<int>(section.sh_offset), FIO_SEEK_SET);
 						file.Read(&bytes[section.sh_addr], section.sh_size);
 						break;
 					case NOBITS:
@@ -253,15 +241,13 @@ namespace elfldr::erl {
 			String strtab_names;
 			strtab_names.Resize(sections[strtab_index].sh_size);
 
-			file.Seek(sections[strtab_index].sh_offset, FIO_SEEK_SET);
+			file.Seek(util::UBCast<int>(sections[strtab_index].sh_offset), FIO_SEEK_SET);
 			file.Read(strtab_names.data(), strtab_names.length());
 
 			// Load .symtab
-			elf_symbol_t* symtab = new elf_symbol_t[sections[symtab_index].sh_size / sizeof(elf_symbol_t)];
-			if(!symtab)
-				return ErlLoadError::OomHit;
+			auto* symtab = new elf_symbol_t[sections[symtab_index].sh_size / sizeof(elf_symbol_t)];
 
-			file.Seek(sections[symtab_index].sh_offset, FIO_SEEK_SET);
+			file.Seek(util::UBCast<int>(sections[symtab_index].sh_offset), FIO_SEEK_SET);
 			file.Read(symtab, sections[symtab_index].sh_size);
 
 			// Load and parse the relocation section(s).
@@ -282,19 +268,18 @@ namespace elfldr::erl {
 					return ErlLoadError::SizeMismatch;
 
 				auto* reloc = new elf_reloca_t[(section.sh_size / section.sh_entsize)];
-				if(!reloc)
-					return ErlLoadError::OomHit;
 
 				// read this reloc entry into data
-				file.Seek(section.sh_offset, FIO_SEEK_SET);
+				file.Seek(util::UBCast<int>(section.sh_offset), FIO_SEEK_SET);
 				file.Read(reloc, section.sh_size);
 
 				for(Word j = 0; j < (section.sh_size / section.sh_entsize); ++j) {
 					auto& r = reloc[j];
 					Word symbol_number = r.r_info >> 8;
 					auto& sym = symtab[symbol_number];
+					auto type = util::UBCast<int>(r.r_info & 255);
 
-					ERL_DEBUG_PRINTF("RelaEntry %3i: 0x%08X Type %d Addend: %d sym: %d (%s): ", j, r.r_offset, r.r_info & 255, r.r_addend, symbol_number, StringView(&strtab_names[symtab[symbol_number].st_name]).CStr());
+					ERL_DEBUG_PRINTF("RelaEntry %3i: 0x%08X Type %d Addend: %d sym: %d (%s): ", j, r.r_offset, type, r.r_addend, symbol_number, StringView(&strtab_names[symtab[symbol_number].st_name]).CStr());
 
 					switch(sym.st_info & 15) {
 						case NOTYPE:
@@ -305,7 +290,7 @@ namespace elfldr::erl {
 							auto offset = relocating_section.sh_addr + r.r_offset;
 							auto addr = reinterpret_cast<std::uintptr_t>(&bytes[sections[sym.st_shndx].sh_addr]);
 
-							if(!ApplyRelocation(offset, r.r_info & 255, addr, r.r_addend)) {
+							if(!ApplyRelocation(offset, type, addr, r.r_addend)) {
 								ERL_DEBUG_PRINTF("Error relocating");
 								// cleanup
 								delete[] reloc;
@@ -317,7 +302,7 @@ namespace elfldr::erl {
 							// TODO: Should probably implement dedupe, but whateverrrrrrrrrr
 							ERL_DEBUG_PRINTF("Internal symbol relocation to %s", StringView(strtab_names.data() + sym.st_name).CStr());
 							ERL_DEBUG_PRINTF("Relocating at address 0x%08X", reinterpret_cast<std::uintptr_t>(bytes + relocating_section.sh_addr + sym.st_value));
-							if(!ApplyRelocation(relocating_section.sh_addr + sym.st_value, r.r_info & 255, reinterpret_cast<std::uintptr_t>(bytes + relocating_section.sh_addr + sym.st_value), r.r_addend)) {
+							if(!ApplyRelocation(relocating_section.sh_addr + sym.st_value, type, reinterpret_cast<std::uintptr_t>(bytes + relocating_section.sh_addr + sym.st_value), r.r_addend)) {
 								ERL_DEBUG_PRINTF("Error relocating");
 								// cleanup
 								delete[] reloc;
@@ -344,7 +329,7 @@ namespace elfldr::erl {
 						auto address = reinterpret_cast<std::uintptr_t>(bytes + offset);
 
 						ERL_RELEASE_PRINTF("Exporting ERL symbol %s @ 0x%08X", name.c_str(), address);
-						symbol_table.Set(name, address);
+						symbol_table.Set(name, Symbol(address));
 					}
 				}
 			}
@@ -356,7 +341,7 @@ namespace elfldr::erl {
 				elfldr::FlushCaches();
 
 			// Let's call _start
-			auto start = reinterpret_cast<int (*)()>(ResolveSymbol("_start"));
+			auto start = ResolveSymbol("_start").As<int()>();
 			int res = start();
 
 			// use res in release builds to avoid funny compiler warning
@@ -381,7 +366,7 @@ namespace elfldr::erl {
 			return -1;
 		}
 
-		const char* GetFileName() const override {
+		[[nodiscard]] const char* GetFileName() const override {
 			return filename.c_str();
 		}
 
@@ -395,7 +380,7 @@ namespace elfldr::erl {
 
 		// TODO: Array<std::uint8_t>?
 		std::uint8_t* bytes {};
-		std::uint32_t fullsize {};
+		// std::uint32_t fullsize {};
 	};
 
 	Image* LoadErl(const char* path) {

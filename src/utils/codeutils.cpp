@@ -53,7 +53,7 @@ namespace elfldr::util {
 		return UBCast<std::uintptr_t>(p) & 0x3;
 	}
 
-	void WriteUnlimitedCallVoid(void* code, void* subroutine) {
+	void WriteRelocatableCall0(void* code, void* subroutine) {
 		auto* codeptr = UBCast<SeperatedWord*>(code);
 		const auto subrdword = UBCast<SeperatedWord>(subroutine);
 

@@ -135,14 +135,14 @@ struct ExpPatch : public Patch {
 		auto* erl = erl::LoadErl("host:sample_erl.erl");
 		if(erl) {
 			auto sym = erl->ResolveSymbol("elfldr_get_functions");
-			auto* fun = util::UBCast<GetFunctions_t>(sym);
 
-			util::DebugOut("sym is @ %p", sym);
-
-			if(util::UBCast<int>(sym) == -1) {
-				util::DebugOut("invalid ERL!");
+			if(!sym.IsValid()) {
+				util::DebugOut("Invalid ERL \"%s\"!", erl->GetFileName());
 				erl::DestroyErl(erl);
 			}
+
+			auto* fun = sym.As<bool(ErlGetFunctionReturn*)>();
+
 
 			ErlGetFunctionReturn egr{};
 

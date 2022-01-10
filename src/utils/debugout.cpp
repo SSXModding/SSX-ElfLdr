@@ -1,6 +1,5 @@
 #include <utils/utils.h>
 
-#include <cstdarg>
 #include <cstring>
 #include <cstdio>
 
@@ -18,7 +17,7 @@ namespace elfldr::util {
 	// to make this a bit less garbage
 #define LITERAL_STRLEN(lit) (sizeof(lit)-1)
 #define LITERAL_STRCPY(dst, lit) __builtin_memcpy(dst, lit, LITERAL_STRLEN(lit))
-#define VSNPRINTF_OFFSET(buf, size, offset) __builtin_vsnprintf(&buf[offset], (size - offset), format, val)
+#define VSNPRINTF_OFFSET(buf, size, offset) __builtin_vsnprintf(&(buf)[offset], ((size) - (offset)), format, val)
 
 	// This code is messy since it needs to only use gcc builtins
 	// to work across erl/elf boundaries, alongside some Platform Soup
@@ -33,11 +32,10 @@ namespace elfldr::util {
 		__builtin_va_list val;
 		__builtin_va_start(val, format);
 
-		// pain. there's a way better way to write this,
-		// but honestly, I'm too lazy too, and this *should* work regardless
+#define DEBUGOUT_PREFIX "[El] "
 
-		LITERAL_STRCPY(&buf[0], "[ElfLdr] ");
-		VSNPRINTF_OFFSET(buf, sizeof(buf), LITERAL_STRLEN("[ElfLdr] "));
+		LITERAL_STRCPY(&buf[0], DEBUGOUT_PREFIX);
+		VSNPRINTF_OFFSET(buf, sizeof(buf), LITERAL_STRLEN(DEBUGOUT_PREFIX));
 
 #ifndef ERL
 		// Tab level handling

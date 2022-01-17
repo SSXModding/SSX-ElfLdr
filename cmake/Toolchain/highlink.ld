@@ -7,8 +7,10 @@
 # Licenced under Academic Free License version 2.0
 # Review ps2sdk README & LICENSE files for further details.
 #
-# Linkfile script for ee-ld (Customized to link high AF)
+# Linkfile script for ee-ld
 */
+
+/** Elfldr vendored version which links a lot higher, so we survive any typical game's ELF load. */
 
 ENTRY(__start);
 

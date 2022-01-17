@@ -1,11 +1,11 @@
 name: Elfldr Autobuilds
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
-  workflow_dispatch:
+on: [push, pull_request, workflow_dispatch]
+#  push:
+#    branches: [ master ]
+#  pull_request:
+#    branches: [ master ]
+#  workflow_dispatch:
   
 jobs:
   build:
@@ -32,12 +32,14 @@ jobs:
           echo "PS2SDK=$PS2SDK" >> $GITHUB_ENV
           echo "GSKIT=$GSKIT" >> $GITHUB_ENV
           
+      # TODO: build matrix
       - name: Build elfldr
         run: |
-            make
+            cmake -B build -DCMAKE_TOOLCHAIN_FILE=cmake/Toolchain/ps2.cmake -DCMAKE_BUILD_TYPE=RELEASE
+            cmake --build build
             
-      - name: Upload build
+      - name: Upload elfldr
         uses: actions/upload-artifact@v2.2.4
         with:
-            name: ssx_elfldr.elf
-            path: ${{github.workspace}}/bin/ssx_elfldr.elf
+            name: elfldr_binaries
+            path: ${{github.workspace}}/build/elfldr.elf

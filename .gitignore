@@ -1,13 +1,5 @@
-# the only binary products
-src/**/obj/
-src/**/obj/*.o
-
-src/**/obj_ssx3/
-src/**/obj_ssx3/*.o
-
-bin/
-bin/*.elf
-bin/*.a
-bin/*.erl
+.idea/
+build/
+cmake-build-*
 
 /publish.sh

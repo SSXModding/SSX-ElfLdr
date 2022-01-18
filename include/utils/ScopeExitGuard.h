@@ -11,6 +11,9 @@ namespace elfldr::util {
 
 	/**
 	 * A scope exit guard.
+	 * This allows code to be run when a scope exits,
+	 * e.g: when a function is returning.
+	 * It can also be aborted if it does not need to run.
 	 */
 	template <class ScopeExitT>
 	struct ScopeExitGuard {

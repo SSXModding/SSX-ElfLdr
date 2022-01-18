@@ -137,7 +137,7 @@ namespace elfldr {
 			return memory;
 		}
 
-		inline SizeType length() const {
+		[[nodiscard]] inline SizeType length() const {
 			return len;
 		}
 
@@ -159,8 +159,7 @@ namespace elfldr {
 
 		inline void Resize(SizeType newLength) {
 			if(newLength == 0) {
-				// Destroy the buffer, if
-				// we have one to destroy
+				// Destroy the buffer, if we have one to destroy
 				if(memory) {
 					len = 0;
 					alloc.Deallocate(memory);

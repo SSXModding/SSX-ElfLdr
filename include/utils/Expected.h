@@ -90,18 +90,18 @@ namespace elfldr::util {
 
 	/**
 	 * A class template for working with deterministic errors.
-	 * \tparam T Retty. Can be void
+	 * \tparam T Return type. Can be void
 	 * \tparam E Error type.
 	 */
 	template <class T, class E>
 	struct Expected {
 		constexpr Expected() = default;
 
-		constexpr Expected(const T& t)
+		constexpr Expected(const T& t) // NOLINT
 			: t(t) {
 		}
 
-		constexpr Expected(const E& e)
+		constexpr Expected(const E& e) // NOLINT
 			: e(e) {
 		}
 
@@ -134,11 +134,11 @@ namespace elfldr::util {
 			return *this;
 		}
 
-		constexpr bool HasError() const {
+		[[nodiscard]] constexpr bool HasError() const {
 			return e.IsConstructed();
 		}
 
-		constexpr bool HasValue() const {
+		[[nodiscard]] constexpr bool HasValue() const {
 			return t.IsConstructed();
 		}
 
@@ -171,7 +171,7 @@ namespace elfldr::util {
 	struct Expected<void, E> {
 		constexpr Expected() = default;
 
-		constexpr Expected(const E& e)
+		constexpr Expected(const E& e) // NOLINT
 			: e(e) {
 		}
 
@@ -190,7 +190,7 @@ namespace elfldr::util {
 			return *this;
 		}
 
-		constexpr bool HasError() const {
+		[[nodiscard]] constexpr bool HasError() const {
 			return e.IsConstructed();
 		}
 
@@ -211,8 +211,9 @@ namespace elfldr::util {
 	template <class E>
 	using VoidExpected = Expected<void, E>;
 
-	// Nicer syntax for returning no error from
-	// VoidExpected<E> retty-functions
+	// Allows for nicer syntax for returning no error from
+	// VoidExpected<E> functions.
+
 	template <class E>
 	constexpr static VoidExpected<E> NO_ERROR {};
 

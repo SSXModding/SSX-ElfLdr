@@ -32,6 +32,7 @@ target_link_libraries(elfldr
 	elfldr::erl
 	"-Wl,--end-group")
 
+# Make elfldr output in the root of the build directory, mostly for ease.
 set_target_properties(elfldr PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
 )

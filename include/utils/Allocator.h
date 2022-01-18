@@ -1,6 +1,8 @@
 #ifndef ALLOCATOR_H
 #define ALLOCATOR_H
 
+#include <cstddef>
+
 // Provide C++ new/new[] and delete/delete[]
 // overloads which use the Utils heap.
 // Does not provide nothrow (these versions are nothrow in and of themselves)
@@ -36,24 +38,51 @@ namespace elfldr::util {
 	 */
 	using Free_t = void (*)(void*);
 
+
+	// TODO: for multi game support, we need to probably
+	// use a probe routine which does the below automatically
+	// as soon as the ELF is loaded.
+
 	/**
 	 * Set the ERL loader's memory allocation/deallocation
 	 * functions.
 	 */
 	void SetAllocationFunctions(Alloc_t alloc, Free_t free, Alloc_t alloc_aligned, Free_t free_aligned);
 
-	// complete this later, for Array<T>, and BasicString<CharT>
-
 	/**
-	 * Allocator using new/delete. Goes on the Utils heap
-	 * @tparam T
+	 * Allocator using the global LibUtils heap.
+	 * Implements the LibUtils version of the Allocator concept.
 	 */
 	template <class T>
 	struct StdAllocator {
+		using ValueType = T;
+		using SizeType = size_t;
 
+		/**
+		 * Allocates storage for N * sizeof(T) objects.
+		 * The memory is not constructed/does not start lifetime for all instances of T contained in it.
+		 * You will have to use Allocator<T>::Construct() or pure placement-new to do so.
+		 */
+		[[nodiscard]] constexpr T* Allocate(size_t number) {
+			ELFLDR_ASSERT(number > MaxSize());
+			return static_cast<T*>(Alloc(number * sizeof(T)));
+		}
+
+		constexpr void Deallocate(T* ptr) {
+			return Free(static_cast<void*>(ptr));
+		}
+
+		template<class ...Args>
+		constexpr void Construct(T* ptr, Args&&... args) {
+			new (ptr) T(Forward<Args>(args)...);
+		}
+
+		[[nodiscard]] constexpr SizeType MaxSize() const {
+			return SizeType(~0) / sizeof(T);
+		}
 	};
 
-
+	// maybe: Allocator<const T>
 
 } // namespace elfldr::util
 

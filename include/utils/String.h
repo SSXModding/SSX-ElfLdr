@@ -80,7 +80,9 @@ namespace elfldr {
 		size_t len;
 	};
 
-	template <class T>
+	// maybe later: CharTraits<T>?
+
+	template <class T, class Alloc = util::StdAllocator<T>>
 	struct BasicString {
 		using CharType = T;
 		using SizeType = std::size_t;
@@ -161,7 +163,7 @@ namespace elfldr {
 				// we have one to destroy
 				if(memory) {
 					len = 0;
-					delete[] memory;
+					alloc.Deallocate(memory);
 				}
 				return;
 			}
@@ -170,7 +172,7 @@ namespace elfldr {
 			auto* old = memory;
 
 			// allocate new buffer
-			memory = new T[newLength + 1];
+			memory = alloc.Allocate(newLength + 1);
 			memory[newLength] = '\0';
 
 			if(old) {
@@ -180,7 +182,7 @@ namespace elfldr {
 					memcpy(&memory[0], &old[0], len * sizeof(T));
 
 				// don't need it
-				delete[] old;
+				alloc.Deallocate(old);
 			}
 			len = newLength;
 		}
@@ -247,6 +249,7 @@ namespace elfldr {
 
 		T* memory { nullptr };
 		SizeType len {};
+		Alloc alloc;
 	};
 
 	// Hash<T> specializations for string stuff,

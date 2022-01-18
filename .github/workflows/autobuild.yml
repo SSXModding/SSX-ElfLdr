@@ -43,7 +43,7 @@ jobs:
           cmake --build build_dev
           mkdir out
           cp ${{github.workspace}}/build/elfldr.elf out/elfldr_release.elf
-          cp ${{github.workspace}}/build_dev/elfldr.elf out/elfldr_release.elf
+          cp ${{github.workspace}}/build_dev/elfldr.elf out/elfldr_debug.elf
           cd out
           zip -9 ${{github.workspace}}/elfldr_nightly.zip *
 

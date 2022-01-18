@@ -7,12 +7,12 @@
 # the output version filename relative to the PWD of the script
 set(VERSION_FILENAME "Version.h")
 
-# TODO: find_package git
+find_package(Git REQUIRED)
 
 # execute all the things we need
-execute_process(COMMAND git describe --tags --always HEAD OUTPUT_VARIABLE GIT_TAG OUTPUT_STRIP_TRAILING_WHITESPACE)
-execute_process(COMMAND git rev-parse --short HEAD OUTPUT_VARIABLE GIT_COMMIT OUTPUT_STRIP_TRAILING_WHITESPACE)
-execute_process(COMMAND git rev-parse --abbrev-ref HEAD OUTPUT_VARIABLE GIT_BRANCH OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND ${GIT_EXECUTABLE} describe --tags --always HEAD OUTPUT_VARIABLE GIT_TAG OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD OUTPUT_VARIABLE GIT_COMMIT OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse --abbrev-ref HEAD OUTPUT_VARIABLE GIT_BRANCH OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 file(WRITE ${VERSION_FILENAME}  "")
 file(APPEND ${VERSION_FILENAME} "#ifndef ELFLDR_VERSION_H\n")

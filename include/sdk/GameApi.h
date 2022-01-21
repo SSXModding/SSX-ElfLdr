@@ -1,3 +1,10 @@
+/**
+ * SSX-Elfldr SDK
+ *
+ * (C) 2021-2022 Lily/modeco80 <lily.modeco80@protonmail.ch>
+ * under the terms of the MIT license.
+ */
+
 #ifndef GAMEAPI_H
 #define GAMEAPI_H
 
@@ -13,7 +20,7 @@
 
 #include <utils/codeutils.h>
 #include <utils/utils.h>
-//#include <elfldr/structs.h>
+//#include <sdk/structs.h>
 
 namespace bx {
 

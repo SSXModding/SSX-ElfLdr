@@ -1,3 +1,10 @@
+/**
+ * SSX-Elfldr SDK
+ *
+ * (C) 2021-2022 Lily/modeco80 <lily.modeco80@protonmail.ch>
+ * under the terms of the MIT license.
+ */
+
 // This header is for SSX OG structures/classes
 #ifndef STRUCTS_H
 #define STRUCTS_H

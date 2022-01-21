@@ -1,6 +1,9 @@
-//
-// Created by lily on 1/1/22.
-//
+/**
+ * SSX-Elfldr
+ *
+ * (C) 2021-2022 Lily/modeco80 <lily.modeco80@protonmail.ch>
+ * under the terms of the MIT license.
+ */
 
 #include <utils/FioFile.h>
 #include <utils/utils.h>

@@ -1,3 +1,10 @@
+/**
+ * SSX-Elfldr SDK
+ *
+ * (C) 2021-2022 Lily/modeco80 <lily.modeco80@protonmail.ch>
+ * under the terms of the MIT license.
+ */
+
 #ifndef ERLABI_H
 #define ERLABI_H
 

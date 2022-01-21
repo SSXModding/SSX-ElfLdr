@@ -1,7 +1,14 @@
-#include <elfldr/ErlAbi.h>
-#include <elfldr/GameApi.h>
-#include <elfldr/structs.h>
+/**
+ * SSX-Elfldr
+ *
+ * (C) 2021-2022 Lily/modeco80 <lily.modeco80@protonmail.ch>
+ * under the terms of the MIT license.
+ */
+
 #include <erl/ErlLoader.h>
+#include <sdk/ErlAbi.h>
+#include <sdk/GameApi.h>
+#include <sdk/structs.h>
 #include <utils/Allocator.h>
 #include <utils/codeutils.h>
 #include <utils/utils.h>
@@ -139,8 +146,7 @@ struct ExpPatch : public Patch {
 
 			auto* fun = sym.As<bool(ErlGetFunctionReturn*)>();
 
-
-			ErlGetFunctionReturn egr{};
+			ErlGetFunctionReturn egr {};
 
 			if(!fun(&egr)) {
 				util::DebugOut("huh?");
@@ -149,7 +155,6 @@ struct ExpPatch : public Patch {
 				for(int i = 0; i < egr.nrFunctions; ++i)
 					util::DebugOut("type %d, ptr %08x", egr.functions[i].type, egr.functions[i].fnPtr);
 			}
-
 		}
 	}
 	// p[enis

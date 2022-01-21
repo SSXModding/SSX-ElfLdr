@@ -1,5 +1,12 @@
-#include <utils/utils.h>
+/**
+ * SSX-Elfldr
+ *
+ * (C) 2021-2022 Lily/modeco80 <lily.modeco80@protonmail.ch>
+ * under the terms of the MIT license.
+ */
+
 #include <utils/Allocator.h>
+#include <utils/utils.h>
 
 namespace elfldr::util {
 
@@ -28,7 +35,6 @@ namespace elfldr::util {
 		ELFLDR_ASSERT(Free_ptr != nullptr);
 		return Free_aligned_ptr(ptr);
 	}
-
 
 	void SetAllocationFunctions(Alloc_t alloc, Free_t free, Alloc_t alloc_aligned, Free_t free_aligned) {
 		Alloc_ptr = alloc;

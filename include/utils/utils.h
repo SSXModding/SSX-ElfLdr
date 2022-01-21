@@ -1,4 +1,10 @@
-// General utilities, provided by the "libutils" library.
+/**
+ * SSX-Elfldr
+ *
+ * (C) 2021-2022 Lily/modeco80 <lily.modeco80@protonmail.ch>
+ * under the terms of the MIT license.
+ */
+
 #ifndef UTILS_H
 #define UTILS_H
 

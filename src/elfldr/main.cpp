@@ -1,5 +1,9 @@
-// Patching ELF loader for (right now) the
-// 2021-2022 modeco80
+/**
+ * SSX-Elfldr
+ *
+ * (C) 2021-2022 Lily/modeco80 <lily.modeco80@protonmail.ch>
+ * under the terms of the MIT license.
+ */
 
 #include <elfldr/ElfLoader.h>
 #include <utils/utils.h>

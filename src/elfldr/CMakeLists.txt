@@ -36,3 +36,5 @@ target_link_libraries(elfldr
 set_target_properties(elfldr PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
 )
+
+# Run the user's publish script when elfldr builds

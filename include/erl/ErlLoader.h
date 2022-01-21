@@ -1,19 +1,27 @@
+/**
+ * SSX-Elfldr/LibERL
+ *
+ * (C) 2021-2022 Lily/modeco80 <lily.modeco80@protonmail.ch>
+ * under the terms of the MIT license.
+ */
+
 #ifndef ERLLOADER_H
 #define ERLLOADER_H
 
-#include <cstdint>
 #include <utils/utils.h>
 
-// The public API surface for Liberl.
+#include <cstdint>
+
+// The public API surface for LibErl.
 //
-// Liberl is a C++ replacement library for the PS2SDK ERL
+// LibErl is a C++ replacement library for the PS2SDK ERL
 // loader library, designed to be lean (which unfortunately means
 // a minor sacrifice of features.).
 //
-// Liberl currently has no support for imports (from either the Elfldr executable, or another ERL),
-// no support for dependencies (which is intentional to ease dependency),
+// LibErl currently has no support for imports (from either the Elfldr executable, or another ERL),
+// no support for dependencies (which is intentional to ease work.),
 // no support for "global" symbols, and generally,
-// is written to just be enough to work for my usage and not much more.
+// is written to just be enough to work for my usage in ElfLdr and not much more.
 //
 
 namespace elfldr::erl {
@@ -22,15 +30,13 @@ namespace elfldr::erl {
 	 * Symbol data type.
 	 * Must be pointer-sized.
 	 */
-	//using Symbol = std::uintptr_t;
+	// using Symbol = std::uintptr_t;
 
 	struct Symbol {
-
 		constexpr Symbol() = default;
 
 		constexpr Symbol(std::uintptr_t p)
 			: _ptr(p) {
-
 		}
 
 		[[nodiscard]] constexpr bool IsValid() const {
@@ -41,7 +47,7 @@ namespace elfldr::erl {
 			return _ptr;
 		}
 
-		template<class T>
+		template <class T>
 		constexpr T* As() const {
 			return util::UBCast<T*>(_ptr);
 		}
@@ -67,8 +73,6 @@ namespace elfldr::erl {
 
 		virtual const char* GetFileName() const = 0;
 	};
-
-
 
 	/**
 	 * Load and relocate a .erl file.

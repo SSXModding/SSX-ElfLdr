@@ -1,3 +1,10 @@
+/**
+ * SSX-Elfldr
+ *
+ * (C) 2021-2022 Lily/modeco80 <lily.modeco80@protonmail.ch>
+ * under the terms of the MIT license.
+ */
+
 // MemClr patch - relatively useless,
 // disables memory clearing done by the game.
 

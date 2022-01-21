@@ -1,3 +1,10 @@
+/**
+ * SSX-Elfldr
+ *
+ * (C) 2021-2022 Lily/modeco80 <lily.modeco80@protonmail.ch>
+ * under the terms of the MIT license.
+ */
+
 #ifndef ELFLDR_ARRAY_H
 #define ELFLDR_ARRAY_H
 
@@ -8,9 +15,8 @@ namespace elfldr::util {
 	/**
 	 * A POD array.
 	 */
-	template<class T, size_t N>
+	template <class T, size_t N>
 	struct Array {
-
 		constexpr size_t Size() {
 			return N;
 		}
@@ -27,6 +33,6 @@ namespace elfldr::util {
 		T _arr_notouchy[N];
 	};
 
-}
+} // namespace elfldr::util
 
 #endif // ELFLDR_ARRAY_H

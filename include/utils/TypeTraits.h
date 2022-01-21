@@ -1,6 +1,16 @@
+/**
+ * SSX-Elfldr
+ *
+ * (C) 2021-2022 Lily/modeco80 <lily.modeco80@protonmail.ch>
+ * under the terms of the MIT license.
+ */
+
 // This file declares my own implementation
 // of C++ type traits (since we're not using a real C++
 // standard library, and libc is all we can use)
+// Optionally real <type_traits> header could be included,
+// but libutils already implements quite a bit of C++ standard library.
+
 #ifndef UTILS_TYPETRAITS_H
 #define UTILS_TYPETRAITS_H
 
@@ -25,7 +35,7 @@ namespace elfldr::util {
 
 		static constexpr type value = constant;
 
-		constexpr operator type () {
+		constexpr operator type() {
 			return value;
 		}
 

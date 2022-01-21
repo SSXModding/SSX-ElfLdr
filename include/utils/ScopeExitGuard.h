@@ -1,6 +1,9 @@
-//
-// Created by lily on 1/9/22.
-//
+/**
+ * SSX-Elfldr
+ *
+ * (C) 2021-2022 Lily/modeco80 <lily.modeco80@protonmail.ch>
+ * under the terms of the MIT license.
+ */
 
 #ifndef ELFLDR_SCOPEEXITGUARD_H
 #define ELFLDR_SCOPEEXITGUARD_H

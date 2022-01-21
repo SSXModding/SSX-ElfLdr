@@ -6,13 +6,14 @@
 
 #include <cstdint>
 
-namespace elfldr::erl {
+namespace elfldr::util {
 
 	// TODO:
-	// - multi dim buckets for hash collisions maybe
+	// - Multi dimension buckets for hash collisions maybe
 	//  (I may just throw out a ERL which does that.)
+	//
 	// - (should really do) dynamic growing, as needed
-	//      Will be done probably after the Allocator API is finalized
+	//      Will be done probably after the Allocator API is finalized and Vector<T> is implemented
 
 	/**
 	 * A simple hash table. Doesn't handle collisions,
@@ -21,6 +22,10 @@ namespace elfldr::erl {
 	template <class Key, class Value, class Hasher = util::Hash<Key>>
 	struct HashTable {
 		inline HashTable() = default;
+
+		inline HashTable(std::size_t bucketSize) {
+			Init(bucketSize);
+		}
 
 		~HashTable() {
 			if(bucket_size)
@@ -34,24 +39,32 @@ namespace elfldr::erl {
 
 		/**
 		 * Add a value to the hash table.
+		 * This is a direct API that may clash
+		 * with operator[]. Sorry.
 		 */
-		void Set(const Key& key, Value value) {
+		void Set(const Key& key, const Value& value) {
 			auto* bucket = MaybeGetBucket(key);
 
 			if(!bucket)
 				return;
 
-			// util::DebugOut("hashTable chose bucket %d", (bucket - &buckets[0]));
-
 			// maybe util::Move both these values?
 			bucket->key = key;
 			bucket->value = value;
+			bucket->used = true;
 		}
 
 		bool HasKey(const Key& key) {
 			auto* bucket = MaybeGetBucket(key);
 
 			if(!bucket)
+				return false;
+
+			// Fast path: if the bucket we retrieved
+			// for this key isn't used, then
+			// we definitely don't have the key,
+			// and we don't need to bug Key::operator==.
+			if(!bucket->used)
 				return false;
 
 			return bucket->key == key;
@@ -61,21 +74,21 @@ namespace elfldr::erl {
 			if(!HasKey(key))
 				return nullptr;
 			auto* bucket = MaybeGetBucket(key);
-
-			// util::DebugOut("hashTable chose bucket %d", (bucket - &buckets[0]));
-			// util::DebugOut("hashTable key is %s, value is %08x", bucket->key.c_str(), bucket->value);
-
 			return &bucket->value;
 		}
 
 		/**
 		 * Array subscript operator.
-		 * Key must exist in the hash table beforehand
 		 */
 		Value& operator[](const Key& k) {
-			if(auto* val = MaybeGet(k); val != nullptr)
-				return *val;
-			ELFLDR_VERIFY(false);
+			auto* bucket = MaybeGetBucket(k);
+			ELFLDR_VERIFY(bucket != nullptr);
+
+			if(!bucket->used) {
+				bucket->used = true;
+			}
+
+			return bucket->value;
 		}
 
 	   private:
@@ -97,6 +110,8 @@ namespace elfldr::erl {
 			return &buckets[HashKey(key)];
 		}
 
+		// TODO: this should be using allocator
+
 		void AllocBuckets(std::size_t size) {
 			// avoid a memory leak by freeing any old buckets
 			// beforehand.
@@ -116,6 +131,6 @@ namespace elfldr::erl {
 		std::size_t bucket_size {};
 	};
 
-} // namespace elfldr::erl
+} // namespace elfldr
 
 #endif // HASHTABLE_H

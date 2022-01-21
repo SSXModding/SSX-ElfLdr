@@ -1,7 +1,15 @@
+/**
+ * SSX-Elfldr
+ *
+ * (C) 2021-2022 Lily/modeco80 <lily.modeco80@protonmail.ch>
+ * under the terms of the MIT license.
+ */
+
 #ifndef ALLOCATOR_H
 #define ALLOCATOR_H
 
 #include <cstddef>
+#include <cstdint>
 
 // Provide C++ new/new[] and delete/delete[]
 // overloads which use the Utils heap.
@@ -38,7 +46,6 @@ namespace elfldr::util {
 	 */
 	using Free_t = void (*)(void*);
 
-
 	// TODO: for multi game support, we need to probably
 	// use a probe routine which does the below automatically
 	// as soon as the ELF is loaded.
@@ -72,9 +79,9 @@ namespace elfldr::util {
 			return Free(static_cast<void*>(ptr));
 		}
 
-		template<class ...Args>
+		template <class... Args>
 		constexpr void Construct(T* ptr, Args&&... args) {
-			new (ptr) T(Forward<Args>(args)...);
+			new(ptr) T(Forward<Args>(args)...);
 		}
 
 		[[nodiscard]] constexpr SizeType MaxSize() const {

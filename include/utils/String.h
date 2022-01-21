@@ -1,27 +1,22 @@
-// How long could lily go without a good string type,
-// according to the commit history of Elfldr?
-//
-// 24 days. That's not too bad!
-//
-// (okaybutseriouslyIcantfuckingtakeitanymore)
-//
-// Unfortunately, due to the fact this uses new[]
-// like no other, this currently can't be used in
-// anything other than liberl. Oh well, maybe I should
-// relax my zero-allocation policy a little bit.
+/**
+ * SSX-Elfldr
+ *
+ * (C) 2021-2022 Lily/modeco80 <lily.modeco80@protonmail.ch>
+ * under the terms of the MIT license.
+ */
 
 #ifndef ELFLDR_STRING_H
 #define ELFLDR_STRING_H
 
+#include <utils/Allocator.h>
+
 #include <cstdint>
 #include <cstring>
-
-#include <utils/Allocator.h>
 
 // :(
 #include <utils/Hash.h>
 
-namespace elfldr {
+namespace elfldr::util {
 
 	/**
 	 * A "view" of a string. Does not own the memory,
@@ -255,19 +250,18 @@ namespace elfldr {
 	// this'll automatically work with U8String and co
 
 	template <class CharT>
-	struct util::Hash<BasicString<CharT>> {
+	struct Hash<BasicString<CharT>> {
 		inline static std::uint32_t hash(const BasicString<CharT>& str) {
 			return util::fnv1a_hash(UBCast<void*>(str.data()), str.length() * sizeof(CharT), 0);
 		}
 	};
 
 	template <class CharT>
-	struct util::Hash<BasicStringView<CharT>> {
+	struct Hash<BasicStringView<CharT>> {
 		inline static std::uint32_t hash(const BasicStringView<CharT>& str) {
 			return util::fnv1a_hash(UBCast<void*>(str.Data()), str.Length() * sizeof(CharT), 0);
 		}
 	};
-
 
 	using String = BasicString<char>;
 	using StringView = BasicStringView<char>;
@@ -275,7 +269,6 @@ namespace elfldr {
 	// safe for UTF-8 (?)
 	// using U8String = BasicString<char8_t>;
 	// using U8StringView = BasicStringView<char8_t>;
-
 
 } // namespace elfldr
 

@@ -1,17 +1,28 @@
+/**
+ * SSX-Elfldr SDK
+ *
+ * (C) 2021-2022 Lily/modeco80 <lily.modeco80@protonmail.ch>
+ * under the terms of the MIT license.
+ */
+
 // Sample ERL for Elfldr
 
 // include the ABI header to get ABI structures.
-#include <elfldr/ErlAbi.h>
+#include <sdk/ErlAbi.h>
 
 // This defines replacements for libc functions (printf, malloc, free)
-// inside of the bx:: namespace, which call code in the game's executable.
+// inside of the bx:: namespace, which call code inside of
+// the game's executable automatically.
 //
-// This, while being beyond janky, saves needing to worry about linking libc,
-// or needing to also load/relocate libc.erl. A Good Thing.
+// This, while being beyond janky, saves needing to worry about linking libc
+// with the ERL,
+// or needing to also load/relocate libc.erl. A Good Thing, even though
+// we probably *could*.
 //
 // For memcpy, memset, and a couple other functions,
-// GCC provides built-in versions of these, which should be preferred.
-#include <elfldr/GameApi.h>
+// GCC provides built-in versions of these, which should be preferred, or
+// I'll provide a "mini" runtime in the SDK for it.
+#include <sdk/GameApi.h>
 
 // A sample function run every game frame,
 // called by elfldr's injection of cGame::UpdateNodes().
@@ -44,7 +55,6 @@ extern "C" bool elfldr_get_functions(elfldr::ErlGetFunctionReturn* ret) {
 	// there's probably worse issues.
 	if(!ret)
 		return false;
-
 
 	// Give elfldr the information it needs and then return success.
 	ret->nrFunctions = sizeof(entryTable) / sizeof(entryTable[0]);

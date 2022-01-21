@@ -1,3 +1,10 @@
+/**
+ * SSX-Elfldr/LibERL
+ *
+ * (C) 2021-2022 Lily/modeco80 <lily.modeco80@protonmail.ch>
+ * under the terms of the MIT license.
+ */
+
 #ifndef ELF_H
 #define ELF_H
 

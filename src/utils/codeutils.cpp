@@ -1,3 +1,10 @@
+/**
+ * SSX-Elfldr
+ *
+ * (C) 2021-2022 Lily/modeco80 <lily.modeco80@protonmail.ch>
+ * under the terms of the MIT license.
+ */
+
 // implementation tu for a couple things I found kinda bloaty
 // to be inlines
 
@@ -36,8 +43,6 @@ namespace elfldr::util {
 
 	// size of the above template in bytes
 	constexpr static std::size_t SubroutineCallTemplate_Size = sizeof(SubroutineCallTemplate) / sizeof(std::uint32_t);
-
-
 
 	void ReplaceString(void* addr, const char* string) {
 		DebugOut("Replacing string \"%s\" at %p: \"%s\"...", UBCast<char*>(addr), addr, string);

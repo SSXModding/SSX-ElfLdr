@@ -1,10 +1,17 @@
+/**
+ * SSX-Elfldr
+ *
+ * (C) 2021-2022 Lily/modeco80 <lily.modeco80@protonmail.ch>
+ * under the terms of the MIT license.
+ */
+
 // Fun code utilities, provided by the "libutils" library.
 
 #ifndef CODEUTILS_H
 #define CODEUTILS_H
 
-#include <cstring>
 #include <cstdint>
+#include <cstring>
 
 // needs util::UBCast<Dest, Source>()
 #include <utils/utils.h>
@@ -97,7 +104,7 @@ namespace elfldr::util {
 	 */
 	template <size_t N>
 	constexpr void NopFill(void* start) {
-		//ELFLDR_VERIFY(IsInstructionAligned(start));
+		// ELFLDR_VERIFY(IsInstructionAligned(start));
 		memset(start, 0x0, N * sizeof(std::uint32_t));
 	}
 
@@ -126,7 +133,7 @@ namespace elfldr::util {
 	 * Call a function at the given address,
 	 * with the given arguments, and the return type.
 	 *
-	 * Turns directly into a call to the given subroutine, 
+	 * Turns directly into a call to the given subroutine,
 	 * using a register. Pretty cool, huh?
 	 *
 	 * \tparam Ret Return type. Defaults to "void".
@@ -155,7 +162,7 @@ namespace elfldr::util {
 	 * \tparam FunctionAddress Function address.
 	 *
 	 * \tparam IsVaradic True if the function takes varadic arguments.
-	 *					 If true, overload resolution for a version 
+	 *					 If true, overload resolution for a version
 	 * 					 of operator() will be permitted, which itself
 	 *					 permits arbitrary additional varadic arguments.
 	 *
@@ -185,7 +192,7 @@ namespace elfldr::util {
 		}
 	};
 
-	/** 
+	/**
 	 * A wrapper for a varadic function (i.e: printf)
 	 */
 	template <uintptr_t FunctionAddress, class Ret, class... ArgTypes>

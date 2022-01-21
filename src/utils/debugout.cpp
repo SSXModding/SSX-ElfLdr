@@ -1,7 +1,14 @@
+/**
+ * SSX-Elfldr
+ *
+ * (C) 2021-2022 Lily/modeco80 <lily.modeco80@protonmail.ch>
+ * under the terms of the MIT license.
+ */
+
 #include <utils/utils.h>
 
-#include <cstring>
 #include <cstdio>
+#include <cstring>
 
 #ifdef ERL
 	#include <elfldr/GameApi.h>
@@ -15,7 +22,7 @@ namespace elfldr::util {
 
 	// Some macro (:() helpers
 	// to make this a bit less garbage
-#define LITERAL_STRLEN(lit) (sizeof(lit)-1)
+#define LITERAL_STRLEN(lit) (sizeof(lit) - 1)
 #define LITERAL_STRCPY(dst, lit) __builtin_memcpy(dst, lit, LITERAL_STRLEN(lit))
 #define VSNPRINTF_OFFSET(buf, size, offset) __builtin_vsnprintf(&(buf)[offset], ((size) - (offset)), format, val)
 

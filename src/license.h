@@ -2,6 +2,7 @@
 // Vendored files do not need this, and libraries that may see some use outside of elfldr (I.E ElfLdr.Erl) can modify this in their source tree.
 //
 // CLion users can use Settings->Editor->File And Code Templates to configure their IDE to insert this license header.
+// Please change the year in this master file to ${YEAR} when inserting it there.
 
 /**
  * SSX-Elfldr

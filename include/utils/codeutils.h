@@ -71,13 +71,26 @@ namespace elfldr::util {
 	 */
 	void WriteString(void* addr, const char* string);
 
+
+	constexpr bool IsPowOf2(uint32_t val) {
+		return !((val != 0) && ((val & (val - 1))));
+	}
+
+	template <uint32_t alignment>
+	constexpr bool IsAlignedNBytes(const void* __restrict address) {
+		static_assert(IsPowOf2(alignment), "Alignment must be a power of 2, silly!!");
+		return !((uintptr_t)address & (alignment - 1));
+	}
+
 	/**
-	 * Check if the passed-in address is word aligned,
-	 * as MIPS instructions need to be word-aligned.
+	 * Check if the passed-in address is Double-word aligned,
+	 * as MIPS instructions need to be DWord-aligned.
 	 *
 	 * \param[in] addr The address to check.
 	 */
-	bool IsInstructionAligned(void* addr);
+	constexpr bool IsInstructionAligned(const void* __restrict addr) {
+		return IsAlignedNBytes<4>(addr);
+	}
 
 	/**
 	 * Writes the 4 instructions pointed to by code to something like:
@@ -94,7 +107,9 @@ namespace elfldr::util {
 	 * \param[out] Code address. 4 instructions space MUST be valid to write to.
 	 * \param[in] subroutine The subroutine address to call.
 	 */
-	void WriteRelocatableCall0(void* code, void* subroutine);
+	void WriteRelocatableCall0(void* __restrict code, const void* __restrict subroutine);
+
+	// TODO: 1/2/3/4 versions which pass those arguments?
 
 	/**
 	 * Fill an aligned section with MIPS nop (all zeros.)

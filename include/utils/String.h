@@ -8,12 +8,12 @@
 #ifndef ELFLDR_STRING_H
 #define ELFLDR_STRING_H
 
-#include <utils/Allocator.h>
 
 #include <cstdint>
 #include <cstring>
 
-// :(
+#include <utils/Allocator.h>
+#include <utils/CharTraits.h>
 #include <utils/Hash.h>
 
 namespace elfldr::util {
@@ -24,7 +24,7 @@ namespace elfldr::util {
 	 * Essentially a special-cased span for strings,
 	 * to avoid creating tons of String objects which manage their memory on the heap.
 	 */
-	template <class T>
+	template <class T, class Traits = CharTraits<T>>
 	struct BasicStringView {
 		constexpr BasicStringView()
 			: data_ptr(nullptr),
@@ -45,7 +45,7 @@ namespace elfldr::util {
 			  len(len) {
 		}
 
-		constexpr size_t Length() const {
+		[[nodiscard]] constexpr size_t Length() const {
 			return len;
 		}
 
@@ -62,8 +62,7 @@ namespace elfldr::util {
 		}
 
 		friend constexpr bool operator==(const BasicStringView& lhs, const BasicStringView& rhs) {
-			// would probably need some work for introducing U8StringView
-			return !strcmp(lhs.data_ptr, rhs.data_ptr);
+			return !Traits::Compare(lhs.data_ptr, rhs.data_ptr);
 		}
 
 		friend constexpr bool operator!=(const BasicStringView& lhs, const BasicStringView& rhs) {
@@ -75,9 +74,8 @@ namespace elfldr::util {
 		size_t len;
 	};
 
-	// maybe later: CharTraits<T>?
 
-	template <class T, class Alloc = util::StdAllocator<T>>
+	template <class T, class Traits = CharTraits<T>, class Alloc = util::StdAllocator<T>>
 	struct BasicString {
 		using CharType = T;
 		using SizeType = std::size_t;
@@ -95,7 +93,8 @@ namespace elfldr::util {
 			// TODO: maybe some interning.
 			// 32 chars max intern, before it becomes an allocation.
 			Resize(length);
-			memcpy(&memory[0], &mem[0], length * sizeof(T));
+			//memcpy(&memory[0], &mem[0], length * sizeof(T));
+			Traits::Copy(&mem[0], &memory[0], length);
 		}
 
 		inline BasicString(BasicString&& move) {
@@ -112,7 +111,7 @@ namespace elfldr::util {
 		inline BasicString(const BasicString& source) {
 			// new buffer.
 			Resize(source.len);
-			memcpy(&memory[0], &source.memory[0], source.len * sizeof(T));
+			Traits::Copy(&source.memory[0], &memory[0], source.len);
 		}
 
 		inline BasicString& operator=(const BasicString& copy) {
@@ -173,7 +172,7 @@ namespace elfldr::util {
 				// copy the old buffer in
 				// TODO: could probably maybe truncate for any length?
 				if(len <= newLength)
-					memcpy(&memory[0], &old[0], len * sizeof(T));
+					Traits::Copy(&old[0], &memory[0], len);
 
 				// don't need it
 				alloc.Deallocate(old);
@@ -219,7 +218,7 @@ namespace elfldr::util {
 
 		friend inline bool operator==(const BasicString& lhs, const BasicString& rhs) {
 			// would probably need some work for introducing U8String
-			return !strcmp(lhs.data(), rhs.data());
+			return !Traits::Compare(lhs.data(), rhs.data());
 		}
 
 		friend inline bool operator!=(const BasicString& lhs, const BasicString& rhs) {

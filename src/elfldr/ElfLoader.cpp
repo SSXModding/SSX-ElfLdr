@@ -40,9 +40,10 @@ namespace elfldr {
 	void ElfLoader::ExecElf(int argc, char** argv) {
 		// this function shouldn't be called if
 		// the elf didn't load properly.
-		assert(gExecData.epc > 0);
+		ELFLDR_VERIFY(gExecData.epc > 0);
 
-		FlushCaches();
+		for(int i = 0; i < 4; ++i)
+			FlushCaches();
 
 		// Reset the IOP and then ExecPS2 us.
 		ResetIOP();

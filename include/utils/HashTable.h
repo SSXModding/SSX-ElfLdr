@@ -9,11 +9,12 @@
 namespace elfldr::util {
 
 	// TODO:
-	// - Multi dimension buckets for hash collisions maybe
+	// - Multi dimension/linked buckets for hash collisions maybe
 	//  (I may just throw out a ERL which does that.)
 	//
 	// - (should really do) dynamic growing, as needed
 	//      Will be done probably after the Allocator API is finalized and Vector<T> is implemented
+	//		We will also need to rehash all keys when resizing which sucks but meh
 
 	/**
 	 * A simple hash table. Doesn't handle collisions,
@@ -84,14 +85,21 @@ namespace elfldr::util {
 			auto* bucket = MaybeGetBucket(k);
 			ELFLDR_VERIFY(bucket != nullptr);
 
+			// Mark this bucket as used,
+			// ala std::*_map<K,V>... Sorry :(
 			if(!bucket->used) {
 				bucket->used = true;
+				bucket->key = k;
 			}
 
 			return bucket->value;
 		}
 
 	   private:
+
+		/**
+		 * A single hash bucket.
+		 */
 		struct Bucket {
 			Key key;
 			Value value;

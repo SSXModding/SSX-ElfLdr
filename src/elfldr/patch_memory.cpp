@@ -45,14 +45,26 @@ struct MemclrPatch : public Patch {
 				// NOP fill the direct memory clearing loop in bxPreInit()
 				util::NopFill<10>(util::Ptr(0x0018a6d8));
 
+				/*
+				 * **************************************************************
+				 * fuck this loop in particular                               *
+				 **************************************************************
+				 *	0018a6d8 0a 00 00 10  	   b          LAB_0018a704
+				 */
+
+				// util::MemRefTo<std::uint32_t>(util::Ptr(0x0018a6d8)) = 0x1000000a; // b to end of for/while loop
+
 				// NOP fill the memory clearing logic in CMN initheapdebug(),
 				// as simply NOP filling the call causes the game to crash.
-				util::NopFill<32>(util::Ptr(0x0018a294));
+				// util::NopFill<32>(util::Ptr(0x0018a294));
 
-#ifdef EXPERIMENTAL
-				util::DebugOut("Special case for Exp - killing MEM_init and initheapdebug");
-				util::NopFill<6>(util::Ptr(0x0018a704));
-#endif
+				util::MemRefTo<std::uint32_t>(util::Ptr(0x0018a2a0)) = 0x10000016; // b to the jr ra in initheapdebug(), this seems to be more stable on new pcsx2
+				util::MemRefTo<std::uint32_t>(util::Ptr(0x0018a2a4)) = 0x00000000; // nop to make the EE happy (and avoid side-effects.)
+
+				//#ifdef EXPERIMENTAL
+				 util::DebugOut("Special case for Exp - killing MEM_init and initheapdebug");
+				 util::NopFill<6>(util::Ptr(0x0018a704));
+				//#endif
 			} break;
 
 			// gaming

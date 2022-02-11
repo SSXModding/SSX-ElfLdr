@@ -54,11 +54,7 @@ namespace elfldr::util {
 		__builtin_memcpy(addr, string, strlen(string) + 1);
 	}
 
-	bool IsInstructionAligned(void* p) {
-		return UBCast<std::uintptr_t>(p) & 0x3;
-	}
-
-	void WriteRelocatableCall0(void* code, void* subroutine) {
+	void WriteRelocatableCall0(void* __restrict code, const void* __restrict subroutine) {
 		auto* codeptr = UBCast<SeperatedWord*>(code);
 		const auto subrdword = UBCast<SeperatedWord>(subroutine);
 

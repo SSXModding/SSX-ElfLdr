@@ -14,6 +14,8 @@
 
 namespace elfldr::util {
 
+	// MAYBE: Move this to a shared spot, so we can do
+	// Maybe<T> (or Optional<T>)
 	namespace detail {
 
 		/**
@@ -124,7 +126,7 @@ namespace elfldr::util {
 			return *this;
 		}
 
-		inline Expected& operator=(Expected& e) {
+		inline Expected& operator=(const Expected& e) {
 			if(this == &e)
 				return *this;
 
@@ -183,7 +185,7 @@ namespace elfldr::util {
 			return *this;
 		}
 
-		inline Expected& operator=(Expected& e) {
+		inline Expected& operator=(const Expected& e) {
 			if(this == &e)
 				return *this;
 

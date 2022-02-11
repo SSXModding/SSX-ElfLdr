@@ -93,6 +93,8 @@ struct ExpPatch : public Patch {
 		constexpr static uintptr_t memstart = 0x002d9440;
 		constexpr static int memsize = 30432192;
 
+		bx::printf("test\n");
+
 		bx::real::MEM_init(util::Ptr(memstart), memsize);
 		bx::real::initheapdebug(memstart, 0x002d8c20, memstart + memsize);
 
@@ -135,6 +137,7 @@ struct ExpPatch : public Patch {
 		// Load all the erls, collect their function pointers, and then
 		// get the length of said collection grouped by type
 
+#if 0
 		auto* erl = erl::LoadErl("host:sample_erl.erl");
 		if(erl) {
 			auto sym = erl->ResolveSymbol("elfldr_get_functions");
@@ -156,8 +159,8 @@ struct ExpPatch : public Patch {
 					util::DebugOut("type %d, ptr %08x", egr.functions[i].type, egr.functions[i].fnPtr);
 			}
 		}
+#endif
 	}
-	// p[enis
 };
 
 // Register the patch into the patch system

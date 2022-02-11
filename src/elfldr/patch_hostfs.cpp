@@ -65,6 +65,10 @@ struct HostFsPatch : public Patch {
 		// how'd you even get here?
 		ELFLDR_VERIFY((data.game != Game::Invalid));
 
+		// TODO: it seems like sceCd* init hangs up on something, I suspect media type
+		// 	(Older PCSX2 versions don't emulate the CD block as well and don't care)
+		//		I'd like for the game to run with no disk in the drive though, so that will probs take work
+
 		switch(data.game) {
 			case Game::SSXOG: {
 				// ASYNCFILE_init usually gets "cd:".

@@ -92,7 +92,7 @@ namespace elfldr::erl {
 			std::int32_t s_current_data;
 			std::uint32_t newstate;
 
-			if(util::IsInstructionAligned(&bytes[offset])) {
+			if(!util::IsInstructionAligned(&bytes[offset])) {
 				ERL_DEBUG_PRINTF("Unaligned relocation (at %p), type %d", &bytes[offset], type);
 			}
 

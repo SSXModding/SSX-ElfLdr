@@ -5,10 +5,16 @@
  * under the terms of the MIT license.
  */
 
+// This is an internal header and provides apis only internal code should touch
+// Use publically available util::Hash<T> for typed hashing, please :)
+// This note does not apply if you're specializing it though
+
 #ifndef UTILS_FNV_H
 #define UTILS_FNV_H
 
-namespace elfldr::util {
+#include <stdint.h>
+
+namespace elfldr::util::detail {
 
 	/**
 	 * FNV1a hash. Pretty self explanatory.
@@ -18,7 +24,7 @@ namespace elfldr::util {
 	 * \param[in] length Size of the input data.
 	 * \param[in] lastval Last hashed value, or 0 for a fresh hash.
 	 */
-	std::uint32_t fnv1a_hash(const void* input, std::size_t length, std::uint32_t lastval);
+	uint32_t fnv1a_hash(const void* input, size_t length, uint32_t lastval);
 
 } // namespace elfldr::util
 

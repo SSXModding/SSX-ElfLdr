@@ -11,7 +11,7 @@
 // This file defines abi types used in ERL functions
 // TODO
 
-#include <cstdint>
+#include <stdint.h>
 
 /**
  * Declare a symbol as hidden
@@ -20,7 +20,7 @@
 
 namespace elfldr {
 
-	enum class FunctionType : std::uint8_t {
+	enum class FunctionType : uint8_t {
 		/**
 		 * Called when cGame::cGame() is called
 		 */
@@ -54,7 +54,7 @@ namespace elfldr {
 	// returned by the ERL's
 	// "bool elfldr_get_functions(ErlGetFunctionReturn*)" function
 	struct ErlGetFunctionReturn {
-		std::uint8_t nrFunctions;
+		uint8_t nrFunctions;
 		FunctionEntry* functions;
 	};
 

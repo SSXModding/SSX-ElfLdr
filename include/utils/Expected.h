@@ -8,8 +8,6 @@
 #ifndef ELFLDR_EXPECTED_H
 #define ELFLDR_EXPECTED_H
 
-#include <cstdint>
-
 #include "utils.h"
 
 namespace elfldr::util {
@@ -88,7 +86,7 @@ namespace elfldr::util {
 			}
 
 			bool constructed { false };
-			alignas(T) std::uint8_t storage[sizeof(T)] {};
+			alignas(T) uint8_t storage[sizeof(T)] {};
 		};
 
 	} // namespace detail

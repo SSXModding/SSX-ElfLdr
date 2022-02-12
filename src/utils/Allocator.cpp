@@ -16,7 +16,7 @@ namespace elfldr::util {
 	static Alloc_t Alloc_aligned_ptr = nullptr;
 	static Free_t Free_aligned_ptr = nullptr;
 
-	void* Alloc(std::uint32_t size) {
+	void* Alloc(uint32_t size) {
 		ELFLDR_ASSERT(Alloc_ptr != nullptr);
 		return Alloc_ptr(size);
 	}
@@ -26,13 +26,13 @@ namespace elfldr::util {
 		return Free_ptr(ptr);
 	}
 
-	void* AllocAligned(std::uint32_t size) {
+	void* AllocAligned(uint32_t size) {
 		ELFLDR_ASSERT(Alloc_aligned_ptr != nullptr);
 		return Alloc_aligned_ptr(size);
 	}
 
 	void FreeAligned(void* ptr) {
-		ELFLDR_ASSERT(Free_ptr != nullptr);
+		ELFLDR_ASSERT(Free_aligned_ptr != nullptr);
 		return Free_aligned_ptr(ptr);
 	}
 
@@ -45,13 +45,13 @@ namespace elfldr::util {
 
 } // namespace elfldr::util
 
-void* operator new(std::size_t size) {
+void* operator new(size_t size) {
 	auto* p = elfldr::util::Alloc(size);
 	ELFLDR_VERIFY(p != nullptr && "Alloc() returned nullptr!!!");
 	return p;
 }
 
-void* operator new[](std::size_t size) {
+void* operator new[](size_t size) {
 	auto* p = elfldr::util::Alloc(size);
 	ELFLDR_VERIFY(p != nullptr && "Alloc() returned nullptr!!!");
 	return p;
@@ -62,7 +62,7 @@ void operator delete(void* ptr) noexcept {
 		elfldr::util::Free(ptr);
 }
 
-void operator delete(void* ptr, std::size_t) noexcept {
+void operator delete(void* ptr, size_t) noexcept {
 	if(ptr) // satisifies that delete/delete[] shouldn't break if nullptr is deleted
 		elfldr::util::Free(ptr);
 }
@@ -72,18 +72,18 @@ void operator delete[](void* ptr) noexcept {
 		elfldr::util::Free(ptr);
 }
 
-void operator delete[](void* ptr, std::size_t) noexcept {
+void operator delete[](void* ptr, size_t) noexcept {
 	if(ptr) // satisifies that delete/delete[] shouldn't break if nullptr is deleted
 		elfldr::util::Free(ptr);
 }
 
-// placments
+// placement new/delete support
 
-void* operator new(std::size_t, void* p) noexcept {
+void* operator new(size_t, void* p) noexcept {
 	return p;
 }
 
-void* operator new[](std::size_t, void* p) noexcept {
+void* operator new[](size_t, void* p) noexcept {
 	return p;
 }
 

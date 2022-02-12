@@ -8,24 +8,42 @@
 #ifndef UTILS_HASH_H
 #define UTILS_HASH_H
 
-
 #include <utils/Fnv1a.h>
 #include <utils/utils.h>
 
 namespace elfldr::util {
 
 	/**
-	 * Hash template. Provides a function
+	 * Hash trait template. Provides a function
 	 * to hash a given value of type T.
 	 */
 	template <class T>
 	struct Hash {
 		// Hash:
-		//static std::uint32_t hash(const T&);
+		// static uint32_t hash(const T&);
 	};
 
+#define HASH_TRIVIAL_SPECIALIZATION(T)                                                  \
+	template <>                                                                         \
+	struct Hash<T> {                                                                    \
+		inline static uint32_t hash(const T& t) {                                       \
+			return detail::fnv1a_hash(reinterpret_cast<const void*>(&t), sizeof(T), 0); \
+		}                                                                               \
+	};
 
-	// TODO: more specializations, here.
+	// trivial specializations for ... trivial types!
+	HASH_TRIVIAL_SPECIALIZATION(uint8_t)
+	HASH_TRIVIAL_SPECIALIZATION(uint16_t)
+	HASH_TRIVIAL_SPECIALIZATION(uint32_t)
+	HASH_TRIVIAL_SPECIALIZATION(uint64_t)
+	HASH_TRIVIAL_SPECIALIZATION(uintptr_t)
+	HASH_TRIVIAL_SPECIALIZATION(int8_t)
+	HASH_TRIVIAL_SPECIALIZATION(int16_t)
+	HASH_TRIVIAL_SPECIALIZATION(int32_t)
+	HASH_TRIVIAL_SPECIALIZATION(int64_t)
+	HASH_TRIVIAL_SPECIALIZATION(intptr_t)
+
+#undef HASH_TRIVIAL_SPECIALIZATION
 
 } // namespace elfldr::util
 

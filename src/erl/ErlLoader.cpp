@@ -60,7 +60,7 @@ namespace elfldr::erl {
 	template <class T>
 	using ErlResult = util::Expected<T, ErlLoadError>;
 
-	constexpr std::uint32_t Align(std::uint32_t alignment_value, int align) {
+	constexpr uint32_t Align(uint32_t alignment_value, int align) {
 		align--;
 		if(alignment_value & align) {
 			alignment_value |= align;
@@ -68,6 +68,10 @@ namespace elfldr::erl {
 		}
 		return alignment_value;
 	}
+
+	// TODO: Array<Image*>
+	// 	or HashTable<String(View), Image*> gLoadedImages?
+	//		for dependency support
 
 	/**
 	 * This class is actually what we allocate
@@ -87,16 +91,16 @@ namespace elfldr::erl {
 		/**
 		 * Apply a ELF relocation for this image.
 		 */
-		[[nodiscard]] bool ApplyRelocation(std::size_t offset, int type, std::uint32_t addr, std::uint32_t addend) const {
-			std::uint32_t u_current_data;
-			std::int32_t s_current_data;
-			std::uint32_t newstate;
+		[[nodiscard]] bool ApplyRelocation(std::size_t offset, int type, uint32_t addr, uint32_t addend) const {
+			uint32_t u_current_data;
+			int32_t s_current_data;
+			uint32_t newstate;
 
 			if(!util::IsInstructionAligned(&bytes[offset])) {
 				ERL_DEBUG_PRINTF("Unaligned relocation (at %p), type %d", &bytes[offset], type);
 			}
 
-			memcpy(&u_current_data, &bytes[offset], sizeof(std::uintptr_t));
+			memcpy(&u_current_data, &bytes[offset], sizeof(uintptr_t));
 			memcpy(&s_current_data, &bytes[offset], 4);
 
 			if(addend != 0)
@@ -120,7 +124,7 @@ namespace elfldr::erl {
 					return false;
 			}
 
-			memcpy(&bytes[offset], &newstate, sizeof(std::uint32_t));
+			memcpy(&bytes[offset], &newstate, sizeof(uint32_t));
 
 			ERL_DEBUG_PRINTF("Changed 0x%08X data from %08X to %08X.", &bytes[offset], u_current_data, newstate);
 			return true;
@@ -154,7 +158,7 @@ namespace elfldr::erl {
 			if(sizeof(elf_section_t) != header.e_shentsize)
 				return ErlLoadError::SizeMismatch;
 
-			std::uint32_t fullDataSize {};
+			uint32_t fullDataSize {};
 
 			// Let's read the section table:
 			auto* sections = new elf_section_t[header.e_shnum];
@@ -211,7 +215,7 @@ namespace elfldr::erl {
 
 			// Allocate buffer for the ERL code + data to go.
 			// this->fullsize = fullDataSize;
-			bytes = new std::uint8_t[fullDataSize];
+			bytes = new uint8_t[fullDataSize];
 
 			// Initialize the symbol hash table, so we can export symbols
 			// using it.
@@ -296,7 +300,7 @@ namespace elfldr::erl {
 						case SECTION: {
 							// ERL_DEBUG_PRINTF("Internal reloc to section %d strndx %d (%s)", sym, sections[sym.st_shndx].sh_name, util::StringView(&shstrtab[sections[sym.st_shndx].sh_name]).CStr());
 							auto offset = relocating_section.sh_addr + r.r_offset;
-							auto addr = reinterpret_cast<std::uintptr_t>(&bytes[sections[sym.st_shndx].sh_addr]);
+							auto addr = reinterpret_cast<uintptr_t>(&bytes[sections[sym.st_shndx].sh_addr]);
 
 							if(!ApplyRelocation(offset, type, addr, r.r_addend)) {
 								ERL_DEBUG_PRINTF("Error relocating");
@@ -309,8 +313,8 @@ namespace elfldr::erl {
 						case FUNC:
 							// TODO: Should probably implement dedupe, but whateverrrrrrrrrr
 							ERL_DEBUG_PRINTF("Internal symbol relocation to %s", util::StringView(strtab_names.data() + sym.st_name).CStr());
-							ERL_DEBUG_PRINTF("Relocating at address 0x%08X", reinterpret_cast<std::uintptr_t>(bytes + relocating_section.sh_addr + sym.st_value));
-							if(!ApplyRelocation(relocating_section.sh_addr + sym.st_value, type, reinterpret_cast<std::uintptr_t>(bytes + relocating_section.sh_addr + sym.st_value), r.r_addend)) {
+							ERL_DEBUG_PRINTF("Relocating at address 0x%08X", reinterpret_cast<uintptr_t>(bytes + relocating_section.sh_addr + sym.st_value));
+							if(!ApplyRelocation(relocating_section.sh_addr + sym.st_value, type, reinterpret_cast<uintptr_t>(bytes + relocating_section.sh_addr + sym.st_value), r.r_addend)) {
 								ERL_DEBUG_PRINTF("Error relocating");
 								// cleanup
 								delete[] reloc;
@@ -334,7 +338,7 @@ namespace elfldr::erl {
 						// get stuff
 						util::String name(&strtab_names[symtab[i].st_name]);
 						auto offset = sections[symtab[i].st_shndx].sh_addr + symtab[i].st_value;
-						auto address = reinterpret_cast<std::uintptr_t>(bytes + offset);
+						auto address = reinterpret_cast<uintptr_t>(bytes + offset);
 
 						ERL_RELEASE_PRINTF("Exporting ERL symbol %s @ 0x%08X", name.c_str(), address);
 						symbol_table[name] = Symbol(address);
@@ -387,7 +391,7 @@ namespace elfldr::erl {
 		util::String filename;
 
 		// TODO: Array<std::uint8_t>?
-		std::uint8_t* bytes {};
+		uint8_t* bytes {};
 		// std::uint32_t fullsize {};
 	};
 

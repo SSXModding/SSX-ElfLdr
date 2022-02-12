@@ -8,38 +8,38 @@
 #ifndef ALLOCATOR_H
 #define ALLOCATOR_H
 
-#include <cstddef>
-#include <cstdint>
+#include <stddef.h>
+#include <stdint.h>
 
 // Provide C++ new/new[] and delete/delete[]
 // overloads which use the Utils heap.
 // Does not provide nothrow (these versions are nothrow in and of themselves)
 
-void* operator new(std::size_t size);
-void* operator new[](std::size_t size);
+void* operator new(size_t size);
+void* operator new[](size_t size);
 void operator delete(void* ptr) noexcept;
 void operator delete[](void* ptr) noexcept;
 
 // Placement new/new[]/delete/delete[]
-void* operator new(std::size_t, void* p) noexcept;
-void* operator new[](std::size_t, void* p) noexcept;
+void* operator new(size_t, void* p) noexcept;
+void* operator new[](size_t, void* p) noexcept;
 void operator delete(void*, void*) noexcept;
 void operator delete[](void*, void*) noexcept;
 
 namespace elfldr::util {
 
 	// C style malloc() api
-	void* Alloc(std::uint32_t size);
+	void* Alloc(uint32_t size);
 	void Free(void* ptr);
 
-	void* AllocAligned(std::uint32_t size);
+	void* AllocAligned(uint32_t size);
 
 	void FreeAligned(void* ptr);
 
 	/**
 	 * malloc() callback type for the ERL loader.
 	 */
-	using Alloc_t = void* (*)(std::uint32_t);
+	using Alloc_t = void* (*)(uint32_t);
 
 	/**
 	 * free() callback type for the ERL loader.

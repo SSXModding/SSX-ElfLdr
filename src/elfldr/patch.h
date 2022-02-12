@@ -8,7 +8,7 @@
 #ifndef PATCH_H
 #define PATCH_H
 
-#include <cstdint>
+#include <stdint.h>
 
 namespace elfldr {
 

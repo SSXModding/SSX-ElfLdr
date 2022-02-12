@@ -78,7 +78,7 @@ struct HostFsPatch : public Patch {
 
 				// replace the strncmp length param constant in ASYNCFILE_init
 				// from 6 to 4, so we can just use "host".
-				util::MemRefTo<std::uint8_t>(util::Ptr(0x00238550)) = 0x4;
+				util::MemRefTo<uint8_t>(util::Ptr(0x00238550)) = 0x4;
 
 				// Write a new string in some slack space.
 
@@ -86,7 +86,7 @@ struct HostFsPatch : public Patch {
 
 				// Overwrite the pointer that the path "beautification" function uses to strcat()
 				// "host0:" pointing it to our HostFS path instead.
-				util::MemRefTo<std::uint32_t>(util::Ptr(0x002c59c8)) = 0x002c5cc4;
+				util::MemRefTo<uint32_t>(util::Ptr(0x002c59c8)) = 0x002c5cc4;
 
 				// Write new IOP module paths
 				util::WriteString(util::Ptr(0x002b3ab0), "host:data/modules/ioprp16.img");
@@ -168,7 +168,7 @@ struct HostFsPatch : public Patch {
 
 				// NOP world BIG file mounts, both for hardcoded SSXFE and the world's mounting
 				util::NopFill<4>(util::Ptr(0x001862dc));
-				util::MemRefTo<std::uint32_t>(util::Ptr(0x00263e1c)) = 0x00000000;
+				util::MemRefTo<uint32_t>(util::Ptr(0x00263e1c)) = 0x00000000;
 			} break;
 
 			// TODO: The game still passes some cdrom0: paths,
@@ -180,7 +180,7 @@ struct HostFsPatch : public Patch {
 
 				// null terminate the ';1' so it isn't concatenated
 				// to paths (HostFS doesn't need it)
-				util::MemRefTo<std::uint8_t>(util::Ptr(0x004a3ea0)) = 0x0;
+				util::MemRefTo<uint8_t>(util::Ptr(0x004a3ea0)) = 0x0;
 
 				util::WriteString(util::Ptr(0x00495828), "host:");
 

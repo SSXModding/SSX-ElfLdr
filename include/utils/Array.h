@@ -8,7 +8,7 @@
 #ifndef ELFLDR_ARRAY_H
 #define ELFLDR_ARRAY_H
 
-#include <cstddef>
+#include <stddef.h>
 
 namespace elfldr::util {
 

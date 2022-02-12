@@ -17,8 +17,8 @@
 #include "patch.h"
 
 // addresses of some fun stuff
-constexpr static std::uintptr_t TheApp_Address = 0x002852f8;
-constexpr static std::uintptr_t TheWorld_Address = 0x00299cc8;
+constexpr static uintptr_t TheApp_Address = 0x002852f8;
+constexpr static uintptr_t TheWorld_Address = 0x00299cc8;
 
 using namespace elfldr;
 
@@ -29,10 +29,10 @@ namespace elfldr {
 
 // aligned malloc/free for ERL
 
-void* AlignedBxMalloc(std::uint32_t c) {
-	auto raw_pointer = bx::real::MEM_alloc("Lily <3", c + sizeof(std::uint32_t), 0x40);
+void* AlignedBxMalloc(uint32_t c) {
+	auto raw_pointer = bx::real::MEM_alloc("Lily <3", c + sizeof(uint32_t), 0x40);
 	auto value = reinterpret_cast<uintptr_t>(raw_pointer);
-	value += (-value) & sizeof(std::uint32_t);
+	value += (-value) & sizeof(uint32_t);
 
 	// prepare the returned pointer by putting in the original malloc address
 	auto* ret_pointer = reinterpret_cast<void*>(value);
@@ -77,7 +77,7 @@ struct ExpPatch : public Patch {
 		// so we can PROBABLY relax REAL stuff
 
 		// clang-format off
-		util::SetAllocationFunctions([](std::uint32_t c) {
+		util::SetAllocationFunctions([](uint32_t c) {
 			return bx::real::MEM_alloc("Lily <3", c, 0x0 /* i forgor mbflags :( */);
 		}, [](void* p) {
 			if(p)
@@ -117,17 +117,17 @@ struct ExpPatch : public Patch {
 		util::NopFill<10>(util::Ptr(0x00189c18)); // start by nopfilling
 
 		// Put in the replacement instructions
-		util::MemRefTo<std::uint32_t>(util::Ptr(0x00189c18)) = 0x2784bde8;
-		util::MemRefTo<std::uint32_t>(util::Ptr(0x00189c1c)) = 0x24050003;
-		util::MemRefTo<std::uint32_t>(util::Ptr(0x00189c20)) = 0x0c06192c;
+		util::MemRefTo<uint32_t>(util::Ptr(0x00189c18)) = 0x2784bde8;
+		util::MemRefTo<uint32_t>(util::Ptr(0x00189c1c)) = 0x24050003;
+		util::MemRefTo<uint32_t>(util::Ptr(0x00189c20)) = 0x0c06192c;
 
 		// basic function prologue
-		constexpr static std::uint32_t subroutine_prologue_template[] {
+		constexpr static uint32_t subroutine_prologue_template[] {
 			0x27BDFFFC, // addiu sp, sp, -0x4
 			0xFFB00000	// sd s0, 0x0(sp) ; save the old value of s0 as the first
 		};
 
-		constexpr static std::uint32_t subroutine_epilogue_template[] {
+		constexpr static uint32_t subroutine_epilogue_template[] {
 			// ; Restore registers to what they were before
 			0xDFB00000, // ld s0, 0x0(sp) ; load the old value of s0
 			0x03E00008, // jr ra
@@ -137,13 +137,13 @@ struct ExpPatch : public Patch {
 		// Load all the erls, collect their function pointers, and then
 		// get the length of said collection grouped by type
 
-#if 0
+#if 1
 		auto* erl = erl::LoadErl("host:sample_erl.erl");
 		if(erl) {
 			auto sym = erl->ResolveSymbol("elfldr_get_functions");
 
 			if(!sym.IsValid()) {
-				util::DebugOut("Invalid ERL \"%s\"!", erl->GetFileName());
+				util::DebugOut("Invalid Codehook \"%s\"!", erl->GetFileName());
 				erl::DestroyErl(erl);
 			}
 

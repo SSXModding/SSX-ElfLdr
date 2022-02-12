@@ -12,8 +12,6 @@
 #include <utils/codeutils.h>
 #include <utils/utils.h>
 
-#include <cstdint>
-
 namespace bx {
 	// ghidra typedefs used
 

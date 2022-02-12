@@ -49,6 +49,9 @@ namespace elfldr::util {
 		}
 	};
 
+	// TODO: implementation of CharTraits for UTF-8,
+	// 	so we can switch to utf-8 safe code (where we're not touching Sony libs/such)
+
 } // namespace elfldr::util
 
 #endif // ELFLDR_CHARTRAITS_H

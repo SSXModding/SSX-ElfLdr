@@ -4,8 +4,6 @@
 #include <utils/Hash.h>
 #include <utils/utils.h>
 
-#include <cstdint>
-
 namespace elfldr::util {
 
 	// TODO:
@@ -106,7 +104,7 @@ namespace elfldr::util {
 			bool used;
 		};
 
-		std::uint32_t HashKey(const Key& key) {
+		uint32_t HashKey(const Key& key) {
 			return Hasher::hash(key) % bucket_size;
 		}
 
@@ -120,7 +118,7 @@ namespace elfldr::util {
 
 		// TODO: this should be using allocator
 
-		void AllocBuckets(std::size_t size) {
+		void AllocBuckets(size_t size) {
 			// avoid a memory leak by freeing any old buckets
 			// beforehand.
 			if(buckets)
@@ -136,7 +134,7 @@ namespace elfldr::util {
 		}
 
 		Bucket* buckets {};
-		std::size_t bucket_size {};
+		size_t bucket_size {};
 	};
 
 } // namespace elfldr

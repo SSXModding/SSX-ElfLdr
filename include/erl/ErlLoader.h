@@ -10,7 +10,6 @@
 
 #include <utils/utils.h>
 
-#include <cstdint>
 
 // The public API surface for LibErl.
 //
@@ -26,16 +25,10 @@
 
 namespace elfldr::erl {
 
-	/**
-	 * Symbol data type.
-	 * Must be pointer-sized.
-	 */
-	// using Symbol = std::uintptr_t;
-
 	struct Symbol {
 		constexpr Symbol() = default;
 
-		constexpr Symbol(std::uintptr_t p)
+		constexpr Symbol(uintptr_t p)
 			: _ptr(p) {
 		}
 
@@ -43,7 +36,7 @@ namespace elfldr::erl {
 			return util::UBCast<int>(_ptr) != -1;
 		}
 
-		std::uintptr_t AsRaw() const {
+		uintptr_t AsRaw() const {
 			return _ptr;
 		}
 
@@ -52,8 +45,8 @@ namespace elfldr::erl {
 			return util::UBCast<T*>(_ptr);
 		}
 
-	   private:
-		std::uintptr_t _ptr;
+		// do not touch, this is only to keep the POD contract true
+		uintptr_t _ptr;
 	};
 
 	/**
@@ -63,7 +56,7 @@ namespace elfldr::erl {
 		virtual ~Image() = default;
 
 		/**
-		 * Resolve a ERL-local symbol.
+		 * Resolve an ERL-local symbol.
 		 *
 		 * \returns Symbol address if found, or 0x0 (nullptr).
 		 *
@@ -73,6 +66,13 @@ namespace elfldr::erl {
 
 		virtual const char* GetFileName() const = 0;
 	};
+
+	/**
+	 * Add a global symbol to the ERL loader.
+	 * This symbol when spotted in an ERL will be slotted
+	 * in with the approiate
+	 */
+	void AddGlobalSymbol(const char* name, Symbol address);
 
 	/**
 	 * Load and relocate a .erl file.

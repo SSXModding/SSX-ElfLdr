@@ -10,7 +10,7 @@
 
 // Internal ELF file format structures for liberl
 
-#include <cstdint>
+#include <stdint.h>
 
 namespace elfldr::erl {
 
@@ -36,21 +36,21 @@ namespace elfldr::erl {
 #define R_MIPS_HI16 5
 #define R_MIPS_LO16 6
 
-	using Half = std::uint16_t;
-	using Addr = std::uint32_t;
-	using Word = std::uint32_t;
-	using SWord = std::uint32_t;
-	using XWord = std::uint64_t;
-	using Sxword = std::uint64_t;
+	using Half = uint16_t;
+	using Addr = uint32_t;
+	using Word = uint32_t;
+	using SWord = uint32_t;
+	using XWord = uint64_t;
+	using Sxword = uint64_t;
 
 	struct elf_header_t {
 		union { // is there a reason why this is a union?
-			std::uint8_t raw[16];
+			uint8_t raw[16];
 			struct e_ident_t {
-				std::uint8_t ei_magic[4];
-				std::uint8_t ei_class;
-				std::uint8_t ei_data;
-				std::uint8_t ei_version;
+				uint8_t ei_magic[4];
+				uint8_t ei_class;
+				uint8_t ei_data;
+				uint8_t ei_version;
 			} cook;
 		} e_ident;
 
@@ -86,8 +86,8 @@ namespace elfldr::erl {
 		Word st_name;
 		Word st_value;
 		Word st_size;
-		std::uint8_t st_info;
-		std::uint8_t st_other;
+		uint8_t st_info;
+		uint8_t st_other;
 		Half st_shndx;
 	};
 

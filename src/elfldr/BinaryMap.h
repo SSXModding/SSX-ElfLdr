@@ -8,7 +8,7 @@
 #ifndef BINMAP_H
 #define BINMAP_H
 
-#include <cstdint>
+#include <stdint.h>
 
 namespace elfldr {
 

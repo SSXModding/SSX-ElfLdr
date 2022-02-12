@@ -8,10 +8,6 @@
 #ifndef ELFLDR_STRING_H
 #define ELFLDR_STRING_H
 
-
-#include <cstdint>
-#include <cstring>
-
 #include <utils/Allocator.h>
 #include <utils/CharTraits.h>
 #include <utils/Hash.h>
@@ -234,7 +230,7 @@ namespace elfldr::util {
 			if(!cstr)
 				return;
 
-			const auto clen = strlen(cstr);
+			const auto clen = Traits::Length(cstr);
 
 			Resize(clen);
 			memcpy(&memory[0], &cstr[0], clen * sizeof(T));
@@ -246,19 +242,21 @@ namespace elfldr::util {
 	};
 
 	// Hash<T> specializations for string stuff,
-	// this'll automatically work with U8String and co
+	// this will automatically work with any new
+	// instantiations of BasicString or BasicStringView,
+	// respecting custom Traits implementations as well.
 
-	template <class CharT>
-	struct Hash<BasicString<CharT>> {
-		inline static std::uint32_t hash(const BasicString<CharT>& str) {
-			return util::fnv1a_hash(UBCast<void*>(str.data()), str.length() * sizeof(CharT), 0);
+	template <class CharT, class Traits>
+	struct Hash<BasicString<CharT, Traits>> {
+		inline static uint32_t hash(const BasicString<CharT, Traits>& str) {
+			return detail::fnv1a_hash(UBCast<const void*>(str.c_str()), str.length() * sizeof(CharT), 0);
 		}
 	};
 
-	template <class CharT>
-	struct Hash<BasicStringView<CharT>> {
-		inline static std::uint32_t hash(const BasicStringView<CharT>& str) {
-			return util::fnv1a_hash(UBCast<void*>(str.Data()), str.Length() * sizeof(CharT), 0);
+	template <class CharT, class Traits>
+	struct Hash<BasicStringView<CharT, Traits>> {
+		inline static uint32_t hash(const BasicStringView<CharT, Traits>& str) {
+			return detail::fnv1a_hash(UBCast<const void*>(str.Data()), str.Length() * sizeof(CharT), 0);
 		}
 	};
 

@@ -8,18 +8,18 @@
 #ifndef ELFLDR_GAMEVERSION_H
 #define ELFLDR_GAMEVERSION_H
 
-#include <cstdint>
+#include <stdint.h>
 
 namespace elfldr {
 
-	enum class Game : std::uint8_t {
+	enum class Game : uint8_t {
 		Invalid,
 		SSXOG,
 		SSXDVD,
 		SSX3
 	};
 
-	enum class GameRegion : std::uint8_t {
+	enum class GameRegion : uint8_t {
 		NTSC,
 		PAL,
 		NTSCJ

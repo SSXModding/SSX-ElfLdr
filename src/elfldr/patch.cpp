@@ -15,6 +15,7 @@
 // this for something more serious.
 constexpr static uint32_t MAX_PATCHES = 4;
 
+// TODO: replace with hashmap, only allow init after memory probing done
 static elfldr::BinaryMap<elfldr::PatchId, elfldr::Patch*, MAX_PATCHES> gPatchMap;
 
 namespace elfldr {

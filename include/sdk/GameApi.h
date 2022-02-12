@@ -22,6 +22,9 @@
 #include <utils/utils.h>
 //#include <sdk/structs.h>
 
+// TODO: dynamic function wrappers
+
+
 namespace bx {
 
 	constexpr static elfldr::util::VarFunction<0x0018ac08, void, const char*> printf {};
@@ -38,15 +41,10 @@ namespace bx {
 		// In REAL headers, this may be char*.
 		// For ease of use, it's void* here.
 
-		constexpr static elfldr::util::Function<0x0023a448, void*, const char* /* label */, std::uint64_t /* size */, int /* flags */> MEM_alloc {};
+		constexpr static elfldr::util::Function<0x0023a448, void*, const char* /* label */, uint64_t /* size */, int /* flags */> MEM_alloc {};
 		constexpr static elfldr::util::Function<0x0023a998, void, void*> MEM_free {};
 	} // namespace real
 
-	// TODO: new/delete implementations
-	// which use bx::real::MEM_alloc/bx::real::MEM_free
-	//
-	// only for the ERL though, elfldr
-	// will besides ERL allocation be zero-alloc.
 } // namespace bx
 
 #endif // GAMEAPI_H

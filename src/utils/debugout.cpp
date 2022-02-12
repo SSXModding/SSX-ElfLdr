@@ -17,7 +17,7 @@
 namespace elfldr::util {
 
 #ifndef ERL
-	std::uint8_t gTabLevel = 0;
+	uint8_t gTabLevel = 0;
 #endif
 
 	// Some macro (:() helpers

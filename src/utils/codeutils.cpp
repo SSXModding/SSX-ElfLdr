@@ -14,12 +14,12 @@ namespace elfldr::util {
 
 	// accessor type for both halves of a word individually.
 	// this makes the code for AddUnlimitedCallVoid a lot less stupid
-	union SeperatedWord {
-		std::uint32_t Word;
+	union SeperatedDWord {
+		uint32_t DWord;
 
 		struct {
-			std::uint16_t top_half;
-			std::uint16_t bottom_half;
+			uint16_t top_half;
+			uint16_t bottom_half;
 		};
 
 		void Dump() const {
@@ -30,8 +30,9 @@ namespace elfldr::util {
 	};
 
 	// This is kinda wasteful, but it should work.
+	// Assumes s0 is a caller-save register too
 
-	constexpr static std::uint32_t SubroutineCallTemplate[] {
+	constexpr static uint32_t SubroutineCallTemplate[] {
 		// Load dword address to jump to
 		0x3c100000, // lui s0,     0x0000 (template top word)
 		0x36100000, // ori s0, s0, 0x0000 (template bottom word)
@@ -42,7 +43,7 @@ namespace elfldr::util {
 	};
 
 	// size of the above template in bytes
-	constexpr static std::size_t SubroutineCallTemplate_Size = sizeof(SubroutineCallTemplate) / sizeof(std::uint32_t);
+	constexpr static size_t SubroutineCallTemplate_Size = sizeof(SubroutineCallTemplate) / sizeof(uint32_t);
 
 	void ReplaceString(void* addr, const char* string) {
 		DebugOut("Replacing string \"%s\" at %p: \"%s\"...", UBCast<char*>(addr), addr, string);
@@ -55,8 +56,8 @@ namespace elfldr::util {
 	}
 
 	void WriteRelocatableCall0(void* __restrict code, const void* __restrict subroutine) {
-		auto* codeptr = UBCast<SeperatedWord*>(code);
-		const auto subrdword = UBCast<SeperatedWord>(subroutine);
+		auto* codeptr = UBCast<SeperatedDWord*>(code);
+		const auto subrdword = UBCast<SeperatedDWord>(subroutine);
 
 		// We assume the address is word aligned,
 		// so we should probably keep that assumption

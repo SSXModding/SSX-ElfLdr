@@ -83,7 +83,7 @@ namespace elfldr::util {
 	struct IsSame<T, T> : public TrueType {};
 
 	template <class T, class U>
-	static constexpr auto IsSameV = IsSame<T, U>::value;
+	[[maybe_unused]] static constexpr auto IsSameV = IsSame<T, U>::value;
 
 } // namespace elfldr::util
 

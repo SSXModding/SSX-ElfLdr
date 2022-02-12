@@ -58,8 +58,8 @@ struct MemclrPatch : public Patch {
 				// as simply NOP filling the call causes the game to crash.
 				// util::NopFill<32>(util::Ptr(0x0018a294));
 
-				util::MemRefTo<std::uint32_t>(util::Ptr(0x0018a2a0)) = 0x10000016; // b to the jr ra in initheapdebug(), this seems to be more stable on new pcsx2
-				util::MemRefTo<std::uint32_t>(util::Ptr(0x0018a2a4)) = 0x00000000; // nop to make the EE happy (and avoid side-effects.)
+				util::MemRefTo<uint32_t>(util::Ptr(0x0018a2a0)) = 0x10000016; // b to the jr ra in initheapdebug(), this seems to be more stable on new pcsx2
+				util::MemRefTo<uint32_t>(util::Ptr(0x0018a2a4)) = 0x00000000; // nop to make the EE happy (and avoid side-effects.)
 
 				//#ifdef EXPERIMENTAL
 				 util::DebugOut("Special case for Exp - killing MEM_init and initheapdebug");
@@ -70,12 +70,12 @@ struct MemclrPatch : public Patch {
 			// gaming
 			case Game::SSXDVD: {
 				// bxPreInit
-				util::MemRefTo<std::uint32_t>(util::Ptr(0x00182b08)) = 0x00000000;
+				util::MemRefTo<uint32_t>(util::Ptr(0x00182b08)) = 0x00000000;
 
 				// initheapdebug()
 				// nopping out the writes themselves seems to be the best here.
-				util::MemRefTo<std::uint32_t>(util::Ptr(0x001826c8)) = 0x00000000;
-				util::MemRefTo<std::uint32_t>(util::Ptr(0x00182700)) = 0x00000000;
+				util::MemRefTo<uint32_t>(util::Ptr(0x001826c8)) = 0x00000000;
+				util::MemRefTo<uint32_t>(util::Ptr(0x00182700)) = 0x00000000;
 			} break;
 
 				// SSX3 release does not actually clear the memory,

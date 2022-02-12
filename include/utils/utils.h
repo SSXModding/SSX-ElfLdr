@@ -8,7 +8,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <cstdint>
+#include <stdint.h>
+#include <stddef.h>
 
 namespace elfldr::util {
 
@@ -16,7 +17,7 @@ namespace elfldr::util {
 	 * this should never have been hardcoded
 	 * and I'm pissed at myself for letting it slide for as long as I did
 	 */
-	constexpr static std::size_t MaxPath = 260;
+	constexpr static size_t MaxPath = 260;
 
 	// it's std::move for elfldr!!!
 	template <class T>
@@ -75,7 +76,7 @@ namespace elfldr::util {
 	/**
 	 * Global tab level.
 	 */
-	extern std::uint8_t gTabLevel;
+	extern uint8_t gTabLevel;
 #endif
 
 	/**
@@ -89,7 +90,7 @@ namespace elfldr::util {
 	void _AssertFailed(const char* exp, const char* file, std::uint32_t line);
 #endif
 
-	void _VerifyFailed(const char* exp, const char* file, std::uint32_t line);
+	void _VerifyFailed(const char* exp, const char* file, uint32_t line);
 
 } // namespace elfldr::util
 

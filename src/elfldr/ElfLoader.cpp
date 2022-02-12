@@ -14,8 +14,6 @@
 #include <sifrpc.h>
 #include <utils/utils.h>
 
-#include <cassert>
-
 namespace elfldr {
 
 	// Global exec data, written by SifLoadElf(...)

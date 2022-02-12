@@ -10,8 +10,8 @@
 #ifndef CODEUTILS_H
 #define CODEUTILS_H
 
-#include <cstdint>
-#include <cstring>
+#include <stdint.h>
+#include <string.h>
 
 // needs util::UBCast<Dest, Source>()
 #include <utils/utils.h>
@@ -25,7 +25,7 @@ namespace elfldr::util {
 	template <class T>
 	struct IntrospectableType {
 		template <class Y>
-		constexpr Y FieldAtOffset(std::size_t offset) {
+		constexpr Y FieldAtOffset(size_t offset) {
 			return static_cast<Y>(static_cast<T*>(this) + offset);
 		}
 	};
@@ -36,8 +36,8 @@ namespace elfldr::util {
 	struct GnuVtablePointer {
 		// Looking at generated assembly reveals
 		// that these are actually emitted as 2 shorts.
-		std::uint16_t adj_upper;
-		std::uint16_t adj_lower;
+		uint16_t adj_upper;
+		uint16_t adj_lower;
 
 		/**
 		 * The function pointer.
@@ -120,7 +120,7 @@ namespace elfldr::util {
 	template <size_t N>
 	constexpr void NopFill(void* start) {
 		// ELFLDR_VERIFY(IsInstructionAligned(start));
-		memset(start, 0x0, N * sizeof(std::uint32_t));
+		memset(start, 0x0, N * sizeof(uint32_t));
 	}
 
 	/**
@@ -129,7 +129,7 @@ namespace elfldr::util {
 	 * \param[in] address Address.
 	 * \return void* pointer
 	 */
-	constexpr void* Ptr(std::uintptr_t address) {
+	constexpr void* Ptr(uintptr_t address) {
 		return UBCast<void*>(address);
 	}
 

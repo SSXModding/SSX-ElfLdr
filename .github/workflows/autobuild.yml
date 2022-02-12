@@ -55,7 +55,7 @@ jobs:
           release_name: SSX-Elfldr Nightlies
           repo_token: ${{secrets.GITHUB_TOKEN}}
           file: ${{github.workspace}}/elfldr_nightly.zip
-          tag: ${{github.ref}}
+          tag: nightly_${{github.ref}}
           overwrite: true
           prerelease: true
           body: "This is a nightly build of SSX-Elfldr. It may break your windows, kick your cat out, and/or order 20 pizzas for you. If in doubt, please use a stable release or a release I have \"formally\" tested."

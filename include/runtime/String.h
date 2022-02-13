@@ -54,7 +54,7 @@ namespace elfldr {
 		}
 
 		constexpr const T& operator[](size_t index) const {
-			return &data_ptr[index];
+			return data_ptr[index];
 		}
 
 		friend constexpr bool operator==(const BasicStringView& lhs, const BasicStringView& rhs) {
@@ -79,12 +79,12 @@ namespace elfldr {
 		inline BasicString() = default;
 
 		inline BasicString(const T* cstr) {
+			ELFLDR_VERIFY(cstr != nullptr);
 			CopyFromCString(cstr);
 		}
 
 		inline BasicString(const T* mem, int length) {
-			if(!mem)
-				return;
+			ELFLDR_VERIFY(mem != nullptr);
 
 			// TODO: maybe some interning.
 			// 32 chars max intern, before it becomes an allocation.
@@ -114,7 +114,7 @@ namespace elfldr {
 			if(this == &copy)
 				return *this;
 
-			// call Zecopyctor
+			// call copy constructor (for ease of implementation)
 			new(this) BasicString(copy);
 			return *this;
 		}

@@ -9,6 +9,7 @@ add_library(elfldr_runtime
 
 		# C++ Runtime code
 		Allocator.cpp
+		String.cpp
 		Fnv1a.cpp
 )
 

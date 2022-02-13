@@ -18,7 +18,7 @@ namespace elfldr {
 	 * A simple hash table. Doesn't handle collisions,
 	 * and is probably boneheaded in design. It works though.
 	 */
-	template <class Key, class Value, class Hasher = Hash<Key>>
+	template <class Key, class Value, class Hasher = Hash<Key>, template<class T> class Allocator = StdAllocator>
 	struct HashTable {
 		inline HashTable() = default;
 
@@ -85,6 +85,9 @@ namespace elfldr {
 
 			// Mark this bucket as used,
 			// ala std::*_map<K,V>... Sorry :(
+			//
+			// AKA: It's not an error condition
+			// if we get here and the bucket isn't used.
 			if(!bucket->used) {
 				bucket->used = true;
 				bucket->key = k;
@@ -104,6 +107,8 @@ namespace elfldr {
 			bool used;
 		};
 
+		Allocator<Bucket> alloc;
+
 		uint32_t HashKey(const Key& key) {
 			return Hasher::hash(key) % bucket_size;
 		}
@@ -111,12 +116,8 @@ namespace elfldr {
 		Bucket* MaybeGetBucket(const Key& key) {
 			if(!buckets)
 				return nullptr;
-
-			// this might be wrong. idk though
 			return &buckets[HashKey(key)];
 		}
-
-		// TODO: this should be using allocator
 
 		void AllocBuckets(size_t size) {
 			// avoid a memory leak by freeing any old buckets
@@ -124,12 +125,20 @@ namespace elfldr {
 			if(buckets)
 				FreeBuckets();
 
-			buckets = new Bucket[size];
+			buckets = alloc.Allocate(size);
+
+			// initialize storage
+			for(size_t i = 0; i < size; ++i)
+				alloc.Construct(&buckets[i]);
+
 			bucket_size = size;
 		}
 
 		void FreeBuckets() {
-			delete[] buckets;
+			for(size_t i = 0; i < bucket_size; ++i)
+				buckets[i].~Bucket();
+
+			alloc.Deallocate(buckets);
 			bucket_size = 0;
 		}
 

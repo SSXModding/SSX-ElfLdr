@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <runtime/Assert.h>
 #include <runtime/Utility.h>
 
 namespace elfldr::util {
@@ -118,7 +119,7 @@ namespace elfldr::util {
 	 */
 	template <size_t N>
 	constexpr void NopFill(void* start) {
-		// ELFLDR_VERIFY(IsInstructionAligned(start));
+		ELFLDR_ASSERT(IsInstructionAligned(start));
 		memset(start, 0x0, N * sizeof(uint32_t));
 	}
 

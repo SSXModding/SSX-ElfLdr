@@ -32,8 +32,8 @@
 extern "C" {
 #endif
 
-#ifdef DEBUG
-void __Elfldr__AssertFailure(const char* exp, const char* file, unsigned line);
+#ifndef NDEBUG
+void __Elfldr__AssertFailure(const char* exp, const char* function, const char* file, unsigned line);
 #endif
 void __Elfldr__VerifyFailure(const char* exp, const char* file, unsigned line);
 
@@ -41,11 +41,11 @@ void __Elfldr__VerifyFailure(const char* exp, const char* file, unsigned line);
 }
 #endif
 
-#ifdef DEBUG
+#ifndef NDEBUG
 	#define ELFLDR_ASSERT(x)                                     \
 		do {                                                     \
 			if(!(x)) {                                           \
-				__Elfldr__AssertFailure(#x, __FILE__, __LINE__); \
+				__Elfldr__AssertFailure(#x, __PRETTY_FUNCTION__, __FILE__, __LINE__); \
 				__builtin_unreachable();                         \
 			}                                                    \
 		} while(0)

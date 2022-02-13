@@ -13,9 +13,9 @@
 #include <utils/utils.h>
 #include <runtime/Assert.h>
 
-#ifdef DEBUG
-void __Elfldr__AssertFailure(const char* exp, const char* file, unsigned line) {
-	elfldr::util::DebugOut("ELFLDR_ASSERT(%s) failed. File: %s:%d", exp, file, line);
+#ifndef NDEBUG
+void __Elfldr__AssertFailure(const char* exp, const char* function, const char* file, unsigned line) {
+	elfldr::util::DebugOut("ELFLDR_ASSERT(%s) failed. File: %s:%d Function %s", exp, file, line, function);
 	while(true)
 		;
 }

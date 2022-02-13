@@ -5,6 +5,8 @@
  * under the terms of the MIT license.
  */
 
+#include <runtime/DynamicArray.h>
+
 #include <runtime/Assert.h>
 #include <elfldr/ElfLoader.h>
 #include <utils/utils.h>

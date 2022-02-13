@@ -13,6 +13,10 @@
 
 namespace elfldr {
 
+	// some stuff to do:
+	// - implement push operation
+	// - implement growing (as we get closer to initial length, or immediately, begin reallocating)
+
 	/**
 	 * A simple dynamic array.
 	 */
@@ -50,9 +54,12 @@ namespace elfldr {
 			return *this;
 		}
 
-		~DynamicArray() {
+		constexpr ~DynamicArray() {
 			Resize(0);
 		}
+
+		// we might want to provide a Reserve() function as well,
+		// which resizes to N but does not activate storage of Elem's
 
 		void Resize(SizeType newSize) {
 			if(newSize == 0) {
@@ -79,34 +86,38 @@ namespace elfldr {
 
 				// don't need the old array anymore
 				alloc.Deallocate(oldArray);
+			} else {
+				// Activate storage for Elem's by default-constructing
+				for(size_t i = 0; i < newSize; ++i)
+					alloc.Construct(rawArray[i]);
 			}
 
 			length = newSize;
 		}
 
-		SizeType Length() const {
+		[[nodiscard]] constexpr SizeType Length() const {
 			return length;
 		}
 
-		Pointer Data() {
+		[[nodiscard]] constexpr Pointer Data() {
 			return &rawArray[0];
 		}
 
-		ConstPointer Data() const {
+		[[nodiscard]] constexpr ConstPointer Data() const {
 			return &rawArray[0];
 		}
 
-		Reference At(size_t index) {
+		[[nodiscard]] constexpr Reference At(size_t index) {
 			ELFLDR_VERIFY(index >= length);
 			return rawArray[index];
 		}
 
-		ConstReference At(size_t index) const {
+		[[nodiscard]] constexpr ConstReference At(size_t index) const {
 			ELFLDR_VERIFY(index >= length);
 			return rawArray[index];
 		}
 
-		Reference operator[](size_t index) {
+		constexpr Reference operator[](size_t index) {
 			// If this is a debug build enforce
 			// size checking using At() for verification,
 			// otherwise just index into the array lmao
@@ -117,7 +128,7 @@ namespace elfldr {
 #endif
 		}
 
-		ConstReference operator[](size_t index) const {
+		constexpr ConstReference operator[](size_t index) const {
 #ifdef DEBUG
 			return At(index);
 #else

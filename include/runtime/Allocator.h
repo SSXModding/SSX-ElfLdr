@@ -58,8 +58,8 @@ namespace elfldr {
 	void SetAllocationFunctions(Alloc_t alloc, Free_t free, Alloc_t alloc_aligned, Free_t free_aligned);
 
 	/**
-	 * Allocator using the global LibUtils heap.
-	 * Implements the LibUtils version of the Allocator concept.
+	 * Allocator using the global runtime heap.
+	 * Implements the Runtime version of the Allocator concept.
 	 */
 	template <class T>
 	struct StdAllocator {

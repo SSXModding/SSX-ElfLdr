@@ -5,8 +5,6 @@
  * under the terms of the MIT license.
  */
 
-#include <runtime/DynamicArray.h>
-
 #include <runtime/Assert.h>
 #include <elfldr/ElfLoader.h>
 #include <utils/utils.h>
@@ -50,6 +48,7 @@ void ApplyPatch(elfldr::Patch* patch) {
 
 int main() {
 	elfldr::util::DebugOut("SSX-ElfLdr version " ELFLDR_VERSION_TAG);
+
 
 	// Init loader services.
 	elfldr::InitLoader();

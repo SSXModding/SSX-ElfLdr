@@ -11,21 +11,18 @@
 //
 
 #include <utils/utils.h>
-
-namespace elfldr::detail {
+#include <runtime/Assert.h>
 
 #ifdef DEBUG
-	void __AssertFailure(const char* exp, const char* file, unsigned line) {
-		util::DebugOut("ELFLDR_ASSERT(%s) failed. File: %s:%d", exp, file, line);
-		while(true)
-			;
-	}
+void __Elfldr__AssertFailure(const char* exp, const char* file, unsigned line) {
+	elfldr::util::DebugOut("ELFLDR_ASSERT(%s) failed. File: %s:%d", exp, file, line);
+	while(true)
+		;
+}
 #endif
 
-	void __VerifyFailure(const char* exp, const char* file, unsigned line) {
-		util::DebugOut("ELFLDR_VERIFY(%s) failed. File: %s:%d", exp, file, line);
-		while(true)
-			;
-	}
-
-} // namespace elfldr::util
+void __Elfldr__VerifyFailure(const char* exp, const char* file, unsigned line) {
+	elfldr::util::DebugOut("ELFLDR_VERIFY(%s) failed. File: %s:%d", exp, file, line);
+	while(true)
+		;
+}

@@ -44,16 +44,16 @@ This patch allows the game to load entirely from the host filesystem, making it 
 #### Setup (SSX OG)
  - Extract all of the game's files from the ISO into a directory of your choosing.
  - Once you've done so, using a .BIG extraction tool, extract all of the .BIG archives in data/models, and place all of the files made in that folder.
- - Copy `ssx_elfldr.elf` alongside the main game ELF (e.g: for US, `SLUS_200.95`).
+ - Copy `elfldr.elf` alongside the main game ELF (e.g: for US, `SLUS_200.95`).
 
 #### Setup (SSX Tricky)
  - Extract all of the game's files from the ISO into a directory of your choosing.
- - Copy `ssx_elfldr.elf` alongside the main game ELF.
+ - Copy `elfldr.elf` alongside the main game ELF.
  
 #### Setup (SSX 3)
  - Extract all of the game's files from the ISO into a directory of your choosing.
  - (Optional) Remove the PAD files, they are not needed and a waste of disk space.
- - Copy `ssx_elfldr.elf` alongside the main game ELF.
+ - Copy `elfldr.elf` alongside the main game ELF.
 
 ### MemClr patch
 

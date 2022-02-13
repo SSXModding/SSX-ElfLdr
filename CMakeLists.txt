@@ -30,6 +30,7 @@ add_custom_target(__elfldr_gittag
 set_source_files_properties(${PROJECT_BINARY_DIR}/Version.h PROPERTIES GENERATED TRUE)
 
 # Include elfldr modules
+add_subdirectory(src/runtime)
 add_subdirectory(src/utils)
 add_subdirectory(src/erl)
 

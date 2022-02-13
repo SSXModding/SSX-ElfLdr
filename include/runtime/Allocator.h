@@ -10,6 +10,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <runtime/Assert.h>
 
 // Provide C++ new/new[] and delete/delete[]
 // overloads which use the Utils heap.
@@ -26,7 +27,7 @@ void* operator new[](size_t, void* p) noexcept;
 void operator delete(void*, void*) noexcept;
 void operator delete[](void*, void*) noexcept;
 
-namespace elfldr::util {
+namespace elfldr {
 
 	// C style malloc() api
 	void* Alloc(uint32_t size);

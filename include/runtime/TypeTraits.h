@@ -1,5 +1,5 @@
 /**
- * SSX-Elfldr
+ * SSX-Elfldr Runtime
  *
  * (C) 2021-2022 Lily/modeco80 <lily.modeco80@protonmail.ch>
  * under the terms of the MIT license.
@@ -14,7 +14,7 @@
 #ifndef UTILS_TYPETRAITS_H
 #define UTILS_TYPETRAITS_H
 
-namespace elfldr::util {
+namespace elfldr {
 
 	// declares ::type using,
 	// useful since you can just baseclass TypeConstant<T>

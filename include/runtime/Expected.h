@@ -8,7 +8,8 @@
 #ifndef ELFLDR_EXPECTED_H
 #define ELFLDR_EXPECTED_H
 
-#include "utils.h"
+#include <runtime/Assert.h>
+#include <runtime/Utility.h>
 
 namespace elfldr::util {
 
@@ -52,7 +53,7 @@ namespace elfldr::util {
 
 				// construct new T
 				constructed = true;
-				new(Get()) T(util::Forward<Args>(args)...);
+				new(Get()) T(Forward<Args>(args)...);
 			}
 
 			constexpr void Destruct() {
@@ -78,11 +79,11 @@ namespace elfldr::util {
 
 		   private:
 			constexpr T* Get() {
-				return util::UBCast<T*>(&storage[0]);
+				return UBCast<T*>(&storage[0]);
 			}
 
 			constexpr const T* Get() const {
-				return util::UBCast<const T*>(&storage[0]);
+				return UBCast<const T*>(&storage[0]);
 			}
 
 			bool constructed { false };

@@ -4,13 +4,11 @@
 set(__ELFLDR_UTILS_BASE_SOURCES
 	assert.cpp
 	codeutils.cpp
-	Fnv1a.cpp
 	debugout.cpp
 )
 
 add_library(elfldr_utils_elf
 	${__ELFLDR_UTILS_BASE_SOURCES}
-	Allocator.cpp # TODO: Move to base sources? It'd be nice to have memory allocation in the ERL, and I think we can add that to the ABI
 	FioFile.cpp	
 )
 

@@ -8,11 +8,11 @@
 #ifndef ELFLDR_STRING_H
 #define ELFLDR_STRING_H
 
-#include <utils/Allocator.h>
-#include <utils/CharTraits.h>
-#include <utils/Hash.h>
+#include <runtime/Allocator.h>
+#include <runtime/CharTraits.h>
+#include <runtime/Hash.h>
 
-namespace elfldr::util {
+namespace elfldr {
 
 	/**
 	 * A "view" of a string. Does not own the memory,
@@ -53,7 +53,7 @@ namespace elfldr::util {
 			return data_ptr;
 		}
 
-		constexpr const T& operator[](std::size_t index) const {
+		constexpr const T& operator[](size_t index) const {
 			return &data_ptr[index];
 		}
 
@@ -71,10 +71,10 @@ namespace elfldr::util {
 	};
 
 
-	template <class T, class Traits = CharTraits<T>, class Alloc = util::StdAllocator<T>>
+	template <class T, class Traits = CharTraits<T>, class Alloc = StdAllocator<T>>
 	struct BasicString {
 		using CharType = T;
-		using SizeType = std::size_t;
+		using SizeType = size_t;
 
 		inline BasicString() = default;
 
@@ -131,11 +131,11 @@ namespace elfldr::util {
 			return len;
 		}
 
-		inline T& operator[](std::size_t index) {
+		inline T& operator[](SizeType index) {
 			return memory[index];
 		}
 
-		inline const T& operator[](std::size_t index) const {
+		inline const T& operator[](SizeType index) const {
 			return memory[index];
 		}
 

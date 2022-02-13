@@ -13,8 +13,7 @@
 #include <stdint.h>
 #include <string.h>
 
-// needs util::UBCast<Dest, Source>()
-#include <utils/utils.h>
+#include <runtime/Utility.h>
 
 namespace elfldr::util {
 

@@ -5,10 +5,11 @@
  * under the terms of the MIT license.
  */
 
-#include <utils/Allocator.h>
+#include <runtime/Assert.h>
+#include <runtime/Allocator.h>
 #include <utils/utils.h>
 
-namespace elfldr::util {
+namespace elfldr {
 
 	static Alloc_t Alloc_ptr = nullptr;
 	static Free_t Free_ptr = nullptr;
@@ -46,35 +47,35 @@ namespace elfldr::util {
 } // namespace elfldr::util
 
 void* operator new(size_t size) {
-	auto* p = elfldr::util::Alloc(size);
+	auto* p = elfldr::Alloc(size);
 	ELFLDR_VERIFY(p != nullptr && "Alloc() returned nullptr!!!");
 	return p;
 }
 
 void* operator new[](size_t size) {
-	auto* p = elfldr::util::Alloc(size);
+	auto* p = elfldr::Alloc(size);
 	ELFLDR_VERIFY(p != nullptr && "Alloc() returned nullptr!!!");
 	return p;
 }
 
 void operator delete(void* ptr) noexcept {
 	if(ptr) // satisifies that delete/delete[] shouldn't break if nullptr is deleted
-		elfldr::util::Free(ptr);
+		elfldr::Free(ptr);
 }
 
 void operator delete(void* ptr, size_t) noexcept {
 	if(ptr) // satisifies that delete/delete[] shouldn't break if nullptr is deleted
-		elfldr::util::Free(ptr);
+		elfldr::Free(ptr);
 }
 
 void operator delete[](void* ptr) noexcept {
 	if(ptr) // satisifies that delete/delete[] shouldn't break if nullptr is deleted
-		elfldr::util::Free(ptr);
+		elfldr::Free(ptr);
 }
 
 void operator delete[](void* ptr, size_t) noexcept {
 	if(ptr) // satisifies that delete/delete[] shouldn't break if nullptr is deleted
-		elfldr::util::Free(ptr);
+		elfldr::Free(ptr);
 }
 
 // placement new/delete support

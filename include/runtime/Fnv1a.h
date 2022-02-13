@@ -13,8 +13,9 @@
 #define UTILS_FNV_H
 
 #include <stdint.h>
+#include <stddef.h>
 
-namespace elfldr::util::detail {
+namespace elfldr::detail {
 
 	/**
 	 * FNV1a hash. Pretty self explanatory.

@@ -8,7 +8,9 @@
 // implementation tu for a couple things I found kinda bloaty
 // to be inlines
 
+#include <runtime/Assert.h>
 #include <utils/codeutils.h>
+#include <utils/utils.h>
 
 namespace elfldr::util {
 

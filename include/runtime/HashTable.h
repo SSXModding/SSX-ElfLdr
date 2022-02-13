@@ -1,10 +1,10 @@
 #ifndef HASHTABLE_H
 #define HASHTABLE_H
 
-#include <utils/Hash.h>
-#include <utils/utils.h>
+#include <runtime/Hash.h>
+#include <runtime/Utility.h>
 
-namespace elfldr::util {
+namespace elfldr {
 
 	// TODO:
 	// - Multi dimension/linked buckets for hash collisions maybe
@@ -18,11 +18,11 @@ namespace elfldr::util {
 	 * A simple hash table. Doesn't handle collisions,
 	 * and is probably boneheaded in design. It works though.
 	 */
-	template <class Key, class Value, class Hasher = util::Hash<Key>>
+	template <class Key, class Value, class Hasher = Hash<Key>>
 	struct HashTable {
 		inline HashTable() = default;
 
-		inline HashTable(std::size_t bucketSize) {
+		inline HashTable(size_t bucketSize) {
 			Init(bucketSize);
 		}
 
@@ -31,7 +31,7 @@ namespace elfldr::util {
 				FreeBuckets();
 		}
 
-		void Init(std::size_t size) {
+		void Init(size_t size) {
 			if(!bucket_size)
 				AllocBuckets(size);
 		}

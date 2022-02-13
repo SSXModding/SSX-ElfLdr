@@ -6,10 +6,10 @@
  */
 
 #include <erl/ErlLoader.h>
+#include <runtime/Allocator.h>
 #include <sdk/ErlAbi.h>
 #include <sdk/GameApi.h>
 #include <sdk/structs.h>
-#include <utils/Allocator.h>
 #include <utils/codeutils.h>
 #include <utils/utils.h>
 
@@ -77,7 +77,7 @@ struct ExpPatch : public Patch {
 		// so we can PROBABLY relax REAL stuff
 
 		// clang-format off
-		util::SetAllocationFunctions([](uint32_t c) {
+		SetAllocationFunctions([](uint32_t c) {
 			return bx::real::MEM_alloc("Lily <3", c, 0x0 /* i forgor mbflags :( */);
 		}, [](void* p) {
 			if(p)

@@ -61,7 +61,7 @@ namespace elfldr::erl {
 	}
 
 	template <class T>
-	using ErlResult = util::Expected<T, ErlLoadError>;
+	using ErlResult = Expected<T, ErlLoadError>;
 
 	constexpr uint32_t Align(uint32_t alignment_value, int align) {
 		align--;
@@ -366,7 +366,7 @@ namespace elfldr::erl {
 			ERL_DEBUG_PRINTF("erl's _start() returned %d", res);
 
 			// No error occurred!
-			return util::NO_ERROR<ErlLoadError>;
+			return NO_ERROR<ErlLoadError>;
 		}
 
 		Symbol ResolveSymbol(const char* symbolName) override {

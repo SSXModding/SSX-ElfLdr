@@ -11,7 +11,7 @@
 #include <runtime/Assert.h>
 #include <runtime/Utility.h>
 
-namespace elfldr::util {
+namespace elfldr {
 
 	// MAYBE: Move this to a shared spot, so we can do
 	// Maybe<T> (or Optional<T>)
@@ -221,6 +221,6 @@ namespace elfldr::util {
 	template <class E>
 	constexpr static VoidExpected<E> NO_ERROR {};
 
-} // namespace elfldr::util
+} // namespace elfldr
 
 #endif // ELFLDR_EXPECTED_H

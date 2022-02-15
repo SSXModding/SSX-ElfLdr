@@ -8,9 +8,13 @@
 // implementation tu for a couple things I found kinda bloaty
 // to be inlines
 
+#include <runtime/Assert.h>
 #include <utils/codeutils.h>
+#include <utils/utils.h>
 
 namespace elfldr::util {
+
+	// FIXME: dead code
 
 	// accessor type for both halves of a word individually.
 	// this makes the code for AddUnlimitedCallVoid a lot less stupid
@@ -55,7 +59,9 @@ namespace elfldr::util {
 		__builtin_memcpy(addr, string, strlen(string) + 1);
 	}
 
+	// TODO: this is dead code :)
 	void WriteRelocatableCall0(void* __restrict code, const void* __restrict subroutine) {
+#if 0
 		auto* codeptr = UBCast<SeperatedDWord*>(code);
 		const auto subrdword = UBCast<SeperatedDWord>(subroutine);
 
@@ -74,6 +80,8 @@ namespace elfldr::util {
 		// to point to the subroutine
 		codeptr[0].bottom_half = subrdword.top_half;
 		codeptr[1].bottom_half = subrdword.bottom_half;
+#endif
+		ELFLDR_VERIFY(false && "Obama");
 	}
 
 } // namespace elfldr::util

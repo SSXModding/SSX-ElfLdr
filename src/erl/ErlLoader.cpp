@@ -7,13 +7,16 @@
 
 #include <elfldr/ElfLoader.h>
 #include <erl/ErlLoader.h>
-#include <utils/Allocator.h>
+
+
+#include <runtime/Allocator.h>
+#include <runtime/Expected.h>
+#include <runtime/HashTable.h>
+#include <runtime/ScopeExitGuard.h>
+#include <runtime/String.h>
+
 #include <utils/codeutils.h>
-#include <utils/Expected.h>
 #include <utils/FioFile.h>
-#include <utils/ScopeExitGuard.h>
-#include <utils/String.h>
-#include <utils/HashTable.h>
 
 #include "elf.h"
 
@@ -44,7 +47,7 @@ namespace elfldr::erl {
 	/**
 	 * Convert a ErlLoadError to string.
 	 */
-	static util::StringView LoadErrorToString(ErlLoadError e) {
+	static StringView LoadErrorToString(ErlLoadError e) {
 		constexpr static const char* tab[] {
 			"ERL file not found",
 			"Not ELF file",
@@ -58,7 +61,7 @@ namespace elfldr::erl {
 	}
 
 	template <class T>
-	using ErlResult = util::Expected<T, ErlLoadError>;
+	using ErlResult = Expected<T, ErlLoadError>;
 
 	constexpr uint32_t Align(uint32_t alignment_value, int align) {
 		align--;
@@ -91,7 +94,7 @@ namespace elfldr::erl {
 		/**
 		 * Apply a ELF relocation for this image.
 		 */
-		[[nodiscard]] bool ApplyRelocation(std::size_t offset, int type, uint32_t addr, uint32_t addend) const {
+		[[nodiscard]] bool ApplyRelocation(size_t offset, int type, uint32_t addr, uint32_t addend) const {
 			uint32_t u_current_data;
 			int32_t s_current_data;
 			uint32_t newstate;
@@ -168,30 +171,30 @@ namespace elfldr::erl {
 			int symtab_index {};
 			int linked_strtab_index {};
 
-			file.Seek(util::UBCast<int>(header.e_shoff), FIO_SEEK_SET);
+			file.Seek(UBCast<int>(header.e_shoff), FIO_SEEK_SET);
 			file.Read(sections, header.e_shnum * sizeof(elf_section_t));
 
 			// Let's read .shstrtab:
-			util::String shstrtab;
+			String shstrtab;
 			shstrtab.Resize(sections[header.e_shstrndx].sh_size);
 
-			file.Seek(util::UBCast<int>(sections[header.e_shstrndx].sh_offset), FIO_SEEK_SET);
+			file.Seek(UBCast<int>(sections[header.e_shstrndx].sh_offset), FIO_SEEK_SET);
 			file.Read(shstrtab.data(), shstrtab.length());
 
 			// Dump all the sections, doing some important stuff to them while doing so.
 			for(Half i = 1; i < header.e_shnum; ++i) {
 				auto& section = sections[i];
-				util::StringView sectionName(&shstrtab[section.sh_name]);
+				StringView sectionName(&shstrtab[section.sh_name]);
 
 				if(sectionName == ".symtab") {
 					symtab_index = i;
-					linked_strtab_index = util::UBCast<int>(section.sh_link);
+					linked_strtab_index = UBCast<int>(section.sh_link);
 				} else if(sectionName == ".strtab") {
 					strtab_index = i;
 				}
 
 				if(section.sh_type == PROGBITS || section.sh_type == NOBITS) {
-					fullDataSize = Align(fullDataSize, util::UBCast<int>(section.sh_addralign));
+					fullDataSize = Align(fullDataSize,UBCast<int>(section.sh_addralign));
 					section.sh_addr = fullDataSize;
 					fullDataSize += section.sh_size;
 				}
@@ -227,12 +230,12 @@ namespace elfldr::erl {
 			// PROGBITS and NOBITS
 			for(int i = 1; i < header.e_shnum; ++i) {
 				auto& section = sections[i];
-				util::StringView sectionName(&shstrtab[section.sh_name]);
+				StringView sectionName(&shstrtab[section.sh_name]);
 
 				switch(section.sh_type) {
 					case PROGBITS:
 						ERL_DEBUG_PRINTF("Reading section %s from ELF file", sectionName.CStr());
-						file.Seek(util::UBCast<int>(section.sh_offset), FIO_SEEK_SET);
+						file.Seek(UBCast<int>(section.sh_offset), FIO_SEEK_SET);
 						file.Read(&bytes[section.sh_addr], section.sh_size);
 						break;
 					case NOBITS:
@@ -250,23 +253,23 @@ namespace elfldr::erl {
 			}
 
 			// Load .strtab
-			util::String strtab_names;
+			String strtab_names;
 			strtab_names.Resize(sections[strtab_index].sh_size);
 
-			file.Seek(util::UBCast<int>(sections[strtab_index].sh_offset), FIO_SEEK_SET);
+			file.Seek(UBCast<int>(sections[strtab_index].sh_offset), FIO_SEEK_SET);
 			file.Read(strtab_names.data(), strtab_names.length());
 
 			// Load .symtab
 			auto* symtab = new elf_symbol_t[sections[symtab_index].sh_size / sizeof(elf_symbol_t)];
 
-			file.Seek(util::UBCast<int>(sections[symtab_index].sh_offset), FIO_SEEK_SET);
+			file.Seek(UBCast<int>(sections[symtab_index].sh_offset), FIO_SEEK_SET);
 			file.Read(symtab, sections[symtab_index].sh_size);
 
 			// Load and parse the relocation section(s).
 
 			for(int i = 0; i < header.e_shnum; ++i) {
 				auto& section = sections[i];
-				util::StringView sectionName(&shstrtab[section.sh_name]);
+				StringView sectionName(&shstrtab[section.sh_name]);
 
 				if(section.sh_type != RELA)
 					continue;
@@ -274,7 +277,7 @@ namespace elfldr::erl {
 				// the section we'd be relocating.
 				auto& relocating_section = sections[section.sh_info];
 
-				ERL_DEBUG_PRINTF("Section %d (%s) contains rela reloc for %d (%s)", i, sectionName.CStr(), section.sh_info, util::StringView(&shstrtab[relocating_section.sh_name]));
+				ERL_DEBUG_PRINTF("Section %d (%s) contains rela reloc for %d (%s)", i, sectionName.CStr(), section.sh_info, StringView(&shstrtab[relocating_section.sh_name]));
 
 				if(section.sh_entsize != sizeof(elf_reloca_t))
 					return ErlLoadError::SizeMismatch;
@@ -282,16 +285,16 @@ namespace elfldr::erl {
 				auto* reloc = new elf_reloca_t[(section.sh_size / section.sh_entsize)];
 
 				// read this reloc entry into data
-				file.Seek(util::UBCast<int>(section.sh_offset), FIO_SEEK_SET);
+				file.Seek(UBCast<int>(section.sh_offset), FIO_SEEK_SET);
 				file.Read(reloc, section.sh_size);
 
 				for(Word j = 0; j < (section.sh_size / section.sh_entsize); ++j) {
 					auto& r = reloc[j];
 					Word symbol_number = r.r_info >> 8;
 					auto& sym = symtab[symbol_number];
-					auto type = util::UBCast<int>(r.r_info & 255);
+					auto type = UBCast<int>(r.r_info & 255);
 
-					ERL_DEBUG_PRINTF("RelaEntry %3i: 0x%08X Type %d Addend: %d sym: %d (%s): ", j, r.r_offset, type, r.r_addend, symbol_number, util::StringView(&strtab_names[symtab[symbol_number].st_name]).CStr());
+					ERL_DEBUG_PRINTF("RelaEntry %3i: 0x%08X Type %d Addend: %d sym: %d (%s): ", j, r.r_offset, type, r.r_addend, symbol_number, StringView(&strtab_names[symtab[symbol_number].st_name]).CStr());
 
 					switch(sym.st_info & 15) {
 						case NOTYPE:
@@ -312,7 +315,7 @@ namespace elfldr::erl {
 						case OBJECT:
 						case FUNC:
 							// TODO: Should probably implement dedupe, but whateverrrrrrrrrr
-							ERL_DEBUG_PRINTF("Internal symbol relocation to %s", util::StringView(strtab_names.data() + sym.st_name).CStr());
+							ERL_DEBUG_PRINTF("Internal symbol relocation to %s", StringView(strtab_names.data() + sym.st_name).CStr());
 							ERL_DEBUG_PRINTF("Relocating at address 0x%08X", reinterpret_cast<uintptr_t>(bytes + relocating_section.sh_addr + sym.st_value));
 							if(!ApplyRelocation(relocating_section.sh_addr + sym.st_value, type, reinterpret_cast<uintptr_t>(bytes + relocating_section.sh_addr + sym.st_value), r.r_addend)) {
 								ERL_DEBUG_PRINTF("Error relocating");
@@ -336,7 +339,7 @@ namespace elfldr::erl {
 				if(((symtab[i].st_info >> 4) == GLOBAL) || ((symtab[i].st_info >> 4) == WEAK)) {
 					if((symtab[i].st_info & 15) != NOTYPE) {
 						// get stuff
-						util::String name(&strtab_names[symtab[i].st_name]);
+						String name(&strtab_names[symtab[i].st_name]);
 						auto offset = sections[symtab[i].st_shndx].sh_addr + symtab[i].st_value;
 						auto address = reinterpret_cast<uintptr_t>(bytes + offset);
 
@@ -363,7 +366,7 @@ namespace elfldr::erl {
 			ERL_DEBUG_PRINTF("erl's _start() returned %d", res);
 
 			// No error occurred!
-			return util::NO_ERROR<ErlLoadError>;
+			return NO_ERROR<ErlLoadError>;
 		}
 
 		Symbol ResolveSymbol(const char* symbolName) override {
@@ -371,7 +374,7 @@ namespace elfldr::erl {
 			//        that's a new[], memcpy(), and delete[] just to look up a symbol.
 			//        Too expensive for my liking, but it shouldn't happen frequently.
 
-			if(auto sym = symbol_table.MaybeGet(util::String(symbolName)); sym != nullptr) {
+			if(auto sym = symbol_table.MaybeGet(String(symbolName)); sym != nullptr) {
 				return *sym;
 			}
 
@@ -387,8 +390,8 @@ namespace elfldr::erl {
 		/**
 		 * The ERL symbol table
 		 */
-		util::HashTable<util::String, Symbol> symbol_table;
-		util::String filename;
+		HashTable<String, Symbol> symbol_table;
+		String filename;
 
 		// TODO: Array<std::uint8_t>?
 		uint8_t* bytes {};
@@ -399,7 +402,7 @@ namespace elfldr::erl {
 		auto* image = new ImageImpl();
 
 		// This guard frees the image in case of a load error.
-		util::ScopeExitGuard guard([&]() {
+		ScopeExitGuard guard([&]() {
 			delete image;
 		});
 

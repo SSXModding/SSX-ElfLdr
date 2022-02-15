@@ -27,6 +27,7 @@
 //	- SSX Tricky (dubbed SSXDVD in code)
 //
 
+#include <runtime/Assert.h>
 #include <utils/codeutils.h>
 #include <utils/utils.h>
 

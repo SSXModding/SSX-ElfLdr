@@ -5,6 +5,7 @@
  * under the terms of the MIT license.
  */
 
+#include <runtime/Assert.h>
 #include <elfldr/ElfLoader.h>
 #include <utils/utils.h>
 
@@ -48,6 +49,7 @@ void ApplyPatch(elfldr::Patch* patch) {
 int main() {
 	elfldr::util::DebugOut("SSX-ElfLdr version " ELFLDR_VERSION_TAG);
 
+
 	// Init loader services.
 	elfldr::InitLoader();
 
@@ -73,7 +75,7 @@ int main() {
 	ApplyPatch(elfldr::GetPatchById(0xE0));
 
 	char* argv[1];
-	argv[0] = elfldr::util::UBCast<char*>(gHostFsPath); // I hate this
+	argv[0] = elfldr::UBCast<char*>(gHostFsPath); // I hate this
 
 	// Execute the elf
 	gLoader.ExecElf(sizeof(argv) / sizeof(argv[0]), argv);

@@ -29,6 +29,8 @@ target_link_libraries(elfldr
 
 	# Project libraries
 	elfldr::utils_elf
+
+		elfldr::runtime
 	elfldr::erl
 	"-Wl,--end-group")
 

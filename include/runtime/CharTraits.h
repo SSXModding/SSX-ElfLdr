@@ -8,10 +8,12 @@
 #ifndef ELFLDR_CHARTRAITS_H
 #define ELFLDR_CHARTRAITS_H
 
-#include <cstddef>
-#include <cstring>
+#include <runtime/Assert.h>
 
-namespace elfldr::util {
+#include <stddef.h>
+#include <string.h>
+
+namespace elfldr {
 
 	/**
 	 * Basic character traits.
@@ -19,7 +21,7 @@ namespace elfldr::util {
 	template <class CharT>
 	struct CharTraits {
 		// inline static std::size_t Length(const CharT* __restrict);
-		// inline static void Copy(const CharT* __restrict, CharT* __restrict, std::size_t);
+		// inline static void Copy(const CharT* __restrict, CharT* __restrict, size_t);
 		// inline static int Compare(const CharT* __restrict, const CharT* __restrict);
 	};
 
@@ -34,7 +36,7 @@ namespace elfldr::util {
 			return strlen(str);
 		}
 
-		inline static void Copy(const char* __restrict src, char* __restrict dest, uintptr_t length) {
+		inline static void Copy(const char* __restrict src, char* __restrict dest, size_t length) {
 			memcpy(dest, src, length * sizeof(char));
 		}
 
@@ -52,6 +54,6 @@ namespace elfldr::util {
 	// TODO: implementation of CharTraits for UTF-8,
 	// 	so we can switch to utf-8 safe code (where we're not touching Sony libs/such)
 
-} // namespace elfldr::util
+} // namespace elfldr
 
 #endif // ELFLDR_CHARTRAITS_H

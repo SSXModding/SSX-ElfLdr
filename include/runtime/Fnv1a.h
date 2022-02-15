@@ -6,15 +6,16 @@
  */
 
 // This is an internal header and provides apis only internal code should touch
-// Use publically available util::Hash<T> for typed hashing, please :)
+// Use the publicly available util::Hash<T> for typed hashing, please :)
 // This note does not apply if you're specializing it though
 
 #ifndef UTILS_FNV_H
 #define UTILS_FNV_H
 
 #include <stdint.h>
+#include <stddef.h>
 
-namespace elfldr::util::detail {
+namespace elfldr::detail {
 
 	/**
 	 * FNV1a hash. Pretty self explanatory.

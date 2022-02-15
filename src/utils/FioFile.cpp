@@ -5,6 +5,7 @@
  * under the terms of the MIT license.
  */
 
+#include <runtime/Assert.h>
 #include <utils/FioFile.h>
 #include <utils/utils.h>
 

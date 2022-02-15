@@ -25,11 +25,16 @@ Game regions/versions or whole games marked as Unsupported are planned to be sup
 ## Building
 
 You need PS2SDK installed (the PS2DEV/open source one, not the Sony one).
+It can be gathered [here](https://github.com/ps2dev/ps2toolchain) if you do not have it installed.
 
-To build the typical version, run `make`.
+To build:
 
-To build the version with experimental patches run `make EXPERIMENTAL=1`
-
+```bash
+$ cmake -B build -GNinja -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain/ps2.cmake
+$ cd build
+$ cmake --build .
+# Profit? (elfldr.elf)
+```
 ## Patch Descriptions
 
 ### HostFS Patch
@@ -39,16 +44,16 @@ This patch allows the game to load entirely from the host filesystem, making it 
 #### Setup (SSX OG)
  - Extract all of the game's files from the ISO into a directory of your choosing.
  - Once you've done so, using a .BIG extraction tool, extract all of the .BIG archives in data/models, and place all of the files made in that folder.
- - Copy `ssx_elfldr.elf` alongside the main game ELF (e.g: for US, `SLUS_200.95`).
+ - Copy `elfldr.elf` alongside the main game ELF (e.g: for US, `SLUS_200.95`).
 
 #### Setup (SSX Tricky)
  - Extract all of the game's files from the ISO into a directory of your choosing.
- - Copy `ssx_elfldr.elf` alongside the main game ELF.
+ - Copy `elfldr.elf` alongside the main game ELF.
  
 #### Setup (SSX 3)
  - Extract all of the game's files from the ISO into a directory of your choosing.
  - (Optional) Remove the PAD files, they are not needed and a waste of disk space.
- - Copy `ssx_elfldr.elf` alongside the main game ELF.
+ - Copy `elfldr.elf` alongside the main game ELF.
 
 ### MemClr patch
 

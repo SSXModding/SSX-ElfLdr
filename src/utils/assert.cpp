@@ -6,26 +6,23 @@
  */
 
 //
-// Helper code in libutils for handling ELFLDR_ASSERT()
+// Helper code in Utils for handling Runtime's ELFLDR_ASSERT()
 // and ELFLDR_VERIFY()
 //
 
 #include <utils/utils.h>
+#include <runtime/Assert.h>
 
-namespace elfldr::util {
-
-#ifdef DEBUG
-	void _AssertFailed(const char* exp, const char* file, uint32_t line) {
-		DebugOut("ELFLDR_ASSERT() expression failed!!!!\nExpression: %s\nFile: %s\nLine: %d", exp, file, line);
-		while(true)
-			;
-	}
+#ifndef NDEBUG
+void __Elfldr__AssertFailure(const char* exp, const char* function, const char* file, unsigned line) {
+	elfldr::util::DebugOut("ELFLDR_ASSERT(%s) failed. File: %s:%d Function %s", exp, file, line, function);
+	while(true)
+		;
+}
 #endif
 
-	void _VerifyFailed(const char* exp, const char* file, uint32_t line) {
-		DebugOut("ELFLDR_VERIFY() expression failed!!!!\nExpression: %s\nFile: %s\nLine: %d", exp, file, line);
-		while(true)
-			;
-	}
-
-} // namespace elfldr::util
+void __Elfldr__VerifyFailure(const char* exp, const char* file, unsigned line) {
+	elfldr::util::DebugOut("ELFLDR_VERIFY(%s) failed. File: %s:%d", exp, file, line);
+	while(true)
+		;
+}

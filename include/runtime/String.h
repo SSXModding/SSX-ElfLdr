@@ -8,11 +8,11 @@
 #ifndef ELFLDR_STRING_H
 #define ELFLDR_STRING_H
 
-#include <utils/Allocator.h>
-#include <utils/CharTraits.h>
-#include <utils/Hash.h>
+#include <runtime/Allocator.h>
+#include <runtime/CharTraits.h>
+#include <runtime/Hash.h>
 
-namespace elfldr::util {
+namespace elfldr {
 
 	/**
 	 * A "view" of a string. Does not own the memory,
@@ -53,8 +53,8 @@ namespace elfldr::util {
 			return data_ptr;
 		}
 
-		constexpr const T& operator[](std::size_t index) const {
-			return &data_ptr[index];
+		constexpr const T& operator[](size_t index) const {
+			return data_ptr[index];
 		}
 
 		friend constexpr bool operator==(const BasicStringView& lhs, const BasicStringView& rhs) {
@@ -71,20 +71,20 @@ namespace elfldr::util {
 	};
 
 
-	template <class T, class Traits = CharTraits<T>, class Alloc = util::StdAllocator<T>>
+	template <class T, class Traits = CharTraits<T>, class Alloc = StdAllocator<T>>
 	struct BasicString {
 		using CharType = T;
-		using SizeType = std::size_t;
+		using SizeType = size_t;
 
 		inline BasicString() = default;
 
 		inline BasicString(const T* cstr) {
+			ELFLDR_VERIFY(cstr != nullptr);
 			CopyFromCString(cstr);
 		}
 
 		inline BasicString(const T* mem, int length) {
-			if(!mem)
-				return;
+			ELFLDR_VERIFY(mem != nullptr);
 
 			// TODO: maybe some interning.
 			// 32 chars max intern, before it becomes an allocation.
@@ -114,7 +114,7 @@ namespace elfldr::util {
 			if(this == &copy)
 				return *this;
 
-			// call Zecopyctor
+			// call copy constructor (for ease of implementation)
 			new(this) BasicString(copy);
 			return *this;
 		}
@@ -131,11 +131,11 @@ namespace elfldr::util {
 			return len;
 		}
 
-		inline T& operator[](std::size_t index) {
+		inline T& operator[](SizeType index) {
 			return memory[index];
 		}
 
-		inline const T& operator[](std::size_t index) const {
+		inline const T& operator[](SizeType index) const {
 			return memory[index];
 		}
 

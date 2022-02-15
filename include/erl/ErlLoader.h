@@ -8,7 +8,8 @@
 #ifndef ERLLOADER_H
 #define ERLLOADER_H
 
-#include <utils/utils.h>
+#include <stdint.h>
+#include <runtime/Utility.h>
 
 
 // The public API surface for LibErl.
@@ -33,7 +34,7 @@ namespace elfldr::erl {
 		}
 
 		[[nodiscard]] constexpr bool IsValid() const {
-			return util::UBCast<int>(_ptr) != -1;
+			return UBCast<int>(_ptr) != -1;
 		}
 
 		uintptr_t AsRaw() const {
@@ -42,7 +43,7 @@ namespace elfldr::erl {
 
 		template <class T>
 		constexpr T* As() const {
-			return util::UBCast<T*>(_ptr);
+			return UBCast<T*>(_ptr);
 		}
 
 		// do not touch, this is only to keep the POD contract true

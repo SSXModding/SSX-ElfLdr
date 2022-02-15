@@ -1,20 +1,17 @@
 /**
- * SSX-Elfldr
+ * SSX-Elfldr Runtime
  *
  * (C) 2021-2022 Lily/modeco80 <lily.modeco80@protonmail.ch>
  * under the terms of the MIT license.
  */
 
 // This file declares my own implementation
-// of C++ type traits (since we're not using a real C++
-// standard library, and libc is all we can use)
-// Optionally real <type_traits> header could be included,
-// but libutils already implements quite a bit of C++ standard library.
+// of C++ type traits in Runtime.
 
 #ifndef UTILS_TYPETRAITS_H
 #define UTILS_TYPETRAITS_H
 
-namespace elfldr::util {
+namespace elfldr {
 
 	// declares ::type using,
 	// useful since you can just baseclass TypeConstant<T>
@@ -62,7 +59,7 @@ namespace elfldr::util {
 	struct EnableIf<T, true> : public TypeConstant<T> {};
 
 	template <class T, bool B>
-	using EnableIfT = EnableIf<T, B>::type;
+	using EnableIfT = typename EnableIf<T, B>::type;
 
 	// This is really only useful in the case
 	// where you can't actually put code; e.g. array size or something
@@ -74,7 +71,7 @@ namespace elfldr::util {
 	struct Conditional<false, T, T2> : public TypeConstant<T2> {};
 
 	template <bool B, class T, class T2>
-	using ConditionalT = Conditional<B, T, T2>::type;
+	using ConditionalT = typename Conditional<B, T, T2>::type;
 
 	template <class T, class U>
 	struct IsSame : public FalseType {};
@@ -82,9 +79,15 @@ namespace elfldr::util {
 	template <class T>
 	struct IsSame<T, T> : public TrueType {};
 
-	template <class T, class U>
-	[[maybe_unused]] static constexpr auto IsSameV = IsSame<T, U>::value;
+	template <class T>
+	struct IsTriviallyCopyable : public BoolConstant<__is_trivially_copyable(T)> {};
 
-} // namespace elfldr::util
+	template <class T>
+	[[maybe_unused]] inline constexpr auto IsTrivallyCopyableV = IsTriviallyCopyable<T>::value;
+
+	template <class T, class U>
+	[[maybe_unused]] inline constexpr auto IsSameV = IsSame<T, U>::value;
+
+} // namespace elfldr
 
 #endif // UTILS_TYPETRAITS_H

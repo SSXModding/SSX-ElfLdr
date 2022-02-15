@@ -18,7 +18,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Verify developer is using the PS2 toolchain,
 # and not e.g: the host toolchain.
-if(NOT DEFINED ELFLDR_PS2_TOOLCHAIN)
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "Playstation2")
+    # TODO(setuptool/superbuild): This shouldn't be an error, we should just do the host build
     message(FATAL_ERROR "Something is totally wrong with your environment. Did you not do -DCMAKE_TOOLCHAIN_FILE=/path/to/elfldr/cmake/Toolchain/ps2.cmake ?")
 endif()
 
@@ -30,8 +31,11 @@ add_custom_target(__elfldr_gittag
 set_source_files_properties(${PROJECT_BINARY_DIR}/Version.h PROPERTIES GENERATED TRUE)
 
 # Include elfldr modules
+add_subdirectory(src/runtime)
 add_subdirectory(src/utils)
 add_subdirectory(src/erl)
 
 # elfldr itself :)
 add_subdirectory(src/elfldr)
+
+#add_subdirectory(src/sampleerl)

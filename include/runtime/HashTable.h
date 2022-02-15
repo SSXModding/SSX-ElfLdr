@@ -18,7 +18,7 @@ namespace elfldr {
 	 * A simple hash table. Doesn't handle collisions,
 	 * and is probably boneheaded in design. It works though.
 	 */
-	template <class Key, class Value, class Hasher = Hash<Key>, template<class T> class Allocator = StdAllocator>
+	template <class Key, class Value, class Hasher = Hash<Key>, template<class> class Allocator = StdAllocator>
 	struct HashTable {
 		inline HashTable() = default;
 

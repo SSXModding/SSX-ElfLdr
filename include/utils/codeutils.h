@@ -31,13 +31,14 @@ namespace elfldr::util {
 	};
 
 	/**
-	 * Vtable pointer structure for GCC 2 Abi.
+	 * VTable pointer structure for GCC2 C++ ABI VTables.
+	 * Allows looking up things
 	 */
 	struct GnuVtablePointer {
 		// Looking at generated assembly reveals
 		// that these are actually emitted as 2 shorts.
-		uint16_t adj_upper;
-		uint16_t adj_lower;
+		uint16_t adj_upper; // TODO: This is probably vcall offset (see IABI, which is pretty much GCC2 ABI but standardized)
+		uint16_t adj_lower; // TODO: This is probably vbase offset (see IABI)
 
 		/**
 		 * The function pointer.
@@ -51,8 +52,12 @@ namespace elfldr::util {
 			function_ptr = UBCast<void*>(Func);
 		}
 
-		// TODO: varadic constexpr operator() for call?
-		// could be done with util::CallFunction().. although I don't really see the point
+		//I think? this isn't going to be used worth a damn yet
+		template<class Res = void, class ...Args>
+		inline Res operator()(void* pObj, Args&&... args) const {
+			ELFLDR_ASSERT(function_ptr != nullptr);
+			return CallFunction<Res>(function_ptr, (uintptr_t)pObj + adj_upper, Forward<Args>(args)...);
+		}
 	};
 
 	/**

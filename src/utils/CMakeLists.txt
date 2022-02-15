@@ -5,11 +5,12 @@ set(__ELFLDR_UTILS_BASE_SOURCES
 	assert.cpp
 	codeutils.cpp
 	debugout.cpp
+	Hook.cpp
 )
 
 add_library(elfldr_utils_elf
 	${__ELFLDR_UTILS_BASE_SOURCES}
-	FioFile.cpp	
+	FioFile.cpp
 )
 
 target_include_directories(elfldr_utils_elf PUBLIC ${PROJECT_SOURCE_DIR}/include/)

@@ -27,28 +27,6 @@ namespace elfldr {
 	void FlushCaches();
 }
 
-// aligned malloc/free for ERL
-
-void* AlignedBxMalloc(uint32_t c) {
-	auto raw_pointer = bx::real::MEM_alloc("Lily <3", c + sizeof(uint32_t), 0x40);
-	auto value = reinterpret_cast<uintptr_t>(raw_pointer);
-	value += (-value) & sizeof(uint32_t);
-
-	// prepare the returned pointer by putting in the original malloc address
-	auto* ret_pointer = reinterpret_cast<void*>(value);
-	reinterpret_cast<uintptr_t*>(ret_pointer)[-1] = reinterpret_cast<uintptr_t>(raw_pointer);
-
-	// util::DebugOut("debug(malloc): real pointer is %p", raw_pointer);
-	return ret_pointer;
-}
-
-void AlignedBxFree(void* p) {
-	auto real_pointer = reinterpret_cast<void*>(reinterpret_cast<uintptr_t*>(p)[-1]);
-	// util::DebugOut("debug(free): real pointer is %p", real_pointer);
-	if(real_pointer != nullptr)
-		bx::real::MEM_free(real_pointer);
-}
-
 struct ExpPatch : public Patch {
 	const char* GetName() const override {
 		return "Experimental";
@@ -82,7 +60,7 @@ struct ExpPatch : public Patch {
 		}, [](void* p) {
 			if(p)
 				bx::real::MEM_free(p);
-		}, AlignedBxMalloc, AlignedBxFree);
+		});
 		// clang-format on
 
 		// maybe this should be a function in gameapi.h?

@@ -41,6 +41,9 @@ namespace elfldr {
 
 		// TODO: Game version?
 
+		void* MallocAddress;
+		void* FreeAddress;
+
 		/**
 		 * Get the game binary filename
 		 */

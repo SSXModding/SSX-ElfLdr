@@ -70,7 +70,6 @@ namespace elfldr {
 		size_t len;
 	};
 
-
 	template <class T, class Traits = CharTraits<T>, class Alloc = StdAllocator<T>>
 	struct BasicString {
 		using CharType = T;
@@ -89,7 +88,7 @@ namespace elfldr {
 			// TODO: maybe some interning.
 			// 32 chars max intern, before it becomes an allocation.
 			Resize(length);
-			//memcpy(&memory[0], &mem[0], length * sizeof(T));
+			// memcpy(&memory[0], &mem[0], length * sizeof(T));
 			Traits::Copy(&mem[0], &memory[0], length);
 		}
 
@@ -246,8 +245,8 @@ namespace elfldr {
 	// instantiations of BasicString or BasicStringView,
 	// respecting custom Traits implementations as well.
 
-	template <class CharT, class Traits>
-	struct Hash<BasicString<CharT, Traits>> {
+	template <class CharT, class Traits, class Allocator>
+	struct Hash<BasicString<CharT, Traits, Allocator>> {
 		inline static uint32_t hash(const BasicString<CharT, Traits>& str) {
 			return detail::fnv1a_hash(UBCast<const void*>(str.c_str()), str.length() * sizeof(CharT), 0);
 		}
@@ -262,6 +261,13 @@ namespace elfldr {
 
 	using String = BasicString<char>;
 	using StringView = BasicStringView<char>;
+
+	// Tell compiler that we explicitly instantiate
+	// these instations of BasicString, so the compiler
+	// doesn't do extra work + linker doesn't have
+	// to do it either.
+	extern template struct BasicString<char>;
+	extern template struct BasicStringView<char>;
 
 	// safe for UTF-8 (?)
 	// using U8String = BasicString<char8_t>;

@@ -14,8 +14,28 @@ namespace elfldr {
 	static Alloc_t Alloc_ptr = nullptr;
 	static Free_t Free_ptr = nullptr;
 
-	static Alloc_t Alloc_aligned_ptr = nullptr;
-	static Free_t Free_aligned_ptr = nullptr;
+	// Right now, we only need dword alignment, so this is fine
+	// if we want to do more specific alignment we can
+
+	void* AllocAligned(uint32_t count) {
+		auto raw_pointer = Alloc(count + sizeof(uint32_t));
+		auto value = reinterpret_cast<uintptr_t>(raw_pointer);
+		value += (-value) & sizeof(uint32_t);
+
+		// prepare the returned pointer by putting in the original malloc address
+		auto* ret_pointer = reinterpret_cast<void*>(value);
+		reinterpret_cast<uintptr_t*>(ret_pointer)[-1] = reinterpret_cast<uintptr_t>(raw_pointer);
+
+		// util::DebugOut("debug(malloc): real pointer is %p", raw_pointer);
+		return ret_pointer;
+	}
+
+	void FreeAligned(void* p) {
+		auto real_pointer = reinterpret_cast<void*>(reinterpret_cast<uintptr_t*>(p)[-1]);
+		// util::DebugOut("debug(free): real pointer is %p", real_pointer);
+		if(real_pointer != nullptr)
+			Free(real_pointer);
+	}
 
 	void* Alloc(uint32_t size) {
 		ELFLDR_ASSERT(Alloc_ptr != nullptr);
@@ -27,21 +47,9 @@ namespace elfldr {
 		return Free_ptr(ptr);
 	}
 
-	void* AllocAligned(uint32_t size) {
-		ELFLDR_ASSERT(Alloc_aligned_ptr != nullptr);
-		return Alloc_aligned_ptr(size);
-	}
-
-	void FreeAligned(void* ptr) {
-		ELFLDR_ASSERT(Free_aligned_ptr != nullptr);
-		return Free_aligned_ptr(ptr);
-	}
-
-	void SetAllocationFunctions(Alloc_t alloc, Free_t free, Alloc_t alloc_aligned, Free_t free_aligned) {
+	void SetAllocationFunctions(Alloc_t alloc, Free_t free) {
 		Alloc_ptr = alloc;
 		Free_ptr = free;
-		Alloc_aligned_ptr = alloc_aligned;
-		Free_aligned_ptr = free_aligned;
 	}
 
 } // namespace elfldr::util

@@ -87,11 +87,32 @@ namespace elfldr {
 					return "???";
 			}
 		}
+
+
+		struct AllocAddressPair {
+			void* alloc;
+			void* free;
+
+			// This isn't actually provided by the game,
+			// but is a free-form lambda provided if the
+			// memory allocator needs to be initialized.
+			void* init;
+		};
+
+		AllocAddressPair MallocAddressFor(Game game, GameRegion region) {
+
+
+		}
+
+		void ProbeSuccess() {
+			// Probe worked, let's let Runtime/Allocator know the malloc/free addresses.
+		}
 	} // namespace
 
 	const char* GameVersionData::GetGameBinary() const {
 		return GameBinaryFor(game, region);
 	}
+
 
 	void ProbeVersion() {
 		char path[util::MaxPath] {};

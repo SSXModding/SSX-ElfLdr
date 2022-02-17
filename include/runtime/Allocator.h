@@ -10,6 +10,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <runtime/TypeTraits.h>
 #include <runtime/Assert.h>
 
 // Provide C++ new/new[] and delete/delete[]
@@ -34,7 +35,6 @@ namespace elfldr {
 	void Free(void* ptr);
 
 	void* AllocAligned(uint32_t size);
-
 	void FreeAligned(void* ptr);
 
 	/**
@@ -52,10 +52,31 @@ namespace elfldr {
 	// as soon as the ELF is loaded.
 
 	/**
-	 * Set the ERL loader's memory allocation/deallocation
+	 * Set the Runtime's memory allocation/deallocation
 	 * functions.
+	 *
+	 * This is important, and needs to be called before
+	 * any Runtime memory management (subsequently, Runtime containers)
+	 * routines can be used.
 	 */
-	void SetAllocationFunctions(Alloc_t alloc, Free_t free, Alloc_t alloc_aligned, Free_t free_aligned);
+	void SetAllocationFunctions(Alloc_t alloc, Free_t free);
+
+	// Allocator concept:
+	//
+	// template<class T>
+	// struct Allocator {
+	//  using ValueType = RemoveCvRefT<T>;
+	//	using SizeType = appropriate_size_type; (or size_t if you're lazy)
+	//
+	//  // NOTE: Only allocates, does not start lifetime
+	//  [[nodiscard]] constexpr ValueType* Allocate(SizeType n);
+	//	constexpr void Deallocate(ValueType* p);
+	//
+	//	template<class... Args>
+	//  constexpr void Construct(ValueType* ptr, Args&&... args);
+	//
+	//  [[nodiscard]] constexpr SizeType MaxSize() const;
+	// };
 
 	/**
 	 * Allocator using the global runtime heap.
@@ -63,7 +84,7 @@ namespace elfldr {
 	 */
 	template <class T>
 	struct StdAllocator {
-		using ValueType = T;
+		using ValueType = RemoveCvRefT<T>;
 		using SizeType = size_t;
 
 		/**
@@ -71,22 +92,22 @@ namespace elfldr {
 		 * The memory is not constructed/does not start lifetime for all instances of T contained in it.
 		 * You will have to use Allocator<T>::Construct() or pure placement-new to do so.
 		 */
-		[[nodiscard]] constexpr T* Allocate(size_t number) {
+		[[nodiscard]] constexpr ValueType* Allocate(SizeType number) {
 			ELFLDR_ASSERT(number > MaxSize());
 			return static_cast<T*>(Alloc(number * sizeof(T)));
 		}
 
-		constexpr void Deallocate(T* ptr) {
+		constexpr void Deallocate(ValueType* ptr) {
 			return Free(static_cast<void*>(ptr));
 		}
 
 		template <class... Args>
-		constexpr void Construct(T* ptr, Args&&... args) {
+		constexpr void Construct(ValueType* ptr, Args&&... args) {
 			new(ptr) T(Forward<Args>(args)...);
 		}
 
 		[[nodiscard]] constexpr SizeType MaxSize() const {
-			return SizeType(~0) / sizeof(T);
+			return SizeType(~0) / sizeof(ValueType);
 		}
 	};
 

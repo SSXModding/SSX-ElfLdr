@@ -97,24 +97,6 @@ namespace elfldr::util {
 		return IsAlignedNBytes<4>(addr);
 	}
 
-	/**
-	 * Writes the 4 instructions pointed to by code to something like:
-	 * \code
-	 *  lui s0, 0x0018 ; top 16 bits
-	 *  ori s0, s0, 0xBADE ; lower 16 bits
-	 *  jalr s0
-	 *  nop ; branch delay
-	 * \code
-	 *
-	 * The given subroutine is called with no arguments.
-	 * The written code also assumes `s0` is a safe register (i.e: it is saved during the hook.).
-	 *
-	 * \param[out] Code address. 4 instructions space MUST be valid to write to.
-	 * \param[in] subroutine The subroutine address to call.
-	 */
-	void WriteRelocatableCall0(void* __restrict code, const void* __restrict subroutine);
-
-	// TODO: 1/2/3/4 versions which pass those arguments?
 
 	/**
 	 * Fill an aligned section with MIPS nop (all zeros.)
@@ -167,9 +149,6 @@ namespace elfldr::util {
 		using FuncT = Ret (*)(Args...);
 		return (UBCast<FuncT>(ptr))(args...);
 	}
-
-	// TODO: Should there be a runtime version of this which stores an address
-	//  or pair of addresses depending on game/release/region?
 
 	/**
 	 * A basic boilerplate function wrapper object,

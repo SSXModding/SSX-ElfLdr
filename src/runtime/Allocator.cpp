@@ -5,8 +5,8 @@
  * under the terms of the MIT license.
  */
 
-#include <runtime/Assert.h>
 #include <runtime/Allocator.h>
+#include <runtime/Assert.h>
 #include <utils/utils.h>
 
 namespace elfldr {
@@ -52,7 +52,7 @@ namespace elfldr {
 		Free_ptr = free;
 	}
 
-} // namespace elfldr::util
+} // namespace elfldr
 
 void* operator new(size_t size) {
 	auto* p = elfldr::Alloc(size);

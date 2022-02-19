@@ -5,7 +5,7 @@
  * under the terms of the MIT license.
  */
 
-#include "GameVersion.h"
+#include <elfldr/GameVersion.h>
 
 #include <fileio.h>
 #include <utils/utils.h>

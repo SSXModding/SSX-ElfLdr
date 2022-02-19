@@ -13,7 +13,7 @@
 #include <utils/codeutils.h>
 #include <utils/utils.h>
 
-#include "GameVersion.h"
+#include "elfldr/GameVersion.h"
 #include "patch.h"
 
 // addresses of some fun stuff
@@ -115,27 +115,45 @@ struct ExpPatch : public Patch {
 		// Load all the erls, collect their function pointers, and then
 		// get the length of said collection grouped by type
 
-#if 1
+		#if 1
 		auto* erl = erl::LoadErl("host:sample_erl.erl");
+
+		// THIS CODE IS GENERIC!
 		if(erl) {
-			auto sym = erl->ResolveSymbol("elfldr_get_functions");
+			{
+				auto sym = erl->ResolveSymbol("elfldr_erl_abiversion");
+				if(!sym.IsValid()) {
+					util::DebugOut("Invalid Codehook \"%s\"! (Doesn't have ABI export?)", erl->GetFileName());
+					erl::DestroyErl(erl);
+					return;
+				}
 
-			if(!sym.IsValid()) {
-				util::DebugOut("Invalid Codehook \"%s\"!", erl->GetFileName());
+				auto* elfldr_erl_abiversion = sym.As<uint32_t()>();
+				if(elfldr_erl_abiversion() != ERL_ABI_VERSION) {
+					util::DebugOut("Invalid Codehook \"%s\"! (Wrong ABI version)", erl->GetFileName());
+					erl::DestroyErl(erl);
+					return;
+				}
+			}
+
+			// Initialize the init data.
+			InitErlData ed{};
+			ed.verData = GetGameVersionData();
+			ed.Alloc = &Alloc;
+			ed.Free = &Free;
+
+			auto initsym = erl->ResolveSymbol("elfldr_erl_init");
+			if(!initsym.IsValid()) {
+				// I give up
+				util::DebugOut("this erl sucks");
 				erl::DestroyErl(erl);
+				return;
 			}
 
-			auto* fun = sym.As<bool(ErlGetFunctionReturn*)>();
+			auto elfldr_erl_init = initsym.As<void(InitErlData*)>();
+			elfldr_erl_init(&ed);
 
-			ErlGetFunctionReturn egr {};
-
-			if(!fun(&egr)) {
-				util::DebugOut("huh?");
-			} else {
-				util::DebugOut("%d functions", egr.nrFunctions);
-				for(int i = 0; i < egr.nrFunctions; ++i)
-					util::DebugOut("type %d, ptr %08x", egr.functions[i].type, egr.functions[i].fnPtr);
-			}
+			// ERL has now initialized.
 		}
 #endif
 	}

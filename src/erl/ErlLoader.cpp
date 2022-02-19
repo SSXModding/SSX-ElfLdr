@@ -89,8 +89,6 @@ namespace elfldr::erl {
 			delete[] bytes;
 		}
 
-		// FIXME: Refactor this function to just take the elf_reloca_t&
-		// 	And/or be a template i.e <class RelocType>
 		/**
 		 * Apply a ELF relocation for this image.
 		 */
@@ -103,8 +101,11 @@ namespace elfldr::erl {
 				ERL_DEBUG_PRINTF("Unaligned relocation (at %p), type %d", &bytes[offset], type);
 			}
 
+			// I guess this is bit_cast stype type punning to avoid ub,
+			// bit_cast implementation in runtime?
+
 			memcpy(&u_current_data, &bytes[offset], sizeof(uintptr_t));
-			memcpy(&s_current_data, &bytes[offset], 4);
+			memcpy(&s_current_data, &bytes[offset], sizeof(uintptr_t));
 
 			if(addend != 0)
 				addr += addend;
@@ -122,6 +123,8 @@ namespace elfldr::erl {
 				case R_MIPS_LO16:
 					newstate = (u_current_data & 0xffff0000) | ((((s_current_data << 16) >> 16) + (addr & 0xffff)) & 0xffff);
 					break;
+
+					// This is very rare to actually happen
 				default:
 					ERL_DEBUG_PRINTF("Unknown relocation type %d", type);
 					return false;
@@ -222,7 +225,7 @@ namespace elfldr::erl {
 
 			// Initialize the symbol hash table, so we can export symbols
 			// using it.
-			symbol_table.Init(64);
+			symbol_table.Init(128);
 
 			ERL_RELEASE_PRINTF("ERL Base Address: 0x%08X", bytes);
 
@@ -356,8 +359,7 @@ namespace elfldr::erl {
 				elfldr::FlushCaches();
 
 			// Let's call _start
-			auto start = ResolveSymbol("_start").As<int()>();
-			int res = start();
+			int res = (ResolveSymbol("_start").As<int()>())();
 
 			// use res in release builds to avoid funny compiler warning
 #ifndef DEBUG

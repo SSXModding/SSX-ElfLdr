@@ -31,7 +31,7 @@
 #include <utils/codeutils.h>
 #include <utils/utils.h>
 
-#include "GameVersion.h"
+#include "elfldr/GameVersion.h"
 #include "patch.h"
 
 // in main.cpp

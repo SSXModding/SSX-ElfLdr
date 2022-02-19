@@ -25,6 +25,9 @@ namespace elfldr {
 		NTSCJ
 	};
 
+	// THIS TYPE IS USED IN THE ERL ABI,
+	// ADD FIELDS AFTER THE EXISTING ONES!!!
+
 	/**
 	 * A package of all game version data.
 	 */
@@ -40,9 +43,6 @@ namespace elfldr {
 		GameRegion region;
 
 		// TODO: Game version?
-
-		void* MallocAddress;
-		void* FreeAddress;
 
 		/**
 		 * Get the game binary filename

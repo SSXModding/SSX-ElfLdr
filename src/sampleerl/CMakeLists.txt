@@ -1,18 +1,22 @@
-
-# TODO: Need to get this working to test hook code
-
-add_library(sample_erl SHARED
+add_executable(sample_erl
         sampleerl.cpp
         )
 
+# TODO(sdk): It would be really nice to make a function which removes this ugliness
+#           and allows you to just make an executable target an erl with one command.
+#           One may only wish.
+
 set_target_properties(sample_erl PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
-        POSITION_INDEPENDENT_CODE OFF
+        COMPILE_FLAGS "-fvisibility=hidden"
+        LINK_FLAGS "-nostartfiles -nodefaultlibs -u start -Wl,-r -Wl,-d"
+        SUFFIX ".erl"
         )
-
-#set_property(GLOBAL PROPERTY POSITION_INDEPENDENT_CODE OFF)
 
 target_link_libraries(sample_erl PUBLIC
         elfldr::runtime
         elfldr::utils_erl
+        # Apparently this ps2sdk library doesn't require bringing libc with it.
+        # Cool. At least I won't have to do *that* by hand :V
+        kernel
         )

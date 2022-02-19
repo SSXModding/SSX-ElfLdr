@@ -38,4 +38,4 @@ add_subdirectory(src/erl)
 # elfldr itself :)
 add_subdirectory(src/elfldr)
 
-#add_subdirectory(src/sampleerl)
+add_subdirectory(src/sampleerl)

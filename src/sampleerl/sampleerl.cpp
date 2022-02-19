@@ -5,64 +5,56 @@
  * under the terms of the MIT license.
  */
 
-// Sample ERL for Elfldr
+// Sample ERL for Elfldr.
 
-// include the ABI header to get ABI structures.
+#include <runtime/Allocator.h>
 #include <sdk/ErlAbi.h>
-
-// This defines replacements for libc functions (printf, malloc, free)
-// inside of the bx:: namespace, which call code inside of
-// the game's executable automatically.
-//
-// This, while being beyond janky, saves needing to worry about linking libc
-// with the ERL,
-// or needing to also load/relocate libc.erl. A Good Thing, even though
-// we probably *could*.
-//
-// For memcpy, memset, and a couple other functions,
-// GCC provides built-in versions of these, which should be preferred, or
-// I'll provide a "mini" runtime in the SDK for it.
 #include <sdk/GameApi.h>
+#include <utils/Hook.h>
 
-// A sample function run every game frame,
-// called by elfldr's injection of cGame::UpdateNodes().
-ELFLDR_HIDDEN void SampleFunction() {
-	bx::printf("sample_erl!SampleFunction()");
+void* (*MEM_alloc_orig)(const char*, uint64_t, int);
+void (*MEM_free_orig)(void* ptr);
+
+const char* test2 = "test data. this should work, if not, globals are busted :)";
+
+// TODO: This should be put into another source file.
+// this pretty much overrides
+#ifndef NDEBUG
+void __Elfldr__AssertFailure(const char* exp, const char* function, const char* file, unsigned line) {
+	bx::printf("its fucked\n");
+	while(true)
+		;
+}
+#endif
+
+void __Elfldr__VerifyFailure(const char* exp, const char* file, unsigned line) {
+	bx::printf("its fucked\n");
+	while(true)
+		;
 }
 
-// Function table
-ELFLDR_HIDDEN elfldr::FunctionEntry entryTable[] {
-	// clang-format off
-
-	// sample cGame::UpdateNodes() hook
-	{
-		.type = elfldr::FunctionType::GameFrame,
-		.fnPtr = &SampleFunction
-	}
-
-	// clang-format on
-};
-
-// example implementation of the only needed ERL call,
-// "elfldr_get_functions". You don't really need to change this,
-// unless you wanna do some stuff before Elfldr knows your stuff.
-
-extern "C" bool elfldr_get_functions(elfldr::ErlGetFunctionReturn* ret) {
-	bx::printf("elfldr_get_functions(ret: %p)", ret);
-	bx::printf("function is @ %p", entryTable[0].fnPtr);
-
-	// If the return pointer is invalid,
-	// there's probably worse issues.
-	if(!ret)
-		return false;
-
-	// Give elfldr the information it needs and then return success.
-	ret->nrFunctions = sizeof(entryTable) / sizeof(entryTable[0]);
-	ret->functions = reinterpret_cast<elfldr::FunctionEntry*>(&entryTable);
-	return true;
+void test() {
+	bx::printf("test()\n");
 }
 
-extern "C" int _start() {
-	bx::printf("Hi, world?\n");
-	return 0;
+extern "C" ELFLDR_ERL_EXPORT void elfldr_erl_init(elfldr::InitErlData* erlData) {
+	bx::printf("elfldr_erl_init() %s\n", test2);
+
+	//elfldr::SetAllocationFunctions(erlData->Alloc, erlData->Free);
+
+	//MEM_alloc_orig = elfldr::HookFunction<void* (*)(const char*, uint64_t, int)>(elfldr::util::Ptr(0x0023a448), [](const char* tag, uint64_t sz, int fl) {
+	//	bx::printf("MEM_alloc: \"%s\" size %d flags %02x\n", tag, sz, fl);
+	//	// allocate the memory after we yell about it
+	//	return MEM_alloc_orig(tag, sz, fl);
+	//});
+
+	// MEM_free_orig = elfldr::HookFunction<void (*)(void*)>(elfldr::util::Ptr(0x0023a998), [](void* ptr) {
+	//	bx::printf("MEM_free: ptr %p\n", ptr);
+	//	// allocate the memory after we yell about it
+	//	return MEM_free_orig(ptr);
+	// });
+
+	bx::printf("elfldr_erl_init() end\n");
 }
+
+ELFLDR_ERL("sample_erl");

@@ -13,7 +13,7 @@
 #include <utils/codeutils.h>
 #include <utils/utils.h>
 
-#include "GameVersion.h"
+#include "elfldr/GameVersion.h"
 #include "patch.h"
 
 // addresses of some fun stuff
@@ -25,28 +25,6 @@ using namespace elfldr;
 // I'm lazy.
 namespace elfldr {
 	void FlushCaches();
-}
-
-// aligned malloc/free for ERL
-
-void* AlignedBxMalloc(uint32_t c) {
-	auto raw_pointer = bx::real::MEM_alloc("Lily <3", c + sizeof(uint32_t), 0x40);
-	auto value = reinterpret_cast<uintptr_t>(raw_pointer);
-	value += (-value) & sizeof(uint32_t);
-
-	// prepare the returned pointer by putting in the original malloc address
-	auto* ret_pointer = reinterpret_cast<void*>(value);
-	reinterpret_cast<uintptr_t*>(ret_pointer)[-1] = reinterpret_cast<uintptr_t>(raw_pointer);
-
-	// util::DebugOut("debug(malloc): real pointer is %p", raw_pointer);
-	return ret_pointer;
-}
-
-void AlignedBxFree(void* p) {
-	auto real_pointer = reinterpret_cast<void*>(reinterpret_cast<uintptr_t*>(p)[-1]);
-	// util::DebugOut("debug(free): real pointer is %p", real_pointer);
-	if(real_pointer != nullptr)
-		bx::real::MEM_free(real_pointer);
 }
 
 struct ExpPatch : public Patch {
@@ -82,7 +60,7 @@ struct ExpPatch : public Patch {
 		}, [](void* p) {
 			if(p)
 				bx::real::MEM_free(p);
-		}, AlignedBxMalloc, AlignedBxFree);
+		});
 		// clang-format on
 
 		// maybe this should be a function in gameapi.h?
@@ -137,27 +115,45 @@ struct ExpPatch : public Patch {
 		// Load all the erls, collect their function pointers, and then
 		// get the length of said collection grouped by type
 
-#if 1
+		#if 1
 		auto* erl = erl::LoadErl("host:sample_erl.erl");
+
+		// THIS CODE IS GENERIC!
 		if(erl) {
-			auto sym = erl->ResolveSymbol("elfldr_get_functions");
+			{
+				auto sym = erl->ResolveSymbol("elfldr_erl_abiversion");
+				if(!sym.IsValid()) {
+					util::DebugOut("Invalid Codehook \"%s\"! (Doesn't have ABI export?)", erl->GetFileName());
+					erl::DestroyErl(erl);
+					return;
+				}
 
-			if(!sym.IsValid()) {
-				util::DebugOut("Invalid Codehook \"%s\"!", erl->GetFileName());
+				auto* elfldr_erl_abiversion = sym.As<uint32_t()>();
+				if(elfldr_erl_abiversion() != ERL_ABI_VERSION) {
+					util::DebugOut("Invalid Codehook \"%s\"! (Wrong ABI version)", erl->GetFileName());
+					erl::DestroyErl(erl);
+					return;
+				}
+			}
+
+			// Initialize the init data.
+			InitErlData ed{};
+			ed.verData = GetGameVersionData();
+			ed.Alloc = &Alloc;
+			ed.Free = &Free;
+
+			auto initsym = erl->ResolveSymbol("elfldr_erl_init");
+			if(!initsym.IsValid()) {
+				// I give up
+				util::DebugOut("this erl sucks");
 				erl::DestroyErl(erl);
+				return;
 			}
 
-			auto* fun = sym.As<bool(ErlGetFunctionReturn*)>();
+			auto elfldr_erl_init = initsym.As<void(InitErlData*)>();
+			elfldr_erl_init(&ed);
 
-			ErlGetFunctionReturn egr {};
-
-			if(!fun(&egr)) {
-				util::DebugOut("huh?");
-			} else {
-				util::DebugOut("%d functions", egr.nrFunctions);
-				for(int i = 0; i < egr.nrFunctions; ++i)
-					util::DebugOut("type %d, ptr %08x", egr.functions[i].type, egr.functions[i].fnPtr);
-			}
+			// ERL has now initialized.
 		}
 #endif
 	}

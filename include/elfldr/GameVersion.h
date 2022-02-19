@@ -25,6 +25,9 @@ namespace elfldr {
 		NTSCJ
 	};
 
+	// THIS TYPE IS USED IN THE ERL ABI,
+	// ADD FIELDS AFTER THE EXISTING ONES!!!
+
 	/**
 	 * A package of all game version data.
 	 */

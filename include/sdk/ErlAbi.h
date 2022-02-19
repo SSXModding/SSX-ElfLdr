@@ -5,62 +5,45 @@
  * under the terms of the MIT license.
  */
 
+// ABI for the ERL layer.
+
+
 #ifndef ERLABI_H
 #define ERLABI_H
 
-// This file defines abi types used in ERL functions
-// TODO
-
 #include <stdint.h>
 
-/**
- * Declare a symbol as hidden
- */
-#define ELFLDR_HIDDEN __attribute__((visibility("hidden")))
+#include <elfldr/GameVersion.h>
+
+//#define ELFLDR_ERL_HIDDEN __attribute__((visibility("hidden")))
+#define ELFLDR_ERL_EXPORT __attribute__((visibility("default"))) extern "C"
 
 namespace elfldr {
 
-	enum class FunctionType : uint8_t {
-		/**
-		 * Called when cGame::cGame() is called
-		 */
-		GameInit,
-
-		/**
-		 * Called every time cGame::UpdateNodes() is called
-		 */
-		GameFrame,
-
-		/**
-		 * Called every time cGame::Render() is called,
-		 * so it can in theory be used to render arbitrary stuff.
-		 * lmao
-		 */
-		GameRender
-	};
-
-	using ErlFunction_t = void (*)();
-
 	/**
-	 * a function entry.
-	 * Elfldr consumes these to add to an internal list
-	 * which it then emits assembler to call.
+	 * ERL ABI version. Should be bumped on any incompatible
+	 * changes to any structures passed to/from ERL, especially InitErlData.
 	 */
-	struct FunctionEntry {
-		FunctionType type;
-		ErlFunction_t fnPtr;
+	constexpr static uint32_t ERL_ABI_VERSION = 0;
+
+	struct InitErlData {
+		GameVersionData verData;
+		void*(*Alloc)(uint32_t);
+		void(*Free)(void*);
+		// any additional data. Requires an ABI bump.
 	};
 
-	// returned by the ERL's
-	// "bool elfldr_get_functions(ErlGetFunctionReturn*)" function
-	struct ErlGetFunctionReturn {
-		uint8_t nrFunctions;
-		FunctionEntry* functions;
-	};
+	// the expected type of elfldr_erl_abiversion
+	using ErlAbiVersionT = uint32_t(*)();
 
-	// the expected type of elfldr_get_functions
-	using GetFunctions_t = bool (*)(ErlGetFunctionReturn*);
+	// the expected type of elfldr_erl_init
+	using ErlInitT = void (*)(InitErlData*);
 
+	// Declare all needed exports for a Elfldr ERL.
+	// elfldr_erl_init() needs to be implemented still.
+#define ELFLDR_ERL(name) \
+	ELFLDR_ERL_EXPORT uint32_t elfldr_erl_abiversion() { return elfldr::ERL_ABI_VERSION; } \
+	ELFLDR_ERL_EXPORT int _start() { return 0; }
 } // namespace elfldr
 
 #endif // ERLABI_H

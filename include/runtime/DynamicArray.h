@@ -22,11 +22,12 @@ namespace elfldr {
 	 */
 	template <class Elem, class Alloc = StdAllocator<Elem>>
 	struct DynamicArray {
+		using ValueType = RemoveCvRefT<T>;
 		using SizeType = size_t;
-		using Reference = Elem&;
-		using ConstReference = const Elem&;
-		using Pointer = Elem*;
-		using ConstPointer = const Elem*;
+		using Reference = ValueType&;
+		using ConstReference = const ValueType&;
+		using Pointer = ValueType*;
+		using ConstPointer = const ValueType*;
 
 		constexpr DynamicArray() = default;
 
@@ -140,6 +141,7 @@ namespace elfldr {
 		Alloc alloc;
 		Pointer rawArray { nullptr };
 		SizeType length { 0 }; // note that this is in Elem, not bytes
+		SizeType size;
 	};
 
 } // namespace elfldr

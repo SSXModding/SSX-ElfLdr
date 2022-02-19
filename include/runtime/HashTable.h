@@ -15,10 +15,15 @@ namespace elfldr {
 	//		We will also need to rehash all keys when resizing which sucks but meh
 
 	/**
-	 * A simple hash table. Doesn't handle collisions,
+	 * A simple hash table/hashmap. Doesn't handle collisions,
 	 * and is probably boneheaded in design. It works though.
+	 *
+	 * \tparam Key Key type. Must have a Hash implementation.
+	 * \tparam Value The value type.
+	 * \tparam Hash The Hash algorithm to use.
+	 * \tparam Allocator The Allocator (see runtime/Allocator.h for the concept definition) to use.
 	 */
-	template <class Key, class Value, class Hasher = Hash<Key>, template<class> class Allocator = StdAllocator>
+	template <class Key, class Value, class Hash = Hash<Key>, template<class> class Allocator = StdAllocator>
 	struct HashTable {
 		inline HashTable() = default;
 
@@ -110,7 +115,7 @@ namespace elfldr {
 		Allocator<Bucket> alloc;
 
 		uint32_t HashKey(const Key& key) {
-			return Hasher::hash(key) % bucket_size;
+			return Hash::hash(key) % bucket_size;
 		}
 
 		Bucket* MaybeGetBucket(const Key& key) {

@@ -1,11 +1,8 @@
 
 add_library(elfldr_runtime
 
-		# C runtime code
+		# C runtime code/library implementaion
 		# crt/
-
-		# C library implementation
-		# clib/
 
 		# C++ Runtime code
 		Allocator.cpp

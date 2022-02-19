@@ -14,14 +14,14 @@
 #include <runtime/Assert.h>
 
 #ifndef NDEBUG
-void __Elfldr__AssertFailure(const char* exp, const char* function, const char* file, unsigned line) {
+__attribute__((weak)) void __Elfldr__AssertFailure(const char* exp, const char* function, const char* file, unsigned line) {
 	elfldr::util::DebugOut("ELFLDR_ASSERT(%s) failed. File: %s:%d Function %s", exp, file, line, function);
 	while(true)
 		;
 }
 #endif
 
-void __Elfldr__VerifyFailure(const char* exp, const char* file, unsigned line) {
+__attribute__((weak)) void __Elfldr__VerifyFailure(const char* exp, const char* file, unsigned line) {
 	elfldr::util::DebugOut("ELFLDR_VERIFY(%s) failed. File: %s:%d", exp, file, line);
 	while(true)
 		;

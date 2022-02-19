@@ -33,7 +33,7 @@ namespace elfldr {
 	 */
 	template <class HookT>
 	constexpr HookT HookFunction(void* funcptr, const HookT hook) {
-		return static_cast<HookT>(detail::HookFunctionBase(funcptr, static_cast<void*>(hook)));
+		return UBCast<HookT>(detail::HookFunctionBase(funcptr, UBCast<void*>(hook)));
 	}
 
 } // namespace elfldr

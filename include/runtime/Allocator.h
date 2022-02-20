@@ -12,6 +12,7 @@
 #include <stdint.h>
 #include <runtime/TypeTraits.h>
 #include <runtime/Assert.h>
+#include <runtime/Utility.h>
 
 // Provide C++ new/new[] and delete/delete[]
 // overloads which use the Utils heap.
@@ -47,6 +48,10 @@ namespace elfldr {
 	 */
 	using Free_t = void (*)(void*);
 
+
+	using AllocFreePair = Pair<Alloc_t, Free_t>;
+
+
 	// TODO: for multi game support, we need to probably
 	// use a probe routine which does the below automatically
 	// as soon as the ELF is loaded.
@@ -59,7 +64,7 @@ namespace elfldr {
 	 * any Runtime memory management (subsequently, Runtime containers)
 	 * routines can be used.
 	 */
-	void SetAllocationFunctions(Alloc_t alloc, Free_t free);
+	void SetAllocationFunctions(AllocFreePair memoryRoutines);
 
 	// Allocator concept:
 	//

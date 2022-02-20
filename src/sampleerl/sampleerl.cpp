@@ -18,7 +18,7 @@ void (*MEM_free_orig)(void* ptr);
 const char* test2 = "test data. this should work, if not, globals are busted :)";
 
 // TODO: This should be put into another source file.
-// this pretty much overrides
+// this pretty much overrides the Utils impl of assert functions
 #ifndef NDEBUG
 void __Elfldr__AssertFailure(const char* exp, const char* function, const char* file, unsigned line) {
 	bx::printf("its fucked\n");
@@ -37,7 +37,7 @@ void test() {
 	bx::printf("test()\n");
 }
 
-extern "C" ELFLDR_ERL_EXPORT void elfldr_erl_init(elfldr::InitErlData* erlData) {
+ELFLDR_ERL_EXPORT void elfldr_erl_init(elfldr::InitErlData* erlData) {
 	bx::printf("elfldr_erl_init() %s\n", test2);
 
 	//elfldr::SetAllocationFunctions(erlData->Alloc, erlData->Free);

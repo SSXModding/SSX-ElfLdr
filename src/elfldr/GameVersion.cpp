@@ -6,11 +6,10 @@
  */
 
 #include <elfldr/GameVersion.h>
-
 #include <fileio.h>
+#include <runtime/Assert.h>
+#include <string.h>
 #include <utils/utils.h>
-
-#include <cstring>
 
 // in main.cpp
 extern const char* gHostFsPath;
@@ -55,39 +54,65 @@ namespace elfldr {
 			return FileExists(buf);
 		}
 
-		const char* GameBinaryFor(Game game, GameRegion region) {
-			switch(game) {
-				case Game::SSXOG:
+		const char* SSXOGBinary(GameRegion region, GameVersion version) {
+			switch(version) {
+				case GameVersion::SSXOG_10:
 					switch(region) {
 						case GameRegion::NTSC:
 							return "SLUS_200.95";
-						case GameRegion::PAL:
-							return "SLES_500.30";
 						default:
-							return "???";
+							ELFLDR_ASSERT(false && "Invalid region!");
 					}
 					break;
-				case Game::SSXDVD:
+			}
+
+			ELFLDR_ASSERT(false);
+		}
+
+		const char* SSXDVDBinary(GameRegion region, GameVersion version) {
+			switch(version) {
+				case GameVersion::SSXDVD_10:
 					switch(region) {
 						case GameRegion::NTSC:
 							return "SLUS_203.26";
 						default:
-							return "???";
+							ELFLDR_ASSERT(false && "Invalid region!");
 					}
 					break;
-				case Game::SSX3:
+			}
+
+			ELFLDR_ASSERT(false);
+		}
+
+		const char* SSX3Binary(GameRegion region, GameVersion version) {
+			switch(version) {
+				case GameVersion::SSX3_OPSM2_DEMO:
+					return "SSX3.ELF"; // iirc?
+				case GameVersion::SSX3_KR_DEMO:
+					return "SLKA_905.02";
+				case GameVersion::SSX3_10:
 					switch(region) {
 						case GameRegion::NTSC:
 							return "SLUS_207.72";
 						default:
-							return "???";
+							ELFLDR_ASSERT(false && "Invalid region!");
 					}
 					break;
-				default:
-					return "???";
 			}
 		}
 
+		const char* GameBinaryFor(Game game, GameRegion region, GameVersion version) {
+			switch(game) {
+				case Game::SSXOG:
+					return SSXOGBinary(region, version);
+				case Game::SSXDVD:
+					return SSXDVDBinary(region, version);
+				case Game::SSX3:
+					return SSX3Binary(region, version);
+				default:
+					ELFLDR_VERIFY(false && "Invalid game passed to GameBinaryFor...");
+			}
+		}
 
 		struct AllocAddressPair {
 			void* alloc;
@@ -100,8 +125,6 @@ namespace elfldr {
 		};
 
 		AllocAddressPair MallocAddressFor(Game game, GameRegion region) {
-
-
 		}
 
 		void ProbeSuccess() {
@@ -110,29 +133,30 @@ namespace elfldr {
 	} // namespace
 
 	const char* GameVersionData::GetGameBinary() const {
-		return GameBinaryFor(game, region);
+		return GameBinaryFor(game, region, version);
 	}
-
 
 	void ProbeVersion() {
 		char path[util::MaxPath] {};
 
-#define TryCase(game_, region_, message)               \
-	if(TryFile(path, GameBinaryFor(game_, region_))) { \
-		gGameVersionData.game = game_;                 \
-		gGameVersionData.region = region_;             \
-		util::DebugOut(message);                       \
-		return;                                        \
+#define TryCase(game_, region_, version_, message)               \
+	if(TryFile(path, GameBinaryFor(game_, region_, version_))) { \
+		gGameVersionData.game = game_;                           \
+		gGameVersionData.region = region_;                       \
+		gGameVersionData.version = version_;                     \
+		util::DebugOut(message);                                 \
+		return;                                                  \
 	}
 
-		TryCase(Game::SSXOG, GameRegion::NTSC, "Version probe detected SSX OG (NTSC).")
-		TryCase(Game::SSXOG, GameRegion::PAL, "Version probe detected SSX OG (PAL).")
+		TryCase(Game::SSXOG, GameRegion::NTSC, GameVersion::SSXOG_10, "Version probe detected SSX OG (NTSC).")
 
 		// SSXDVD
-		TryCase(Game::SSXDVD, GameRegion::NTSC, "Version probe detected SSX Tricky (NTSC).")
+		TryCase(Game::SSXDVD, GameRegion::NTSC, GameVersion::SSXDVD_10, "Version probe detected SSX Tricky (NTSC).")
 
 		// SSX 3
-		TryCase(Game::SSX3, GameRegion::NTSC, "Version probe detected SSX 3 (NTSC).")
+		TryCase(Game::SSX3, GameRegion::NTSC, GameVersion::SSX3_OPSM2_DEMO, "Version probe detected SSX 3 (OPSM2 Demo).")
+		TryCase(Game::SSX3, GameRegion::NotApplicable, GameVersion::SSX3_KR_DEMO, "Version probe detected SSX 3 (KR Demo).")
+		TryCase(Game::SSX3, GameRegion::NTSC, GameVersion::SSX3_10, "Version probe detected SSX 3 (NTSC).")
 
 #undef TryCase
 

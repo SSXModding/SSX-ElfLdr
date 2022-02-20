@@ -55,12 +55,12 @@ struct ExpPatch : public Patch {
 		// so we can PROBABLY relax REAL stuff
 
 		// clang-format off
-		SetAllocationFunctions([](uint32_t c) {
+		SetAllocationFunctions({ [](uint32_t c) {
 			return bx::real::MEM_alloc("Lily <3", c, 0x0 /* i forgor mbflags :( */);
 		}, [](void* p) {
 			if(p)
 				bx::real::MEM_free(p);
-		});
+		}});
 		// clang-format on
 
 		// maybe this should be a function in gameapi.h?
@@ -115,7 +115,7 @@ struct ExpPatch : public Patch {
 		// Load all the erls, collect their function pointers, and then
 		// get the length of said collection grouped by type
 
-		#if 1
+#if 1
 		auto* erl = erl::LoadErl("host:sample_erl.erl");
 
 		// THIS CODE IS GENERIC!
@@ -137,7 +137,7 @@ struct ExpPatch : public Patch {
 			}
 
 			// Initialize the init data.
-			InitErlData ed{};
+			InitErlData ed {};
 			ed.verData = GetGameVersionData();
 			ed.Alloc = &Alloc;
 			ed.Free = &Free;

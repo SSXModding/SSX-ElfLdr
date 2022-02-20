@@ -12,20 +12,82 @@
 
 namespace elfldr {
 
+	/**
+	 * Supported games.
+	 */
 	enum class Game : uint8_t {
+		/**
+		 * Invalid game.
+		 */
 		Invalid,
+
+		/**
+		 * SSX OG.
+		 */
 		SSXOG,
+
+		/**
+		 * SSX Tricky.
+		 */
 		SSXDVD,
+
+		/**
+		 * SSX 3.
+		 */
 		SSX3
 	};
 
 	enum class GameRegion : uint8_t {
 		NTSC,
 		PAL,
-		NTSCJ
+		NTSCJ,
+		/**
+		 * Used if a region is not applicable,
+		 * for e.g. game coverdiscs.
+		 */
+		NotApplicable
 	};
 
-	// THIS TYPE IS USED IN THE ERL ABI,
+	enum class GameVersion : uint8_t {
+		/**
+		 * SSX OG Release
+		 */
+		SSXOG_10,
+
+		// This space for Demo/earlier builds
+
+		/**
+		 * SSX Tricky Release
+		 */
+		SSXDVD_10 = 10,
+
+		/**
+		 * SSX Tricky Jampack demo.
+		 * Built September 2001.
+		 */
+		SSXDVD_JAMPACK_DEMO,
+
+		// This space for rent
+
+		/**
+		 * SSX 3 Release
+		 */
+		SSX3_10,
+
+		/**
+		 * SSX3 OPSM2 Demo.
+		 * Built early June 2003, from a codebase from May 2003.
+		 */
+		SSX3_OPSM2_DEMO = 20, // unsupported but I'm giving it space here
+
+		/**
+		 * SSX3 Korean demo.
+		 * Built June 2003.
+		 */
+		SSX3_KR_DEMO
+	};
+
+	// THIS TYPE IS PASSED IN THE ERL ABI,
 	// ADD FIELDS AFTER THE EXISTING ONES!!!
 
 	/**
@@ -42,7 +104,10 @@ namespace elfldr {
 		 */
 		GameRegion region;
 
-		// TODO: Game version?
+		/**
+		 * Version.
+		 */
+		GameVersion version;
 
 		/**
 		 * Get the game binary filename

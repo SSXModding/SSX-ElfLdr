@@ -16,7 +16,7 @@
 #include <elfldr/GameVersion.h>
 
 //#define ELFLDR_ERL_HIDDEN __attribute__((visibility("hidden")))
-#define ELFLDR_ERL_EXPORT __attribute__((visibility("default"))) extern "C"
+#define ELFLDR_ERL_EXPORT extern "C" __attribute__((visibility("default")))
 
 namespace elfldr {
 

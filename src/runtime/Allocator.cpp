@@ -47,9 +47,9 @@ namespace elfldr {
 		return Free_ptr(ptr);
 	}
 
-	void SetAllocationFunctions(Alloc_t alloc, Free_t free) {
-		Alloc_ptr = alloc;
-		Free_ptr = free;
+	void SetAllocationFunctions(AllocFreePair memoryRoutines) {
+		Alloc_ptr = memoryRoutines.first;
+		Free_ptr = memoryRoutines.second;
 	}
 
 } // namespace elfldr

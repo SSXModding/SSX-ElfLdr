@@ -12,17 +12,29 @@ Versioned releases will also be available here, but you can choose to use the bl
 ## Game Support Table
 Game regions/versions or whole games marked as Unsupported are planned to be supported later.
 
+
+
 | Game          | Region/Version     | Support Status
 | --------------|--------------------|---------------|
-| SSX OG (2000) | USA (1.0)          | Supported
-| SSX OG (2000) | USA (Greatest Hits)| Unknown
-| SSX OG (2000) | PAL (1.0)          | Unsupported
-| SSX OG (2000) | NTSC-J (1.0)       | Unsupported
-| SSX Tricky    | USA (1.0)          | Supported
-| SSX Tricky    | PAL/NTSC-J         | Unsupported
-| SSX 3         | USA (1.0)          | Supported
-| SSX 3         | PAL/NTSC-J         | Unsupported
-| SSX On Tour   | (N/A)              | Unsupported
+| SSX OG (2000) | USA (1.0)          | ✅
+| SSX OG (2000) | USA (Greatest Hits)| ❓
+| SSX OG (2000) | PAL (1.0)          | ❌
+| SSX OG (2000) | NTSC-J (1.0)       | ❌
+| SSX Tricky    | USA (1.0)          | ✅
+| SSX Tricky    | PAL/NTSC-J         | ❌
+| SSX 3         | OPSM2 Demo         | 🧩️
+| SSX 3         | KR Demo            | 🧩
+| SSX 3         | PAL/NTSC-J         | ❌
+| SSX On Tour   | (N/A)              | ❌
+
+
+#### Legend
+| Symbol   |  Meaning
+| ---------|-----------------------|
+|  ✅️      | Supported
+|  🧩️       | Partial/In development
+|  ❌️      | Unsupported
+|  ❓       | Unknown
 
 
 ## Setup

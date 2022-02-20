@@ -5,7 +5,7 @@ A patching loader for the SSX games on PS2, providing the ability to run the gam
 It also provides a general patching/function hooking framework for developers.
 
 ## Builds
-Automatic builds of Elfldr, made on every commit to every branch, are available [at the Releases tab](https://github.com/modeco80/SSX-ElfLdr/releases).
+Automatic builds of Elfldr, made on every commit to every branch, are available [at the Releases tab](https://github.com/SSXModding/SSX-ElfLdr/releases).
 
 Versioned releases will also be available here, but you can choose to use the bleeding edge (if you so desire).
 

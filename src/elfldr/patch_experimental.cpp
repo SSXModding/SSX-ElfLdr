@@ -13,12 +13,16 @@
 #include <utils/codeutils.h>
 #include <utils/utils.h>
 
+#include <utils/Hook.h>
+
 #include "elfldr/GameVersion.h"
 #include "patch.h"
 
 // addresses of some fun stuff
 constexpr static uintptr_t TheApp_Address = 0x002852f8;
 constexpr static uintptr_t TheWorld_Address = 0x00299cc8;
+
+static void(*cApplication_Init_Orig)(bx::cApplication* capp, char*);
 
 using namespace elfldr;
 
@@ -114,8 +118,17 @@ struct ExpPatch : public Patch {
 
 		// Load all the erls, collect their function pointers, and then
 		// get the length of said collection grouped by type
+	
 
-#if 1
+		// Test hook	
+		cApplication_Init_Orig = elfldr::HookFunction<void(*)(bx::cApplication*, char*)>(util::Ptr(0x00183a68), [](bx::cApplication* capp_this, char* p1) {
+			bx::printf("cApplication::Init(%s) hook; orig is %p\n", p1, cApplication_Init_Orig);
+			capp_this->mGameRate = 0.5;
+			cApplication_Init_Orig(capp_this, p1);
+		});
+
+
+#if 0
 		auto* erl = erl::LoadErl("host:sample_erl.erl");
 
 		// THIS CODE IS GENERIC!

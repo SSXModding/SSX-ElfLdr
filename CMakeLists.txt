@@ -1,5 +1,11 @@
 cmake_minimum_required(VERSION 3.19)
 
+##if(NOT CMAKE_SYSTEM_NAME STREQUAL "Playstation2")
+##    add_subdirectory(cmake/superbuild)
+##    return()
+##endif()
+
+
 # Prohibit in-source tree builds.
 # CMake will be banning this in a bit, so when we can adjust cmake_minimum_required
 # to that exact CMake version, this block can be removed (or the policy enforced).
@@ -16,12 +22,6 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Verify developer is using the PS2 toolchain,
-# and not e.g: the host toolchain.
-if(NOT CMAKE_SYSTEM_NAME STREQUAL "Playstation2")
-    # TODO(setuptool/superbuild): This shouldn't be an error, we should just do the host build
-    message(FATAL_ERROR "Something is totally wrong with your environment. Did you not do -DCMAKE_TOOLCHAIN_FILE=/path/to/elfldr/cmake/Toolchain/ps2.cmake ?")
-endif()
 
 # Git tag target.
 add_custom_target(__elfldr_gittag

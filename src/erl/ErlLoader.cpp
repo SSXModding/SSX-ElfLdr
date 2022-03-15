@@ -48,14 +48,10 @@ namespace elfldr::erl {
 	//		for dependency support
 
 	/**
-	 * This class is actually what we allocate
-	 * when we give an Image* to people.
-	 * It includes all the private members we might need.
-	 *
-	 * Also provides the implementation of Image::ResolveSymbol and image loading to begin with..
+	 * Implementation of ERL image things.
 	 */
-	struct ImageImpl : public Image {
-		~ImageImpl() override {
+	struct ImageImpl {
+		~ImageImpl() {
 			ERL_DEBUG_PRINTF("~ImageImpl()");
 			delete[] bytes;
 		}
@@ -342,7 +338,7 @@ namespace elfldr::erl {
 			return NO_ERROR<ErlLoadError>;
 		}
 
-		Symbol ResolveSymbol(const char* symbolName) override {
+		Symbol ResolveSymbol(const char* symbolName) {
 			// FIXME: Does this need to construct a temporary string *EVERY* time it gets called?
 			//        that's a new[], memcpy(), and delete[] just to look up a symbol.
 			//        Too expensive for my liking, but it shouldn't happen frequently.
@@ -354,7 +350,7 @@ namespace elfldr::erl {
 			return -1;
 		}
 
-		[[nodiscard]] const char* GetFileName() const override {
+		[[nodiscard]] const char* GetFileName() const {
 			return filename.c_str();
 		}
 
@@ -366,35 +362,40 @@ namespace elfldr::erl {
 		HashTable<String, Symbol> symbol_table;
 		String filename;
 
-		// TODO: Array<std::uint8_t>?
+		// TODO: DynamicArray<std::uint8_t>?
 		uint8_t* bytes {};
 		// std::uint32_t fullsize {};
 	};
 
-	Image* LoadErl(const char* path) {
-		auto* image = new ImageImpl();
+	// helper to reduce boilerplate.
+#define AS_IMPL() reinterpret_cast<ImageImpl*>(&this->_impl[0])
+#define AS_IMPL_C() reinterpret_cast<const ImageImpl*>(&this->_impl[0])
 
-		// This guard frees the image in case of a load error.
-		ScopeExitGuard guard([&]() {
-			delete image;
-		});
+	Image::Image() {
+		static_assert(sizeof(_impl) >= sizeof(ImageImpl), "Impl data can't hold impl object");
+		new (AS_IMPL()) ImageImpl();
+	}
 
-		ERL_DEBUG_PRINTF("Attempting to load ERL \"%s\"", path);
+	Image::~Image() {
+		AS_IMPL()->~ImageImpl();
+	}
 
-		image->filename = path;
+	LoadResult<void> Image::LoadFromFile(const char* filename) {
+		return AS_IMPL()->Load(filename);
+	}
 
-		auto res = image->Load(path);
-		if(res.HasError()) {
-			// We know there's an error
-			ERL_RELEASE_PRINTF("Error %d loading ERL \"%s\" (%s)", res.Error(), path, LoadErrorToString(res.Error()).CStr());
-			return nullptr;
-		}
+	Symbol Image::ResolveSymbol(const char* symbolName) {
+		return AS_IMPL()->ResolveSymbol(symbolName);
+	}
 
-		// OK!
-		// We've loaded everything, and it's seemed to have worked!
-		// Woo-hoo!
-		guard.DontCall();
-		return image;
+	const char* Image::GetFileName() const {
+		return AS_IMPL_C()->GetFileName();
+	}
+
+	// may not even need this, although I think we're getting a little lucky with stack
+
+	Image* CreateErl() {
+		return new Image();
 	}
 
 	void DestroyErl(Image* theImage) {

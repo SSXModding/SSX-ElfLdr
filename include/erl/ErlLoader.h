@@ -92,7 +92,17 @@ namespace elfldr::erl {
 	 * An ERL image.
 	 */
 	struct Image {
-		virtual ~Image() = default;
+
+		Image();
+		~Image();
+
+		/**
+	 	 * Load and relocate a .erl file.
+	 	 *
+	 	 * \param[in] path ERL path.
+	 	 * \returns OK result, or error.
+		 */
+		LoadResult<void> LoadFromFile(const char* filename);
 
 		/**
 		 * Resolve an ERL-local symbol.
@@ -101,9 +111,17 @@ namespace elfldr::erl {
 		 *
 		 * \param[in] symbolName The name of the symbol to resolve.
 		 */
-		virtual Symbol ResolveSymbol(const char* symbolName) = 0;
+		Symbol ResolveSymbol(const char* symbolName);
 
-		virtual const char* GetFileName() const = 0;
+		const char* GetFileName() const;
+
+	   private:
+		// we actually only need 28 bytes at the moment (as of 3/14/2022),
+		// but 32 bytes gives us a pointer's worth of growth room.
+		using ImplStorage = uint8_t[32];
+
+		// impl. Please no touch :(
+		ImplStorage _impl;
 	};
 
 	// may not be needed.. yet
@@ -115,17 +133,17 @@ namespace elfldr::erl {
 	//void AddGlobalSymbol(const char* name, Symbol address);
 
 	/**
-	 * Load and relocate a .erl file.
-	 *
-	 * \param[in] path ERL path.
-	 * \returns Image handle (allocated with the ERL allocator), or nullptr on error.
+	 * Create a new ERL image object.
 	 */
-	Image* LoadErl(const char* path);
+	Image* CreateErl();
 
 	/**
-	 * Destroy a loaded ERL image.
+	 * Destroy a ERL image object.
 	 */
 	void DestroyErl(Image* theImage);
+
+	// Unique/shared/Erl?
+	// Might have to make unique_ptr and shared_ptr a thing first lol
 
 } // namespace elfldr::erl
 

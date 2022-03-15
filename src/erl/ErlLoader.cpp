@@ -33,35 +33,6 @@
 
 namespace elfldr::erl {
 
-	// all possible ERL load errors
-	enum class ErlLoadError {
-		FileNotFound, /** File does not exist on disk */
-		NotElf,		  /** Not a ELF file */
-		//	NotMips,		/** ELF machine type is not MIPS R5900 */
-		SizeMismatch,	/** Some data structure size didn't match up our structures */
-		NotRelocatable, /** ELF is not relocatable */
-		//	NoSymbols,		/** No symbols */
-		RelocationError /** Internal error relocating symbol */
-	};
-
-	/**
-	 * Convert a ErlLoadError to string.
-	 */
-	static StringView LoadErrorToString(ErlLoadError e) {
-		constexpr static const char* tab[] {
-			"ERL file not found",
-			"Not ELF file",
-			//	"Not MIPS",
-			"Critical structure size mismatch",
-			"Not a relocatable ELF",
-			//	"No symbols",
-			"Internal error relocating symbol :("
-		};
-		return tab[static_cast<int>(e)];
-	}
-
-	template <class T>
-	using ErlResult = Expected<T, ErlLoadError>;
 
 	constexpr uint32_t Align(uint32_t alignment_value, int align) {
 		align--;
@@ -136,7 +107,7 @@ namespace elfldr::erl {
 			return true;
 		}
 
-		ErlResult<void> Load(const char* path) {
+		LoadResult<void> Load(const char* path) {
 			// Stage 1: open the file.
 			// If this doesn't work, then the user specified an invalid path.
 			util::FioFile file;

@@ -11,6 +11,9 @@
 #include <stdint.h>
 #include <runtime/Utility.h>
 
+#include <runtime/Expected.h>
+#include <runtime/String.h>
+
 
 // The public API surface for LibErl.
 //
@@ -50,6 +53,41 @@ namespace elfldr::erl {
 		uintptr_t _ptr;
 	};
 
+	// TODO: it would be really nice to allow state
+
+	// all possible ERL load errors
+	enum class ErlLoadError {
+		FileNotFound, /** File does not exist on disk */
+		NotElf,		  /** Not a ELF file */
+		//	NotMips,		/** ELF machine type is not MIPS R5900 */
+		SizeMismatch,	/** Some data structure size didn't match up our structures */
+		NotRelocatable, /** ELF is not relocatable */
+		//	NoSymbols,		/** No symbols */
+		RelocationError /** Internal error relocating symbol */
+	};
+
+	/**
+	 * Convert a ErlLoadError to string.
+	 */
+	static StringView LoadErrorToString(ErlLoadError e) {
+		constexpr static const char* table[] {
+			"ERL file not found",
+			"Not ELF file",
+			//	"Not MIPS",
+			"Critical structure size mismatch",
+			"Not a relocatable ELF",
+			//	"No symbols",
+			"Internal error relocating symbol :("
+		};
+		return table[static_cast<size_t>(e)];
+	}
+
+	/**
+	 * Helper typedef for the load result.
+	 */
+	template <class T>
+	using LoadResult = Expected<T, ErlLoadError>;
+
 	/**
 	 * An ERL image.
 	 */
@@ -68,12 +106,13 @@ namespace elfldr::erl {
 		virtual const char* GetFileName() const = 0;
 	};
 
+	// may not be needed.. yet
 	/**
 	 * Add a global symbol to the ERL loader.
 	 * This symbol when spotted in an ERL will be slotted
-	 * in with the approiate
+	 * in with the approiate address.
 	 */
-	void AddGlobalSymbol(const char* name, Symbol address);
+	//void AddGlobalSymbol(const char* name, Symbol address);
 
 	/**
 	 * Load and relocate a .erl file.

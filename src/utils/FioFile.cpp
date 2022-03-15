@@ -31,17 +31,20 @@ namespace elfldr::util {
 	int FioFile::Read(void* buffer, size_t length) {
 		if(Good())
 			return fioRead(fd, buffer, length);
+		return -1;
 	}
 
 	int FioFile::Write(void* buffer, size_t length) {
 		if(Good())
 			return fioWrite(fd, buffer, length);
+		return -1;
 	}
 
 	int FioFile::Seek(int offset, int whence) {
 		ELFLDR_ASSERT(Good());
 		if(Good())
 			return fioLseek(fd, offset, whence);
+		return -1;
 	}
 
 	int FioFile::Tell() {
@@ -49,6 +52,7 @@ namespace elfldr::util {
 		// whatever, this works
 		if(Good())
 			return fioLseek(fd, 0, FIO_SEEK_CUR);
+		return -1;
 	}
 
 	void FioFile::Open(const char* path, int openflags) {

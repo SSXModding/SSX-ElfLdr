@@ -8,12 +8,10 @@
 #ifndef ERLLOADER_H
 #define ERLLOADER_H
 
-#include <stdint.h>
-#include <runtime/Utility.h>
-
 #include <runtime/Expected.h>
 #include <runtime/String.h>
-
+#include <runtime/Utility.h>
+#include <stdint.h>
 
 // The public API surface for LibErl.
 //
@@ -57,9 +55,9 @@ namespace elfldr::erl {
 
 	// all possible ERL load errors
 	enum class ErlLoadError {
-		FileNotFound, /** File does not exist on disk */
-		NotElf,		  /** Not a ELF file */
-		//	NotMips,		/** ELF machine type is not MIPS R5900 */
+		FileNotFound,	/** File does not exist on disk */
+		NotElf,			/** Not a ELF file */
+		NotMips,		/** ELF machine type is not valid */
 		SizeMismatch,	/** Some data structure size didn't match up our structures */
 		NotRelocatable, /** ELF is not relocatable */
 		//	NoSymbols,		/** No symbols */
@@ -73,11 +71,11 @@ namespace elfldr::erl {
 		constexpr static const char* table[] {
 			"ERL file not found",
 			"Not ELF file",
-			//	"Not MIPS",
+			"Not MIPS",
 			"Critical structure size mismatch",
-			"Not a relocatable ELF",
+			"ELF file isn't relocatable",
 			//	"No symbols",
-			"Internal error relocating symbol :("
+			"Internal error relocating a symbol"
 		};
 		return table[static_cast<size_t>(e)];
 	}
@@ -92,15 +90,14 @@ namespace elfldr::erl {
 	 * An ERL image.
 	 */
 	struct Image {
-
 		Image();
 		~Image();
 
 		/**
-	 	 * Load and relocate a .erl file.
-	 	 *
-	 	 * \param[in] path ERL path.
-	 	 * \returns OK result, or error.
+		 * Load and relocate a .erl file.
+		 *
+		 * \param[in] path ERL path.
+		 * \returns OK result, or error.
 		 */
 		LoadResult<void> LoadFromFile(const char* filename);
 
@@ -116,9 +113,9 @@ namespace elfldr::erl {
 		const char* GetFileName() const;
 
 	   private:
-		// we actually only need 28 bytes at the moment (as of 3/14/2022),
-		// but 32 bytes gives us a pointer's worth of growth room.
-		using ImplStorage = uint8_t[32];
+		// Bump this up or down depending on changes to ImageImpl, in
+		// erl/ErlLoader.cpp.
+		using ImplStorage = uint8_t[44];
 
 		// impl. Please no touch :(
 		ImplStorage _impl;
@@ -130,7 +127,7 @@ namespace elfldr::erl {
 	 * This symbol when spotted in an ERL will be slotted
 	 * in with the approiate address.
 	 */
-	//void AddGlobalSymbol(const char* name, Symbol address);
+	// void AddGlobalSymbol(const char* name, Symbol address);
 
 	/**
 	 * Create a new ERL image object.

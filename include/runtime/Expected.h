@@ -8,6 +8,7 @@
 #ifndef ELFLDR_EXPECTED_H
 #define ELFLDR_EXPECTED_H
 
+#include <stdint.h>
 #include <runtime/Assert.h>
 #include <runtime/Utility.h>
 

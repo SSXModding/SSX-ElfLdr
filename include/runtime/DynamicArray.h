@@ -9,6 +9,7 @@
 #define ELFLDR_DYNAMICARRAY_H
 
 #include <runtime/Allocator.h>
+#include <runtime/TypeTraits.h>
 #include <runtime/Utility.h>
 
 namespace elfldr {
@@ -22,7 +23,7 @@ namespace elfldr {
 	 */
 	template <class Elem, class Alloc = StdAllocator<Elem>>
 	struct DynamicArray {
-		using ValueType = RemoveCvRefT<T>;
+		using ValueType = RemoveCvRefT<Elem>;
 		using SizeType = size_t;
 		using Reference = ValueType&;
 		using ConstReference = const ValueType&;
@@ -30,6 +31,11 @@ namespace elfldr {
 		using ConstPointer = const ValueType*;
 
 		constexpr DynamicArray() = default;
+
+		// Helper constuctor, resize automatically to (len)
+		inline DynamicArray(SizeType len) {
+			Resize(len);
+		}
 
 		inline DynamicArray(const DynamicArray& other) {
 			Resize(other.length);
@@ -90,7 +96,7 @@ namespace elfldr {
 			} else {
 				// Activate storage for Elem's by default-constructing
 				for(size_t i = 0; i < newSize; ++i)
-					alloc.Construct(rawArray[i]);
+					alloc.Construct(&rawArray[i]);
 			}
 
 			length = newSize;
@@ -100,25 +106,25 @@ namespace elfldr {
 			return length;
 		}
 
-		[[nodiscard]] constexpr Pointer Data() {
+		[[nodiscard]] inline Pointer Data() {
 			return &rawArray[0];
 		}
 
-		[[nodiscard]] constexpr ConstPointer Data() const {
+		[[nodiscard]] inline ConstPointer Data() const {
 			return &rawArray[0];
 		}
 
-		[[nodiscard]] constexpr Reference At(size_t index) {
+		[[nodiscard]] inline Reference At(size_t index) {
 			ELFLDR_VERIFY(index >= length);
 			return rawArray[index];
 		}
 
-		[[nodiscard]] constexpr ConstReference At(size_t index) const {
+		[[nodiscard]] inline const ConstReference At(size_t index) const {
 			ELFLDR_VERIFY(index >= length);
 			return rawArray[index];
 		}
 
-		constexpr Reference operator[](size_t index) {
+		inline Reference operator[](size_t index) {
 			// If this is a debug build enforce
 			// size checking using At() for verification,
 			// otherwise just index into the array lmao
@@ -129,7 +135,7 @@ namespace elfldr {
 #endif
 		}
 
-		constexpr ConstReference operator[](size_t index) const {
+		inline ConstReference operator[](size_t index) const {
 #ifdef DEBUG
 			return At(index);
 #else

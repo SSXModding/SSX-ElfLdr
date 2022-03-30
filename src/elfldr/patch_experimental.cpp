@@ -125,7 +125,8 @@ struct ExpPatch : public Patch {
 			cApplication_Init_Orig(capp_this, p1);
 		});
 
-#if 1
+		// Disabling for inclusion into master branch
+#if 0
 		auto* erl = erl::CreateErl();
 
 		// THIS CODE IS GENERIC!

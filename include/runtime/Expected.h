@@ -10,6 +10,7 @@
 
 #include <runtime/Assert.h>
 #include <runtime/Utility.h>
+#include <stdint.h>
 
 namespace elfldr {
 
@@ -147,23 +148,42 @@ namespace elfldr {
 		}
 
 		constexpr T& Value() {
-			ELFLDR_ASSERT(HasValue() && !HasError());
+			ELFLDR_VERIFY(HasValue() && !HasError());
 			return t.GetConstructed();
 		}
 
 		constexpr E& Error() {
-			ELFLDR_ASSERT(!HasValue() && HasError());
+			ELFLDR_VERIFY(!HasValue() && HasError());
 			return e.GetConstructed();
 		}
 
 		constexpr const T& Value() const {
-			ELFLDR_ASSERT(HasValue() && !HasError());
+			ELFLDR_VERIFY(HasValue() && !HasError());
 			return t.GetConstructed();
 		}
 
 		constexpr const E& Error() const {
-			ELFLDR_ASSERT(!HasValue() && HasError());
+			ELFLDR_VERIFY(!HasValue() && HasError());
 			return e.GetConstructed();
+		}
+
+		// Dereference operators.
+		// Make sure to ensure that the Expected has a value when using these functions
+
+		T& operator*() {
+			return Value();
+		}
+
+		const T& operator*() const {
+			return Value();
+		}
+
+		T* operator->() {
+			return &Value();
+		}
+
+		const T* operator->() const {
+			return &Value();
 		}
 
 	   private:

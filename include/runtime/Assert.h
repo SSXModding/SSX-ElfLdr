@@ -23,7 +23,8 @@
 // of Earth.
 //
 // I'm only kidding of course, but, for the most part,
-// ELFLDR_VERIFY() is used for sanity checking I'd always like in.
+// ELFLDR_VERIFY() is used for sanity checking I'd always like in
+// the release build.
 
 #ifndef ELFLDR_ASSERT_H
 #define ELFLDR_ASSERT_H
@@ -41,13 +42,16 @@ void __Elfldr__VerifyFailure(const char* exp, const char* file, unsigned line);
 }
 #endif
 
+// NB: We don't implement the craziness that the C standard assert() allows,
+// just enough to assert/verify. Don't go putting this into expressions.
+
 #ifndef NDEBUG
-	#define ELFLDR_ASSERT(x)                                     \
-		do {                                                     \
-			if(!(x)) {                                           \
+	#define ELFLDR_ASSERT(x)                                                          \
+		do {                                                                          \
+			if(!(x)) {                                                                \
 				__Elfldr__AssertFailure(#x, __PRETTY_FUNCTION__, __FILE__, __LINE__); \
-				__builtin_unreachable();                         \
-			}                                                    \
+				__builtin_unreachable();                                              \
+			}                                                                         \
 		} while(0)
 #else
 	#define ELFLDR_ASSERT(x)

@@ -98,7 +98,7 @@ namespace elfldr {
 		 * You will have to use Allocator<T>::Construct() or pure placement-new to do so.
 		 */
 		[[nodiscard]] constexpr ValueType* Allocate(SizeType number) {
-			ELFLDR_ASSERT(number > MaxSize());
+			//ELFLDR_ASSERT(number > MaxSize());
 			return static_cast<T*>(Alloc(number * sizeof(T)));
 		}
 

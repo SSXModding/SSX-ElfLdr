@@ -9,6 +9,7 @@
 #define ELFLDR_UTILITY_H
 
 #include <runtime/TypeTraits.h>
+#include <string.h> // memcpy()
 #include <stddef.h>
 
 namespace elfldr {

@@ -8,9 +8,10 @@
 #ifndef ERLLOADER_H
 #define ERLLOADER_H
 
-#include <stdint.h>
+#include <runtime/Expected.h>
+#include <runtime/String.h>
 #include <runtime/Utility.h>
-
+#include <stdint.h>
 
 // The public API surface for LibErl.
 //
@@ -50,11 +51,57 @@ namespace elfldr::erl {
 		uintptr_t _ptr;
 	};
 
+	// TODO: it would be really nice to allow state
+
+	// all possible ERL load errors
+	enum class ErlLoadError {
+		NotImplemented, ///< Something's not implemented
+		ErrorReading,	///< Error reading from ERL file
+		FileNotFound,	///< File does not exist on disk
+		NotElf,			///< Not a ELF file
+		NotMips,		///< ELF machine type is not valid
+		SizeMismatch,	///< Some data structure size didn't match up our structures
+		NotRelocatable, ///< ELF is not relocatable
+		//	NoSymbols,		///< No symbols
+		RelocationError ///< Internal error relocating symbol
+	};
+
+	/**
+	 * Convert a ErlLoadError to string.
+	 */
+	static StringView LoadErrorToString(ErlLoadError e) {
+		constexpr static const char* table[] {
+			"ERL file not found",
+			"Not ELF file",
+			"Not MIPS",
+			"Critical structure size mismatch",
+			"ELF file isn't relocatable",
+			//	"No symbols",
+			"Internal error relocating a symbol"
+		};
+		return table[static_cast<size_t>(e)];
+	}
+
+	/**
+	 * Helper typedef for the load result.
+	 */
+	template <class T>
+	using LoadResult = Expected<T, ErlLoadError>;
+
 	/**
 	 * An ERL image.
 	 */
 	struct Image {
-		virtual ~Image() = default;
+		Image();
+		~Image();
+
+		/**
+		 * Load and relocate a .erl file.
+		 *
+		 * \param[in] path ERL path.
+		 * \returns OK result, or error.
+		 */
+		LoadResult<void> LoadFromFile(const char* filename);
 
 		/**
 		 * Resolve an ERL-local symbol.
@@ -63,30 +110,39 @@ namespace elfldr::erl {
 		 *
 		 * \param[in] symbolName The name of the symbol to resolve.
 		 */
-		virtual Symbol ResolveSymbol(const char* symbolName) = 0;
+		Symbol ResolveSymbol(const char* symbolName);
 
-		virtual const char* GetFileName() const = 0;
+		const char* GetFileName() const;
+
+	   private:
+		// Bump this up or down depending on changes to ImageImpl, in
+		// erl/ErlLoader.cpp.
+		using ImplStorage = uint8_t[44];
+
+		// impl. Please no touch :(
+		ImplStorage _impl;
 	};
 
+	// may not be needed.. yet
 	/**
 	 * Add a global symbol to the ERL loader.
 	 * This symbol when spotted in an ERL will be slotted
-	 * in with the approiate
+	 * in with the approiate address.
 	 */
-	void AddGlobalSymbol(const char* name, Symbol address);
+	// void AddGlobalSymbol(const char* name, Symbol address);
 
 	/**
-	 * Load and relocate a .erl file.
-	 *
-	 * \param[in] path ERL path.
-	 * \returns Image handle (allocated with the ERL allocator), or nullptr on error.
+	 * Create a new ERL image object.
 	 */
-	Image* LoadErl(const char* path);
+	Image* CreateErl();
 
 	/**
-	 * Destroy a loaded ERL image.
+	 * Destroy a ERL image object.
 	 */
 	void DestroyErl(Image* theImage);
+
+	// Unique/shared/Erl?
+	// Might have to make unique_ptr and shared_ptr a thing first lol
 
 } // namespace elfldr::erl
 

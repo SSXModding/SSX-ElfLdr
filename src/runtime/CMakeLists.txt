@@ -3,6 +3,8 @@ add_library(elfldr_runtime
 
 		# C runtime code/library implementaion
 		# crt/
+		crt/ps2sdk_stubs.cpp
+		crt/printf.cpp
 
 		# C++ Runtime code
 		Allocator.cpp

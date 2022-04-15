@@ -29,9 +29,10 @@ target_link_libraries(elfldr
 
 	# Project libraries
 	elfldr::utils_elf
+	elfldr::runtime
 
-		elfldr::runtime
-	elfldr::erl
+	# add for v0.6.0
+	#elfldr::erl
 	"-Wl,--end-group")
 
 # Make elfldr output in the root of the build directory, mostly for ease.

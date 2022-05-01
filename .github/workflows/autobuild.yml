@@ -39,7 +39,7 @@ jobs:
 
       - name: Build elfldr (debug) and package
         run: |
-          cmake -B build_debug -DCMAKE_TOOLCHAIN_FILE=cmake/Toolchain/ps2.cmake -DCMAKE_BUILD_TYPE=Release
+          cmake -B build_debug -DCMAKE_TOOLCHAIN_FILE=cmake/Toolchain/ps2.cmake -DCMAKE_BUILD_TYPE=Debug
           cmake --build build_debug -t package
 
       - name: Upload elfldr artifacts (release)
@@ -57,9 +57,9 @@ jobs:
           path: |
             build_debug/packages/*
             !build_debug/packages/_CPack_Packages
-      
-  # If this commit has a tag attached to it we build a release
 
+  # If this commit has a tag attached to it we create a release
+  # from the artifacts of this build job.
   create-release:
     name: Create release
     runs-on: ubuntu-latest

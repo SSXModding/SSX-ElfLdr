@@ -14,7 +14,11 @@ if(" ${CMAKE_SOURCE_DIR}" STREQUAL " ${CMAKE_BINARY_DIR}")
 endif()
 
 include(${CMAKE_SOURCE_DIR}/cmake/Policies.cmake)
-project(elfldr)
+project(elfldr
+        LANGUAGES CXX
+        DESCRIPTION "HostFS enabling Mod/ELF loader for the SSX games on PS2"
+        VERSION 0.5
+        )
 
 # Require C++20. It's 2022,
 # we're 80% of our way to C++23.
@@ -39,3 +43,34 @@ add_subdirectory(src/erl)
 add_subdirectory(src/elfldr)
 
 add_subdirectory(src/sampleerl)
+
+
+## project packaging
+
+set(CMAKE_INSTALL_PREFIX /)
+set(CPACK_SET_DESTDIR ON)
+
+install(TARGETS elfldr)
+
+# documentation
+install(FILES ${PROJECT_SOURCE_DIR}/README.md ${PROJECT_SOURCE_DIR}/LICENSE DESTINATION ${CMAKE_INSTALL_PREFIX})
+# todo: mkdocs generated page in /doc
+
+## CPack (used by GitHub Actions to package releases)
+
+if(NOT DEFINED CPACK_GENERATOR)
+        set(CPACK_GENERATOR ZIP)
+endif()
+
+set(CPACK_VERBATIM_VARIABLES        ON)
+set(CPACK_ARCHIVE_THREADS           0)
+set(CPACK_PACKAGE_DIRECTORY         ${PROJECT_BINARY_DIR}/packages)
+set(CPACK_PACKAGE_NAME              SSX-ElfLdr)
+set(CPACK_PACKAGE_VENDOR            modeco80)
+set(CPACK_PACKAGE_CONTACT           modeco80)
+set(CPACK_RESOURCE_FILE_README      ${PROJECT_SOURCE_DIR}/README.md)
+set(CPACK_RESOURCE_FILE_LICENSE     ${PROJECT_SOURCE_DIR}/LICENSE)
+set(CPACK_PACKAGE_INSTALL_DIRECTORY elfldr)
+
+
+include(CPack)

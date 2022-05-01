@@ -9,50 +9,18 @@
 #include <fileio.h>
 #include <runtime/Assert.h>
 #include <string.h>
+#include <strings.h>
 #include <utils/utils.h>
 
 // in main.cpp
 extern const char* gHostFsPath;
 
-// dopen doesn't work otherwise i could do a clean iteration
-// of the directory.
-/*
-if(auto fd = fioDopen("host:"); fd != -1) {
-	io_dirent_t entry;
-	while(fioDread(fd, &entry)) {
-		if(entry.stat.attr & S_IFDIR)
-			elfldr::util::DebugOut("Directory %s", entry.name);
-		else if(entry.stat.attr & S_IFREG)
-			elfldr::util::DebugOut("Regular file %s", entry.name);
-	}
-	fioDclose(fd);
-}
-*/
-
 // Global copy of game version data.
 static elfldr::GameVersionData gGameVersionData {};
-
-// TODO: Refactor to use util::FioFile
 
 namespace elfldr {
 
 	namespace {
-		// TODO: Maybe have this return the fd
-		// if it exists, so we can do version scanning?
-		bool FileExists(const char* path) {
-			if(auto fd = fioOpen(path, O_RDONLY); fd > 0) {
-				fioClose(fd);
-				return true;
-			}
-
-			return false;
-		}
-
-		bool TryFile(char* buf, const char* path) {
-			strncpy(&buf[0], gHostFsPath, elfldr::util::MaxPath * sizeof(char));
-			strcat(buf, path);
-			return FileExists(buf);
-		}
 
 		const char* SSXOGBinary(GameRegion region, GameVersion version) {
 			switch(version) {
@@ -139,24 +107,46 @@ namespace elfldr {
 	void ProbeVersion() {
 		char path[util::MaxPath] {};
 
-#define TryCase(game_, region_, version_, message)               \
-	if(TryFile(path, GameBinaryFor(game_, region_, version_))) { \
-		gGameVersionData.game = game_;                           \
-		gGameVersionData.region = region_;                       \
-		gGameVersionData.version = version_;                     \
-		util::DebugOut(message);                                 \
-		return;                                                  \
+		// should we open a fd to probe version? (either by way of hashing the file or smth)
+#define TryCase(game_, region_, version_, message)                         \
+	if(!strcasecmp(entry.name, GameBinaryFor(game_, region_, version_))) { \
+		gGameVersionData.game = game_;                                     \
+		gGameVersionData.region = region_;                                 \
+		gGameVersionData.version = version_;                               \
+		util::DebugOut(message);                                           \
+		return;                                                            \
 	}
 
-		TryCase(Game::SSXOG, GameRegion::NTSC, GameVersion::SSXOG_10, "Version probe detected SSX OG (NTSC).")
+		// utils should maybe have a FioDirectory class which handles
+		// - open
+		// - close
+		// for now this is ok, if we need it elsewhere we can make it a object
+		if(auto fd = fioDopen("host:"); fd != -1) {
+			io_dirent_t entry;
+			while(fioDread(fd, &entry)) {
 
-		// SSXDVD
-		TryCase(Game::SSXDVD, GameRegion::NTSC, GameVersion::SSXDVD_10, "Version probe detected SSX Tricky (NTSC).")
+				// this is a GIANT hack but the Newlib constants don't work,
+				// so we have to define our own here.
 
-		// SSX 3
-		TryCase(Game::SSX3, GameRegion::NTSC, GameVersion::SSX3_OPSM2_DEMO, "Version probe detected SSX 3 (OPSM2 Demo).")
-		TryCase(Game::SSX3, GameRegion::NotApplicable, GameVersion::SSX3_KR_DEMO, "Version probe detected SSX 3 (KR Demo).")
-		TryCase(Game::SSX3, GameRegion::NTSC, GameVersion::SSX3_10, "Version probe detected SSX 3 (NTSC).")
+#define IOP_ISDIR(entry) (((entry).stat.mode & 0b00000001))
+#define IOP_ISREG(entry) (!((entry).stat.mode & 0b00000001))
+
+				if(IOP_ISREG(entry)) {
+					// elfldr::util::DebugOut("Regular file %s", entry.name);
+
+					TryCase(Game::SSXOG, GameRegion::NTSC, GameVersion::SSXOG_10, "Version probe detected SSX OG (NTSC).")
+
+					// SSXDVD
+					TryCase(Game::SSXDVD, GameRegion::NTSC, GameVersion::SSXDVD_10, "Version probe detected SSX Tricky (NTSC).")
+
+					// SSX 3
+					TryCase(Game::SSX3, GameRegion::NTSC, GameVersion::SSX3_OPSM2_DEMO, "Version probe detected SSX 3 (OPSM2 Demo).")
+					TryCase(Game::SSX3, GameRegion::NotApplicable, GameVersion::SSX3_KR_DEMO, "Version probe detected SSX 3 (KR Demo).")
+					TryCase(Game::SSX3, GameRegion::NTSC, GameVersion::SSX3_10, "Version probe detected SSX 3 (NTSC).")
+				}
+			}
+			fioDclose(fd);
+		}
 
 #undef TryCase
 

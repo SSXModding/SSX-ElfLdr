@@ -1,16 +1,16 @@
 
 add_library(elfldr_runtime
 
-		# C runtime code/library implementaion
-		# crt/
-		crt/ps2sdk_stubs.cpp
-		crt/printf.cpp
+        # C runtime code/library implementaion
+        # crt/
+        crt/ps2sdk_stubs.cpp
+        crt/printf.cpp
 
-		# C++ Runtime code
-		Allocator.cpp
-		String.cpp
-		Fnv1a.cpp
-)
+        # C++ Runtime code
+        Allocator.cpp
+        String.cpp
+        Fnv1a.cpp
+        )
 
 # if I didn't need to manually compose a linker argument thing in elfldr itself
 # (might be able to subside that soon, to be honest) this would be a good place

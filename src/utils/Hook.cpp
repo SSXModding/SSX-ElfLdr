@@ -5,15 +5,12 @@
  * under the terms of the MIT license.
  */
 
+#include <kernel.h>
+#include <runtime/Allocator.h>
 #include <stdint.h>
 #include <string.h>
-
-#include <runtime/Allocator.h>
-
 #include <utils/Hook.h>
 #include <utils/MipsIEncoder.h>
-
-#include <kernel.h>
 
 namespace elfldr::detail {
 
@@ -52,15 +49,15 @@ namespace elfldr::detail {
 		destInstPtr[0] = mips::lui(mips::Reg::T0, ((uintptr_t)hook >> 16));
 		destInstPtr[1] = mips::ori(mips::Reg::T0, mips::Reg::T0, (uintptr_t)hook & 0xFFFF);
 
-		//ELFLDR_VERIFY(trampolineBuf != nullptr && "Failed to allocate trampoline buffer.");
+		// ELFLDR_VERIFY(trampolineBuf != nullptr && "Failed to allocate trampoline buffer.");
 
-		memcpy(&trampolineBuf[sizeof(callTemplate)/sizeof(uint32_t)], &callTemplate[0], sizeof(callTemplate));
+		memcpy(&trampolineBuf[sizeof(callTemplate) / sizeof(uint32_t)], &callTemplate[0], sizeof(callTemplate));
 
 		// Calculate the start of the original function's instructions.
 		uintptr_t tramp_dest = (uintptr_t)dest + (sizeof(callTemplate));
 
-		trampolineBuf[sizeof(callTemplate)/sizeof(uint32_t) ] = mips::lui(mips::Reg::T0, tramp_dest >> 16);
-		trampolineBuf[sizeof(callTemplate)/sizeof(uint32_t) + 1] = mips::ori(mips::Reg::T0, mips::Reg::T0, tramp_dest & 0xFFFF);
+		trampolineBuf[sizeof(callTemplate) / sizeof(uint32_t)] = mips::lui(mips::Reg::T0, tramp_dest >> 16);
+		trampolineBuf[sizeof(callTemplate) / sizeof(uint32_t) + 1] = mips::ori(mips::Reg::T0, mips::Reg::T0, tramp_dest & 0xFFFF);
 
 		// Flush D/I cache, just in case.
 		FlushCache(CPU_DATA_CACHE);

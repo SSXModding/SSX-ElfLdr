@@ -7,13 +7,10 @@
 
 #include <stddef.h>
 
-
 extern "C" size_t strlen(const char* __restrict str);
 extern "C" void strrev(char* __restrict str);
 
-
 extern "C" {
-
 
 char* itoa(int num, char* str, int base) {
 	int i = 0;

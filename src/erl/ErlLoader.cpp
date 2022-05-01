@@ -120,8 +120,6 @@ namespace elfldr::erl {
 				return sections.Error();
 
 			shdrs_ = &(*sections);
-
-
 		}
 
 		LoadResult<Elf32_Ehdr> LoadHeader() {
@@ -164,12 +162,10 @@ namespace elfldr::erl {
 			return res;
 		}
 
-
-
 	   private:
 		util::FioFile file;
 		ImageImpl* image;
-		Elf32_Ehdr* header_{};
+		Elf32_Ehdr* header_ {};
 		DynamicArray<Elf32_Shdr>* shdrs_;
 	};
 

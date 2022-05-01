@@ -13,7 +13,6 @@ extern "C" size_t strlen(const char* __restrict str);
 
 extern "C" {
 
-
 int _vsnprintf(char* __restrict buf, int length, const char* __restrict format, __builtin_va_list va) {
 	auto len = strlen(format);
 	char itoa_buf[32];
@@ -21,7 +20,6 @@ int _vsnprintf(char* __restrict buf, int length, const char* __restrict format, 
 	int buf_len = 0;
 
 	for(int i = 0; i < len; ++i) {
-
 		if(length != -1) // special sentinel value used by vsprintf as "don't care" value
 			if(buf_len >= length)
 				break;
@@ -120,7 +118,6 @@ int vsprintf(char* __restrict buf, const char* __restrict format, __builtin_va_l
 int vsnprintf(char* __restrict buf, int len, const char* __restrict format, __builtin_va_list va) {
 	return _vsnprintf(buf, len, format, va);
 }
-
 
 // TODO: vsnprintf
 }

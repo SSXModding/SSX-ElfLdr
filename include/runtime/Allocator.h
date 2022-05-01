@@ -8,11 +8,11 @@
 #ifndef ALLOCATOR_H
 #define ALLOCATOR_H
 
+#include <runtime/Assert.h>
+#include <runtime/TypeTraits.h>
+#include <runtime/Utility.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <runtime/TypeTraits.h>
-#include <runtime/Assert.h>
-#include <runtime/Utility.h>
 
 // Provide C++ new/new[] and delete/delete[]
 // overloads which use the Utils heap.
@@ -48,9 +48,7 @@ namespace elfldr {
 	 */
 	using Free_t = void (*)(void*);
 
-
 	using AllocFreePair = Pair<Alloc_t, Free_t>;
-
 
 	// TODO: for multi game support, we need to probably
 	// use a probe routine which does the below automatically
@@ -98,7 +96,7 @@ namespace elfldr {
 		 * You will have to use Allocator<T>::Construct() or pure placement-new to do so.
 		 */
 		[[nodiscard]] constexpr ValueType* Allocate(SizeType number) {
-			//ELFLDR_ASSERT(number > MaxSize());
+			// ELFLDR_ASSERT(number > MaxSize());
 			return static_cast<T*>(Alloc(number * sizeof(T)));
 		}
 
@@ -118,6 +116,6 @@ namespace elfldr {
 
 	// maybe: Allocator<const T>
 
-} // namespace elfldr::util
+} // namespace elfldr
 
 #endif // ALLOCATOR_H

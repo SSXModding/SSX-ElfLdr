@@ -5,8 +5,8 @@
  * under the terms of the MIT license.
  */
 
-#include <runtime/Assert.h>
 #include <elfldr/ElfLoader.h>
+#include <runtime/Assert.h>
 #include <utils/utils.h>
 
 #include "patch.h"
@@ -48,7 +48,6 @@ void ApplyPatch(elfldr::Patch* patch) {
 
 int main() {
 	elfldr::util::DebugOut("SSX-ElfLdr version " ELFLDR_VERSION_TAG);
-
 
 	// Init loader services.
 	elfldr::InitLoader();

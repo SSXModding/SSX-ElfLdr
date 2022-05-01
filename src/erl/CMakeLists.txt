@@ -1,6 +1,6 @@
 add_library(elfldr_erl
-	ErlLoader.cpp
-)
+        ErlLoader.cpp
+        )
 
 # techinically unneeded but whatever
 target_include_directories(elfldr_erl PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

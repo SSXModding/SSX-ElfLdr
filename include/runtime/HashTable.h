@@ -23,7 +23,7 @@ namespace elfldr {
 	 * \tparam Hash The Hash algorithm to use.
 	 * \tparam Allocator The Allocator (see runtime/Allocator.h for the concept definition) to use.
 	 */
-	template <class Key, class Value, class Hash = Hash<Key>, template<class> class Allocator = StdAllocator>
+	template <class Key, class Value, class Hash = Hash<Key>, template <class> class Allocator = StdAllocator>
 	struct HashTable {
 		inline HashTable() = default;
 
@@ -102,7 +102,6 @@ namespace elfldr {
 		}
 
 	   private:
-
 		/**
 		 * A single hash bucket.
 		 */

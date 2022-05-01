@@ -6,15 +6,14 @@
  */
 
 #include <sio.h>
-
 #include <stdarg.h>
 #include <stdio.h>
 
 extern "C" {
-//int vsnprintf(char* __restrict buf, int len, const char* __restrict format, va_list va);
+// int vsnprintf(char* __restrict buf, int len, const char* __restrict format, va_list va);
 
 int elfldr_vprintf(const char* __restrict format, va_list vs) {
-	static char buffer[2048]{};
+	static char buffer[2048] {};
 	int res = vsnprintf(buffer, sizeof(buffer), format, vs);
 	sio_putsn(buffer);
 	return res;

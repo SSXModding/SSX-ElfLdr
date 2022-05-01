@@ -16,5 +16,4 @@ int sprintf(char* __restrict buf, const char* __restrict format, ...) {
 	__builtin_va_end(val);
 	return res;
 }
-
 }

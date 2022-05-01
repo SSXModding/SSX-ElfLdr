@@ -33,6 +33,6 @@ namespace elfldr {
 		T _arr_notouchy[N];
 	};
 
-} // namespace elfldr::util
+} // namespace elfldr
 
 #endif // ELFLDR_ARRAY_H

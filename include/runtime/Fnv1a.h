@@ -12,8 +12,8 @@
 #ifndef UTILS_FNV_H
 #define UTILS_FNV_H
 
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 
 namespace elfldr::detail {
 
@@ -27,6 +27,6 @@ namespace elfldr::detail {
 	 */
 	uint32_t fnv1a_hash(const void* input, size_t length, uint32_t lastval);
 
-} // namespace elfldr::util
+} // namespace elfldr::detail
 
 #endif // UTILS_FNV_H

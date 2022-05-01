@@ -2,22 +2,22 @@
 #include <cstdint>
 
 namespace elfldr::config {
-	
+
 	enum class ConfigTokenValue : std::uint16_t {
 		Invalid = -1,
 
 		Comment, // #
 
 		LiteralKey, // ' or " (don't matter)
-		
+
 		Identifier, // Identifier
-		
+
 		GroupBegin, // {
-		GroupEnd, // }
-		
-		ArrayBegin, // [
+		GroupEnd,	// }
+
+		ArrayBegin,		 // [
 		ArrayNextElement // ,
-		ArrayEnd, // [
+		ArrayEnd,		 // [
 	}
 
 	// example syntax/grammar:
@@ -33,13 +33,9 @@ namespace elfldr::config {
 	//  value = "test"
 	// }
 	// global_value = 10
-	
-	
+
 	struct ConfigToken {
-		
-	private:
-		
+	   private:
 	}
-	
-	
-}
+
+} // namespace elfldr::config

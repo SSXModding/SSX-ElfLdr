@@ -40,13 +40,13 @@ void test() {
 ELFLDR_ERL_EXPORT void elfldr_erl_init(elfldr::InitErlData* erlData) {
 	bx::printf("elfldr_erl_init() %s\n", test2);
 
-	//elfldr::SetAllocationFunctions(erlData->Alloc, erlData->Free);
+	// elfldr::SetAllocationFunctions(erlData->Alloc, erlData->Free);
 
-	//MEM_alloc_orig = elfldr::HookFunction<void* (*)(const char*, uint64_t, int)>(elfldr::util::Ptr(0x0023a448), [](const char* tag, uint64_t sz, int fl) {
+	// MEM_alloc_orig = elfldr::HookFunction<void* (*)(const char*, uint64_t, int)>(elfldr::util::Ptr(0x0023a448), [](const char* tag, uint64_t sz, int fl) {
 	//	bx::printf("MEM_alloc: \"%s\" size %d flags %02x\n", tag, sz, fl);
 	//	// allocate the memory after we yell about it
 	//	return MEM_alloc_orig(tag, sz, fl);
-	//});
+	// });
 
 	// MEM_free_orig = elfldr::HookFunction<void (*)(void*)>(elfldr::util::Ptr(0x0023a998), [](void* ptr) {
 	//	bx::printf("MEM_free: ptr %p\n", ptr);

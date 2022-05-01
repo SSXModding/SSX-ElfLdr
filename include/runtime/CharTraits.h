@@ -9,7 +9,6 @@
 #define ELFLDR_CHARTRAITS_H
 
 #include <runtime/Assert.h>
-
 #include <stddef.h>
 #include <string.h>
 

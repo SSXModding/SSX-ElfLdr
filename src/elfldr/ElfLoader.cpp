@@ -5,13 +5,13 @@
  * under the terms of the MIT license.
  */
 
-#include <runtime/Assert.h>
 #include <elfldr/ElfLoader.h>
 #include <fileio.h>
 #include <iopcontrol.h>
 #include <iopheap.h>
 #include <kernel.h>
 #include <loadfile.h>
+#include <runtime/Assert.h>
 #include <sifrpc.h>
 #include <utils/utils.h>
 

@@ -62,8 +62,8 @@ struct MemclrPatch : public Patch {
 				util::MemRefTo<uint32_t>(util::Ptr(0x0018a2a4)) = 0x00000000; // nop to make the EE happy (and avoid side-effects.)
 
 				//#ifdef EXPERIMENTAL
-				 util::DebugOut("Special case for Exp - killing MEM_init and initheapdebug");
-				 util::NopFill<6>(util::Ptr(0x0018a704));
+				util::DebugOut("Special case for Exp - killing MEM_init and initheapdebug");
+				util::NopFill<6>(util::Ptr(0x0018a704));
 				//#endif
 			} break;
 

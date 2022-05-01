@@ -49,11 +49,11 @@ namespace elfldr::util {
 
 #ifndef ERL
 		// Tab level handling
-//		for(int i = 0; i < gTabLevel; ++i)
-//			putc('\t', stdout);
+		//		for(int i = 0; i < gTabLevel; ++i)
+		//			putc('\t', stdout);
 
 		// use nano newlib puts() where we can
-		//printf("%s\n", buf);
+		// printf("%s\n", buf);
 		elfldr_printf("%s\n", buf);
 #else
 		// I could *probably* search through the binary for puts(),

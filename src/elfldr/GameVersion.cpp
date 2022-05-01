@@ -124,7 +124,6 @@ namespace elfldr {
 		if(auto fd = fioDopen("host:"); fd != -1) {
 			io_dirent_t entry;
 			while(fioDread(fd, &entry)) {
-
 				// this is a GIANT hack but the Newlib constants don't work,
 				// so we have to define our own here.
 

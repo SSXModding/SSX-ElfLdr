@@ -45,6 +45,6 @@ namespace elfldr {
 
 #undef HASH_TRIVIAL_SPECIALIZATION
 
-} // namespace elfldr::util
+} // namespace elfldr
 
 #endif // UTILS_HASH_H

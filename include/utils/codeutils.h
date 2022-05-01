@@ -10,11 +10,10 @@
 #ifndef CODEUTILS_H
 #define CODEUTILS_H
 
-#include <stdint.h>
-#include <string.h>
-
 #include <runtime/Assert.h>
 #include <runtime/Utility.h>
+#include <stdint.h>
+#include <string.h>
 
 namespace elfldr::util {
 
@@ -52,8 +51,8 @@ namespace elfldr::util {
 			function_ptr = UBCast<void*>(Func);
 		}
 
-		//I think? this isn't going to be used worth a damn yet
-		template<class Res = void, class ...Args>
+		// I think? this isn't going to be used worth a damn yet
+		template <class Res = void, class... Args>
 		inline Res operator()(void* pObj, Args&&... args) const {
 			ELFLDR_ASSERT(function_ptr != nullptr);
 			return CallFunction<Res>(function_ptr, (uintptr_t)pObj + adj_upper, Forward<Args>(args)...);
@@ -76,7 +75,6 @@ namespace elfldr::util {
 	 */
 	void WriteString(void* addr, const char* string);
 
-
 	constexpr bool IsPowOf2(uint32_t val) {
 		return !((val != 0) && ((val & (val - 1))));
 	}
@@ -96,7 +94,6 @@ namespace elfldr::util {
 	constexpr bool IsInstructionAligned(const void* __restrict addr) {
 		return IsAlignedNBytes<4>(addr);
 	}
-
 
 	/**
 	 * Fill an aligned section with MIPS nop (all zeros.)

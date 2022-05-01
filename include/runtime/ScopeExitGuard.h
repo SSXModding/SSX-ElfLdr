@@ -44,6 +44,6 @@ namespace elfldr {
 		bool should_call { true };
 	};
 
-} // namespace elfldr::util
+} // namespace elfldr
 
 #endif // ELFLDR_SCOPEEXITGUARD_H

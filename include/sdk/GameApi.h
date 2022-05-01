@@ -24,7 +24,6 @@
 
 // TODO: dynamic function wrappers
 
-
 namespace bx {
 
 	constexpr static elfldr::util::VarFunction<0x0018ac08, void, const char*> printf {};

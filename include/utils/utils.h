@@ -8,8 +8,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 
 namespace elfldr::util {
 
@@ -18,8 +18,6 @@ namespace elfldr::util {
 	 * and I'm pissed at myself for letting it slide for as long as I did
 	 */
 	constexpr static size_t MaxPath = 260;
-
-
 
 #ifndef ERL
 	/**
@@ -34,6 +32,5 @@ namespace elfldr::util {
 	void DebugOut(const char* format, ...);
 
 } // namespace elfldr::util
-
 
 #endif // UTILS_H

@@ -56,6 +56,8 @@ For now:
 
 ### SSX Tricky
 - Extract the game's files from the ISO or physical disk into a directory of your choosing.
+- Using a .BIG extraction tool of your choice, extract the .BIG archives in `data/models`.
+  - Once done, copy the files from the newly-made `data/models` to the actual `data/models` directory.
 
 ### SSX 3
 - Extract the game's files from the ISO or physical disk into a directory of your choosing.

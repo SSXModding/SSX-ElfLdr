@@ -80,4 +80,4 @@ jobs:
           generate_release_notes:  true
           files: |
             elfldr-release/*
-            eldfldr-debug/*
+            elfldr-debug/*

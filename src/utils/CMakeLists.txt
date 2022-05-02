@@ -1,3 +1,9 @@
+#
+# SSX-Elfldr
+#
+# (C) 2021-2022 Lily/modeco80 <lily.modeco80@protonmail.ch>
+# under the terms of the MIT license.
+#
 
 # These sources are in both libutils-elf
 # and libutils-erl (the minimized version for the ERL to use.)

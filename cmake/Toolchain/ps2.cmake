@@ -1,3 +1,10 @@
+#
+# SSX-Elfldr
+#
+# (C) 2021-2022 Lily/modeco80 <lily.modeco80@protonmail.ch>
+# under the terms of the MIT license.
+#
+
 # Based off the shipped ps2dev.cmake toolchain file
 # in the ps2sdk source tree, modified for elfldr
 
@@ -9,6 +16,7 @@ set(CMAKE_SYSTEM_PROCESSOR "mips64r5900el")
 # our PlayStation2 platform. Otherwise, CMake will yell
 # and complain (rightfully.)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
 set(CMAKE_C_COMPILER mips64r5900el-ps2-elf-gcc)
 set(CMAKE_CXX_COMPILER mips64r5900el-ps2-elf-g++)

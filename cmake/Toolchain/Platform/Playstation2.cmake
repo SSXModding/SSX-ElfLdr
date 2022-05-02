@@ -1,3 +1,10 @@
+#
+# SSX-Elfldr
+#
+# (C) 2021-2022 Lily/modeco80 <lily.modeco80@protonmail.ch>
+# under the terms of the MIT license.
+#
+
 # CMake platform settings for PlayStation 2
 
 set(CMAKE_EXECUTABLE_SUFFIX ".elf")

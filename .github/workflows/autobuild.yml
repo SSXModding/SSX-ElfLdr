@@ -7,6 +7,9 @@ on: [ push, pull_request ]
 #    branches: [ master ]
 #  workflow_dispatch:
 
+# todo: maybe a job to update and push to gh-pages branch
+#   if a commit modifies files in docs/ or /mkdocs.yml
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -14,9 +17,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      # This techinically also "Installs" it too.
+      # This techinically also "Installs" ps2sdk too.
       # TODO: CACHE THIS SO I DON'T KEEP HITTING GITHUB SERVERS.
-      - name: Fetch and setup ps2sdk
+      - name: Fetch and setup dependencies
         run: |
           export PS2DEV=$HOME/ps2dev
           export PS2SDK=$PS2DEV/ps2sdk
@@ -31,15 +34,18 @@ jobs:
           echo "PS2DEV=$PS2DEV" >> $GITHUB_ENV
           echo "PS2SDK=$PS2SDK" >> $GITHUB_ENV
           echo "GSKIT=$GSKIT" >> $GITHUB_ENV
+          pip install mkdocs
 
       - name: Build elfldr (release) and package
         run: |
           cmake -B build -DCMAKE_TOOLCHAIN_FILE=cmake/Toolchain/ps2.cmake -DCMAKE_BUILD_TYPE=Release
+          cmake --build build -t docs
           cmake --build build -t package
 
       - name: Build elfldr (debug) and package
         run: |
           cmake -B build_debug -DCMAKE_TOOLCHAIN_FILE=cmake/Toolchain/ps2.cmake -DCMAKE_BUILD_TYPE=Debug
+          cmake --build build -t docs
           cmake --build build_debug -t package
 
       - name: Upload elfldr artifacts (release)

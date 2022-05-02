@@ -1,3 +1,10 @@
+#
+# SSX-Elfldr
+#
+# (C) 2021-2022 Lily/modeco80 <lily.modeco80@protonmail.ch>
+# under the terms of the MIT license.
+#
+
 cmake_minimum_required(VERSION 3.19)
 
 ##if(NOT CMAKE_SYSTEM_NAME STREQUAL "Playstation2")
@@ -13,7 +20,8 @@ if(" ${CMAKE_SOURCE_DIR}" STREQUAL " ${CMAKE_BINARY_DIR}")
     message(FATAL_ERROR "In-source-tree builds are strictly prohibited. Please don't do them.")
 endif()
 
-include(${CMAKE_SOURCE_DIR}/cmake/Policies.cmake)
+include(cmake/CMakeNewPolicy.cmake)
+
 project(elfldr
         LANGUAGES CXX
         DESCRIPTION "HostFS enabling Mod/ELF loader for the SSX games on PS2"
@@ -34,6 +42,9 @@ add_custom_target(__elfldr_gittag
         SOURCES ${PROJECT_BINARY_DIR}/Version.h)
 set_source_files_properties(${PROJECT_BINARY_DIR}/Version.h PROPERTIES GENERATED TRUE)
 
+# ElfLdr mkdocs
+include(MkDocs)
+
 # Include elfldr modules
 add_subdirectory(src/runtime)
 add_subdirectory(src/utils)
@@ -50,11 +61,19 @@ add_subdirectory(src/sampleerl)
 set(CMAKE_INSTALL_PREFIX /)
 set(CPACK_SET_DESTDIR ON)
 
+# documentation
+install(FILES ${PROJECT_SOURCE_DIR}/README.md ${PROJECT_SOURCE_DIR}/LICENSE DESTINATION /)
+
+# Install static mkdocs documentation
+# if documentation build is enabled
+if(MkDocs_FOUND)
+    install(DIRECTORY ${PROJECT_SOURCE_DIR}/site/ DESTINATION /doc)
+endif()
+
+# todo: mkdocs generated page in /doc
+
 install(TARGETS elfldr)
 
-# documentation
-install(FILES ${PROJECT_SOURCE_DIR}/README.md ${PROJECT_SOURCE_DIR}/LICENSE DESTINATION ${CMAKE_INSTALL_PREFIX})
-# todo: mkdocs generated page in /doc
 
 ## CPack (used by GitHub Actions to package releases)
 

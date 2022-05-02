@@ -1,0 +1,16 @@
+site_name: SSX-ElfLdr
+copyright: (C) 2021-2022 modeco80 under the terms of the MIT License.
+theme: readthedocs
+
+site_url: ""
+use_directory_urls: false
+plugins: []
+
+nav:
+    - 'Home':
+        - 'Index': index.md
+        - 'Setup Guide': setupguide.md
+        - 'Game Support Table': gamesupport.md
+        - 'Patch Descriptions': patchdescriptions.md
+    - 'Developers':
+        - 'Building SSX-ElfLdr From Source': develop/building.md

@@ -8,6 +8,7 @@
 #include <elfldr/GameVersion.h>
 #include <fileio.h>
 #include <runtime/Assert.h>
+#include <stdio.h>
 #include <string.h>
 #include <strings.h>
 #include <utils/utils.h>
@@ -98,22 +99,80 @@ namespace elfldr {
 		void ProbeSuccess() {
 			// Probe worked, let's let Runtime/Allocator know the malloc/free addresses.
 		}
+
+		StringView GameToString(Game g) {
+			ELFLDR_ASSERT(g != Game::Invalid && "this codepath shouldn't be called with an invalid game");
+
+			switch(g) {
+				case Game::SSXOG:
+					return "ssx";
+				case Game::SSXDVD:
+					return "ssxdvd";
+				case Game::SSX3:
+					return "ssx3";
+
+				default:
+					ELFLDR_VERIFY(false && "how'd you get here...?");
+			}
+		}
+
+		StringView RegionToString(GameRegion reg) {
+			switch(reg) {
+				case GameRegion::NotApplicable:
+					return "na";
+				case GameRegion::NTSC:
+					return "us";
+				case GameRegion::NTSCJ:
+					return "jp";
+				case GameRegion::PAL:
+					return "eu";
+			}
+			ELFLDR_UNREACHABLE();
+		}
+
+		StringView VersionToString(GameVersion ver) {
+			switch(ver) {
+				case GameVersion::SSXOG_10:
+				case GameVersion::SSXDVD_10:
+				case GameVersion::SSX3_10:
+					return "1.0";
+
+				case GameVersion::SSXDVD_JAMPACK_DEMO:
+					return "jamd";
+
+				case GameVersion::SSX3_KR_DEMO:
+					return "krd";
+
+				case GameVersion::SSX3_OPSM2_DEMO:
+					return "opmd";
+			}
+
+			ELFLDR_UNREACHABLE();
+		}
+
 	} // namespace
 
-	const char* GameVersionData::GetGameBinary() const {
+	StringView GameVersionData::GetGameBinary() const {
 		return GameBinaryFor(game, region, version);
 	}
 
-	void ProbeVersion() {
-		char path[util::MaxPath] {};
+	StringView GameVersionData::ToString() const {
+		static char tempBuf[128];
+		int res = snprintf(&tempBuf[0], sizeof(tempBuf), "%s/%s/%s", GameToString(game).CStr(), RegionToString(region).CStr(), VersionToString(version).CStr());
 
+		if(res == -1)
+			return "";
+
+		return { &tempBuf[0], static_cast<size_t>(res) };
+	}
+
+	void ProbeVersion() {
 		// should we open a fd to probe version? (either by way of hashing the file or smth)
-#define TryCase(game_, region_, version_, message)                         \
+#define TryCase(game_, region_, version_, message_UNUSED_)                 \
 	if(!strcasecmp(entry.name, GameBinaryFor(game_, region_, version_))) { \
 		gGameVersionData.game = game_;                                     \
 		gGameVersionData.region = region_;                                 \
 		gGameVersionData.version = version_;                               \
-		util::DebugOut(message);                                           \
 		return;                                                            \
 	}
 

@@ -25,7 +25,7 @@ elfldr::ElfLoader gLoader;
 void DoLoadElf(const elfldr::GameVersionData& gdata) {
 	char elfPath[elfldr::util::MaxPath] {};
 	strncpy(&elfPath[0], gHostFsPath, elfldr::util::MaxPath * sizeof(char));
-	strcat(elfPath, gdata.GetGameBinary());
+	strcat(elfPath, gdata.GetGameBinary().CStr());
 
 	ELFLDR_VERIFY(gLoader.LoadElf(elfPath));
 }
@@ -63,6 +63,8 @@ int main() {
 		while(true)
 			;
 	}
+
+	elfldr::util::DebugOut("Game detected: \"%s\"", gdata.ToString().CStr());
 
 	DoLoadElf(gdata);
 

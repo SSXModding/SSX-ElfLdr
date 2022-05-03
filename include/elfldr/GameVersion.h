@@ -8,6 +8,7 @@
 #ifndef ELFLDR_GAMEVERSION_H
 #define ELFLDR_GAMEVERSION_H
 
+#include <runtime/String.h>
 #include <stdint.h>
 
 namespace elfldr {
@@ -112,7 +113,17 @@ namespace elfldr {
 		/**
 		 * Get the game binary filename
 		 */
-		const char* GetGameBinary() const;
+		StringView GetGameBinary() const;
+
+		/**
+		 * Converts this version data to a string applicable
+		 * to use in configuration.
+		 * Not reentrant; copy data if you need to call
+		 * this function multiple times.
+		 */
+		StringView ToString() const;
+
+		// LoadFromString(), which parses each component to load the game/region/ver?
 	};
 
 	/**

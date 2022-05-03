@@ -65,4 +65,7 @@ void __Elfldr__VerifyFailure(const char* exp, const char* file, unsigned line);
 		}                                                    \
 	} while(0)
 
+
+#define ELFLDR_UNREACHABLE() __builtin_unreachable()
+
 #endif // ELFLDR_ASSERT_H

@@ -66,7 +66,7 @@ install(FILES ${PROJECT_SOURCE_DIR}/README.md ${PROJECT_SOURCE_DIR}/LICENSE DEST
 
 # Install static mkdocs documentation
 # if documentation build is enabled
-if(MkDocs_FOUND)
+if(DOCS_ENABLED)
     install(DIRECTORY ${PROJECT_SOURCE_DIR}/site/ DESTINATION /doc)
 endif()
 

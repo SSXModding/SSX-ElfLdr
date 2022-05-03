@@ -119,11 +119,11 @@ struct ExpPatch : public Patch {
 		// get the length of said collection grouped by type
 
 		// Test hook
-		cApplication_Init_Orig = elfldr::HookFunction<void (*)(bx::cApplication*, char*)>(util::Ptr(0x00183a68), [](bx::cApplication* capp_this, char* p1) {
-			bx::printf("cApplication::Init(%s) hook; orig is %p\n", p1, cApplication_Init_Orig);
-			capp_this->mGameRate = 0.5;
-			cApplication_Init_Orig(capp_this, p1);
-		});
+		//cApplication_Init_Orig = elfldr::HookFunction<void (*)(bx::cApplication*, char*)>(util::Ptr(0x00183a68), [](bx::cApplication* capp_this, char* p1) {
+		//	bx::printf("cApplication::Init(%s) hook; orig is %p\n", p1, cApplication_Init_Orig);
+		//	capp_this->mGameRate = 0.5;
+		//	cApplication_Init_Orig(capp_this, p1);
+		//});
 
 #if 0
 		auto* erl = erl::LoadErl("host:sample_erl.erl");

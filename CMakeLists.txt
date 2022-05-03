@@ -74,6 +74,11 @@ endif()
 
 install(TARGETS elfldr)
 
+# SDK stuffs.
+install(TARGETS elfldr_runtime elfldr_utils_erl DESTINATION /sdk/lib)
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/ DESTINATION /sdk/include)
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/cmake/Toolchain/ DESTINATION /sdk/toolchain)
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/sampleerl/ DESTINATION /sdk/samples/sample_ch)
 
 ## CPack (used by GitHub Actions to package releases)
 

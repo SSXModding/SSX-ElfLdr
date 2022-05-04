@@ -127,10 +127,13 @@ namespace elfldr {
 	};
 
 	/**
-	 * Get view of a game binary for the provided game/region/version
+	 * Get view of string of the game binary for the provided game/region/version.
 	 */
-	StringView GameBinaryFor(Game game, GameRegion region, GameVersion version);
+	[[nodiscard]] StringView GameBinaryFor(Game game, GameRegion region, GameVersion version);
 
+	/**
+	 * Get global singleton copy of the game version data.
+	 */
 	[[nodiscard]] GameVersionData& GetGameVersionData();
 
 } // namespace elfldr

@@ -9,6 +9,7 @@ add_executable(elfldr
         # Elfldr core
         ElfLoader.cpp
         GameVersion.cpp
+        VersionProbe.cpp
         main.cpp
         patch.cpp
 

@@ -113,25 +113,25 @@ namespace elfldr {
 		/**
 		 * Get the game binary filename
 		 */
-		StringView GetGameBinary() const;
+		[[nodiscard]] StringView GetGameBinary() const;
 
 		/**
 		 * Converts this version data to a string applicable
-		 * to use in configuration.
-		 * Not reentrant; copy data if you need to call
-		 * this function multiple times.
+		 * to use in configuration (a ElfLdr GameID).
+		 *
+		 * This function is not reentrant; copy data if you need to call this function multiple times.
 		 */
-		StringView ToString() const;
+		[[nodiscard]] StringView GameID() const;
 
 		// LoadFromString(), which parses each component to load the game/region/ver?
 	};
 
 	/**
-	 * Probe the game version data.
+	 * Get view of a game binary for the provided game/region/version
 	 */
-	void ProbeVersion();
+	StringView GameBinaryFor(Game game, GameRegion region, GameVersion version);
 
-	const GameVersionData& GetGameVersionData();
+	[[nodiscard]] GameVersionData& GetGameVersionData();
 
 } // namespace elfldr
 

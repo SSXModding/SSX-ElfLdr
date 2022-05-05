@@ -8,11 +8,10 @@
 #ifndef ELFLDR_FIODIRECTORY_H
 #define ELFLDR_FIODIRECTORY_H
 
-#include <runtime/String.h>
 #include <fileio.h>
+#include <runtime/String.h>
 
 namespace elfldr::util {
-
 
 	// this is a GIANT hack but the Newlib constants don't work,
 	// so we have to define our own here.
@@ -20,22 +19,58 @@ namespace elfldr::util {
 #define ELFLDR_FIO_ISDIR(entry) (((entry).stat.mode & 0b00000001))
 #define ELFLDR_FIO_ISREG(entry) (!((entry).stat.mode & 0b00000001))
 
+	/**
+	 * A safe wrapper over FIO directory iteration.
+	 */
 	struct FioDirectory {
-
 		FioDirectory() = default;
 
-		explicit FioDirectory(StringView);
+		/**
+		 * Shorthand constructor to do Open(path).
+		 * \param[in] path Directory to open and iterate.
+		 */
+		explicit FioDirectory(StringView path);
 
-		bool Open(StringView path);
+		/**
+		 * Initialize this FioDirectory with an existing file descriptor.
+		 *
+		 * \param[in] fd An existing fd returned by fioDopen().
+		 */
+		explicit FioDirectory(int fd)
+			: fd(fd) {
+		}
 
 		~FioDirectory();
 
-		bool Ok() const;
+		/**
+		 * Open a directory.
+		 *
+		 * \param[in] path Directory to open and iterate.
+		 * \return True if open succeeded, false if not.
+		 */
+		bool Open(StringView path);
+
+		/**
+		 * Is the FioDirectory opened successfully?
+		 * \return True if good, false otherwise.
+		 */
+		bool Good() const;
+
+		/**
+		 * Helper conversion operator
+		 * \see FioDirectory::Ok()
+		 */
 		operator bool() const;
 
-		template<class DirectoryIterator>
+		/**
+		 * Iterate through the currently open directory.
+		 *
+		 * \tparam DirectoryIterator A function object, ideally bool(io_dirent_t& ent). Return false to stop iteration
+		 * \param[i] callback The iteration callback
+		 */
+		template <class DirectoryIterator>
 		void Iterate(DirectoryIterator&& callback) const {
-			if(!Ok())
+			if(!Good())
 				return;
 
 			io_dirent_t dirent;
@@ -46,9 +81,9 @@ namespace elfldr::util {
 		}
 
 	   private:
-		int fd{-1};
+		int fd { -1 };
 	};
 
-}
+} // namespace elfldr::util
 
 #endif // ELFLDR_FIODIRECTORY_H

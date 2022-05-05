@@ -93,18 +93,6 @@ struct ExpPatch : public Patch {
 						util::MemRefTo<uint32_t>(util::Ptr(0x00189c1c)) = 0x24050003;
 						util::MemRefTo<uint32_t>(util::Ptr(0x00189c20)) = 0x0c06192c;
 
-						// basic function prologue
-						constexpr static uint32_t subroutine_prologue_template[] {
-							0x27BDFFFC, // addiu sp, sp, -0x4
-							0xFFB00000	// sd s0, 0x0(sp) ; save the old value of s0 as the first
-						};
-
-						constexpr static uint32_t subroutine_epilogue_template[] {
-							// ; Restore registers to what they were before
-							0xDFB00000, // ld s0, 0x0(sp) ; load the old value of s0
-							0x03E00008, // jr ra
-							0x27BD0004	// addiu sp, sp, 0x4 ; This instruction is executed the same time as the jr as a pipeline side effect
-						};
 
 						// Load all the erls, collect their function pointers, and then
 						// get the length of said collection grouped by type

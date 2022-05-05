@@ -14,24 +14,24 @@ namespace elfldr::util {
 	}
 
 	FioDirectory::~FioDirectory() {
-		if(Ok())
+		if(Good())
 			fioDclose(fd);
 	}
 
 	bool FioDirectory::Open(StringView path) {
 		fd = fioDopen(path.CStr());
-		if(!Ok())
+		if(!Good())
 			return false;
 
 		return true;
 	}
 
-	bool FioDirectory::Ok() const {
+	bool FioDirectory::Good() const {
 		return fd != -1;
 	}
 
 	FioDirectory::operator bool() const {
-		return Ok();
+		return Good();
 	}
 
 }

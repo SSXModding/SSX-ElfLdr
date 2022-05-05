@@ -8,7 +8,7 @@
 #ifndef ELFLDR_HOOK_H
 #define ELFLDR_HOOK_H
 
-namespace elfldr {
+namespace elfldr::util {
 
 	namespace detail {
 		/**

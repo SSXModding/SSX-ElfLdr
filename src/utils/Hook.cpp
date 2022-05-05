@@ -12,7 +12,7 @@
 #include <utils/Hook.h>
 #include <utils/MipsIEncoder.h>
 
-namespace elfldr::detail {
+namespace elfldr::util::detail {
 
 	constexpr static uint32_t callTemplate[] {
 		mips::nop(), // will be replaced by lui t0, top_word

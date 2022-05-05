@@ -18,7 +18,7 @@ namespace elfldr {
 		bool gameDetected = false;
 		auto& versionData = GetGameVersionData();
 
-		if(!dir.Ok()) {
+		if(!dir.Good()) {
 			// Older PCSX2 versions do not support dopen() on the HostFS device,
 			// for reasons that are kinda unknown to me.
 			//

@@ -29,7 +29,8 @@ namespace elfldr {
 
 		dir.Iterate([&](io_dirent_t& ent) {
 			auto TryGame = [&](Game game, GameRegion region, GameVersion version) {
-				if(!StrCaseMatch(StringView(ent.name), GameBinaryFor(game, region, version))) {
+				//util::DebugOut("trying \"%s\"", GameBinaryFor(game, region, version).CStr());
+				if(StrCaseMatch(StringView(ent.name), GameBinaryFor(game, region, version))) {
 					versionData.game = game;
 					versionData.region = region;
 					versionData.version = version;
@@ -43,6 +44,8 @@ namespace elfldr {
 				if(TryGame(Game::SSXOG, GameRegion::NTSC, GameVersion::SSXOG_10))
 					return false;
 				if(TryGame(Game::SSXDVD, GameRegion::NTSC, GameVersion::SSXDVD_10))
+					return false;
+				if(TryGame(Game::SSXDVD, GameRegion::NotApplicable, GameVersion::SSXDVD_JAMPACK_DEMO))
 					return false;
 				if(TryGame(Game::SSX3, GameRegion::NTSC, GameVersion::SSX3_OPSM2_DEMO))
 					return false;

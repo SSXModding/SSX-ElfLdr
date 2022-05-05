@@ -13,27 +13,6 @@ extern const char* gHostFsPath;
 
 namespace elfldr {
 
-	// utils please!
-
-	template <class CharT>
-	constexpr CharT CheapToLower(CharT chara) {
-		if(chara >= 'A' && chara <= 'Z')
-			return chara + 32;
-		else
-			return chara;
-	}
-
-	constexpr bool StrCaseMatch(StringView sv, StringView sv2) {
-		if(sv.Length() != sv2.Length())
-			return false; // Quick shortcut
-
-		for(StringView::SizeType i = 0; i < sv.Length(); ++i)
-			if(CheapToLower(sv[i]) != CheapToLower(sv2[i]))
-				return false; // not matching
-
-		return true;
-	}
-
 	void AutodetectGameVersion() {
 		util::FioDirectory dir(gHostFsPath);
 		bool gameDetected = false;
@@ -50,7 +29,7 @@ namespace elfldr {
 
 		dir.Iterate([&](io_dirent_t& ent) {
 			auto TryGame = [&](Game game, GameRegion region, GameVersion version) {
-				if(!StrCaseMatch(ent.name, GameBinaryFor(game, region, version))) {
+				if(!StrCaseMatch(StringView(ent.name), GameBinaryFor(game, region, version))) {
 					versionData.game = game;
 					versionData.region = region;
 					versionData.version = version;

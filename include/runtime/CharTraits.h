@@ -22,6 +22,7 @@ namespace elfldr {
 		// inline static size_t Length(const CharT* __restrict);
 		// inline static void Copy(const CharT* __restrict, CharT* __restrict, size_t);
 		// inline static int Compare(const CharT* __restrict, const CharT* __restrict);
+		// inline static CharT ToLower(CharT c);
 	};
 
 	/**
@@ -47,6 +48,13 @@ namespace elfldr {
 			ELFLDR_ASSERT(str1 != nullptr);
 			ELFLDR_ASSERT(str2 != nullptr);
 			return strcmp(str1, str2);
+		}
+
+		inline static char ToLower(char c) {
+			if(c >= 'A' && c <= 'Z')
+				return c + 32;
+			else
+				return c;
 		}
 	};
 

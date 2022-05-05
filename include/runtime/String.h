@@ -249,16 +249,16 @@ namespace elfldr {
 	// instantiations of BasicString or BasicStringView,
 	// respecting custom Traits implementations as well.
 
-	template <class CharT, class Traits, class Allocator>
-	struct Hash<BasicString<CharT, Traits, Allocator>> {
-		inline static uint32_t hash(const BasicString<CharT, Traits>& str) {
+	template <class CharT, template<class> class Traits, class Allocator>
+	struct Hash<BasicString<CharT, Traits<CharT>, Allocator>> {
+		inline static uint32_t hash(const BasicString<CharT, Traits<CharT>>& str) {
 			return detail::fnv1a_hash(UBCast<const void*>(str.c_str()), str.length() * sizeof(CharT), 0);
 		}
 	};
 
-	template <class CharT, class Traits>
-	struct Hash<BasicStringView<CharT, Traits>> {
-		inline static uint32_t hash(const BasicStringView<CharT, Traits>& str) {
+	template <class CharT, template<class> class Traits>
+	struct Hash<BasicStringView<CharT, Traits<CharT>>> {
+		inline static uint32_t hash(const BasicStringView<CharT, Traits<CharT>>& str) {
 			return detail::fnv1a_hash(UBCast<const void*>(str.Data()), str.Length() * sizeof(CharT), 0);
 		}
 	};
@@ -276,6 +276,33 @@ namespace elfldr {
 	// safe for UTF-8 (?)
 	// using U8String = BasicString<char8_t>;
 	// using U8StringView = BasicStringView<char8_t>;
+
+	// String Algorithms:
+
+	template<class CharT, template<class> class Traits>
+	constexpr bool StrCaseMatch(BasicStringView<CharT, Traits<CharT>> sv, BasicStringView<CharT, Traits<CharT>> sv2) {
+		if(sv.Length() != sv2.Length())
+			return false; // Quick shortcut
+
+		for(StringView::SizeType i = 0; i < sv.Length(); ++i)
+			if(Traits<CharT>::ToLower(sv[i]) != Traits<CharT>::ToLower(sv2[i]))
+				return false; // not matching
+
+		return true;
+	}
+
+	template<class CharT, template<class> class Traits>
+	constexpr bool StrMatch(BasicStringView<CharT, Traits<CharT>> sv, BasicStringView<CharT, Traits<CharT>> sv2) {
+		if(sv.Length() != sv2.Length())
+			return false; // Quick shortcut
+
+		for(StringView::SizeType i = 0; i < sv.Length(); ++i)
+			if(sv[i] != sv2[i])
+				return false; // not matching
+
+		return true;
+	}
+
 
 } // namespace elfldr
 

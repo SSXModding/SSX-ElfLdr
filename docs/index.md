@@ -1,4 +1,4 @@
-Welcome to the SSX-ElfLdr documentation.
+Welcome to the SSX-ElfLdr v0.5 documentation.
 
 ## What is SSX-ElfLdr?
 

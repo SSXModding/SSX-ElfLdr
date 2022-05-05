@@ -6,8 +6,6 @@
  */
 
 #include <elfldr/GameVersion.h>
-#include <fileio.h>
-#include <strings.h>
 #include <utils/FioDirectory.h>
 
 // in main.cpp
@@ -15,21 +13,31 @@ extern const char* gHostFsPath;
 
 namespace elfldr {
 
-	void AutodetectGameVersion() {
-		auto& versionData = GetGameVersionData();
+	// utils please!
 
-		// should we then open a fd to probe the game binary version? (either by way of hashing the file or smth)
-#define TryCase(game_, region_, version_, message_UNUSED_)                      \
-	if(!strcasecmp(ent.name, GameBinaryFor(game_, region_, version_).CStr())) { \
-		versionData.game = game_;                                               \
-		versionData.region = region_;                                           \
-		versionData.version = version_;                                         \
-		detected = true;                                                        \
-		return false;                                                           \
+	template<class CharT>
+	constexpr CharT CheapToLower(CharT chara) {
+		if(chara >= 'A' && chara <= 'Z')
+			return chara + 32;
+		else
+			return chara;
 	}
 
+	constexpr bool StrCaseMatch(StringView sv, StringView sv2) {
+		if(sv.Length() != sv2.Length())
+			return false; // Quick shortcut
+
+		for(StringView::SizeType i = 0; i < sv.Length(); ++i)
+			if(CheapToLower(sv[i]) != CheapToLower(sv2[i]))
+				return false; // not matching
+
+		return true;
+	}
+
+	void AutodetectGameVersion() {
 		util::FioDirectory dir(gHostFsPath);
-		bool detected = false;
+		bool gameDetected = false;
+		auto& versionData = GetGameVersionData();
 
 		if(!dir.Ok()) {
 			// Older PCSX2 versions do not support dopen() on the HostFS device,
@@ -37,32 +45,39 @@ namespace elfldr {
 			//
 			// If this branch is executed, the PCSX2 version being used is probably
 			// too old to work, so we intentionally crash.
-			ELFLDR_VERIFY(false && "Your PCSX2 version is too old, and does not support dopen() on the HostFS device.");
+			ELFLDR_VERIFY(false && "Your PCSX2 version is too old!");
 		}
 
 		dir.Iterate([&](io_dirent_t& ent) {
-			if(ELFLDR_FIO_ISREG(ent)) {
-				//elfldr::util::DebugOut("Regular file %s", ent.name);
+			auto TryGame = [&](Game game, GameRegion region, GameVersion version) {
+				if(!StrCaseMatch(ent.name, GameBinaryFor(game, region, version))) {
+					versionData.game = game;
+					versionData.region = region;
+					versionData.version = version;
+					gameDetected = true;
+					return true;
+				}
+				return false;
+			};
 
-				TryCase(Game::SSXOG, GameRegion::NTSC, GameVersion::SSXOG_10, "Version probe detected SSX OG (NTSC).")
-
-				// SSXDVD
-				TryCase(Game::SSXDVD, GameRegion::NTSC, GameVersion::SSXDVD_10, "Version probe detected SSX Tricky (NTSC).")
-
-				// SSX 3
-				TryCase(Game::SSX3, GameRegion::NTSC, GameVersion::SSX3_OPSM2_DEMO, "Version probe detected SSX 3 (OPSM2 Demo).")
-				TryCase(Game::SSX3, GameRegion::NotApplicable, GameVersion::SSX3_KR_DEMO, "Version probe detected SSX 3 (KR Demo).")
-				TryCase(Game::SSX3, GameRegion::NTSC, GameVersion::SSX3_10, "Version probe detected SSX 3 (NTSC).")
-			}
+			if(ELFLDR_FIO_ISREG(ent))
+				if(TryGame(Game::SSXOG, GameRegion::NTSC, GameVersion::SSXOG_10))
+					return false;
+				if(TryGame(Game::SSXDVD, GameRegion::NTSC, GameVersion::SSXDVD_10))
+					return false;
+				if(TryGame(Game::SSX3, GameRegion::NTSC, GameVersion::SSX3_OPSM2_DEMO))
+					return false;
+				if(TryGame(Game::SSX3, GameRegion::NotApplicable, GameVersion::SSX3_KR_DEMO))
+					return false;
+				if(TryGame(Game::SSX3, GameRegion::NTSC, GameVersion::SSX3_10))
+					return false;
 
 			return true;
 		});
 
-#undef TryCase
-		if(!detected) {
-			// Mark invalid game.
+		// Mark invalid game if the above loop did not detect any game.
+		if(!gameDetected)
 			versionData.game = Game::Invalid;
-		}
 	}
 
 } // namespace elfldr

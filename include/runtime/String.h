@@ -22,6 +22,10 @@ namespace elfldr {
 	 */
 	template <class T, class Traits = CharTraits<T>>
 	struct BasicStringView {
+
+		using CharType = T;
+		using SizeType = size_t;
+
 		constexpr BasicStringView()
 			: data_ptr(nullptr),
 			  len(0) {
@@ -36,12 +40,12 @@ namespace elfldr {
 			  len(strlen(ptr)) {
 		}
 
-		constexpr BasicStringView(T* ptr, size_t len)
+		constexpr BasicStringView(T* ptr, SizeType len)
 			: data_ptr(ptr),
 			  len(len) {
 		}
 
-		[[nodiscard]] constexpr size_t Length() const {
+		[[nodiscard]] constexpr SizeType Length() const {
 			return len;
 		}
 
@@ -53,7 +57,7 @@ namespace elfldr {
 			return data_ptr;
 		}
 
-		constexpr const T& operator[](size_t index) const {
+		constexpr const T& operator[](SizeType index) const {
 			return data_ptr[index];
 		}
 
@@ -67,7 +71,7 @@ namespace elfldr {
 
 	   private:
 		const T* data_ptr;
-		size_t len;
+		SizeType len;
 	};
 
 	template <class T, class Traits = CharTraits<T>, class Alloc = StdAllocator<T>>

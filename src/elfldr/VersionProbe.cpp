@@ -15,7 +15,7 @@ namespace elfldr {
 
 	// utils please!
 
-	template<class CharT>
+	template <class CharT>
 	constexpr CharT CheapToLower(CharT chara) {
 		if(chara >= 'A' && chara <= 'Z')
 			return chara + 32;
@@ -60,7 +60,7 @@ namespace elfldr {
 				return false;
 			};
 
-			if(ELFLDR_FIO_ISREG(ent))
+			if(ELFLDR_FIO_ISREG(ent)) {
 				if(TryGame(Game::SSXOG, GameRegion::NTSC, GameVersion::SSXOG_10))
 					return false;
 				if(TryGame(Game::SSXDVD, GameRegion::NTSC, GameVersion::SSXDVD_10))
@@ -71,6 +71,7 @@ namespace elfldr {
 					return false;
 				if(TryGame(Game::SSX3, GameRegion::NTSC, GameVersion::SSX3_10))
 					return false;
+			}
 
 			return true;
 		});

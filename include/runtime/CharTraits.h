@@ -19,7 +19,7 @@ namespace elfldr {
 	 */
 	template <class CharT>
 	struct CharTraits {
-		// inline static std::size_t Length(const CharT* __restrict);
+		// inline static size_t Length(const CharT* __restrict);
 		// inline static void Copy(const CharT* __restrict, CharT* __restrict, size_t);
 		// inline static int Compare(const CharT* __restrict, const CharT* __restrict);
 	};
@@ -29,7 +29,7 @@ namespace elfldr {
 	 */
 	template <>
 	struct CharTraits<char> {
-		inline static uintptr_t Length(const char* __restrict str) {
+		inline static size_t Length(const char* __restrict str) {
 			if(str == nullptr)
 				return 0;
 			return strlen(str);

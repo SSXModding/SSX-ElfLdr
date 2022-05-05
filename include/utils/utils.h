@@ -19,13 +19,6 @@ namespace elfldr::util {
 	 */
 	constexpr static size_t MaxPath = 260;
 
-#ifndef ERL
-	/**
-	 * Global tab level.
-	 */
-	extern uint8_t gTabLevel;
-#endif
-
 	/**
 	 * Write a message with a prefix.
 	 */

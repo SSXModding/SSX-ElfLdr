@@ -120,6 +120,9 @@ namespace elfldr::erl {
 				return sections.Error();
 
 			shdrs_ = &(*sections);
+
+
+			return NO_ERROR<ErlLoadError>;
 		}
 
 		LoadResult<Elf32_Ehdr> LoadHeader() {

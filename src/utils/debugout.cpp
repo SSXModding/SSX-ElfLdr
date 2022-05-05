@@ -19,10 +19,6 @@ extern "C" int elfldr_printf(const char* __restrict format, ...);
 
 namespace elfldr::util {
 
-#ifndef ERL
-	uint8_t gTabLevel = 0;
-#endif
-
 	// Some macro (:() helpers
 	// to make this a bit less garbage
 #define LITERAL_STRLEN(lit) (sizeof(lit) - 1)
@@ -48,10 +44,6 @@ namespace elfldr::util {
 		VSNPRINTF_OFFSET(buf, sizeof(buf), LITERAL_STRLEN(DEBUGOUT_PREFIX));
 
 #ifndef ERL
-		// Tab level handling
-		//		for(int i = 0; i < gTabLevel; ++i)
-		//			putc('\t', stdout);
-
 		// use nano newlib puts() where we can
 		// printf("%s\n", buf);
 		elfldr_printf("%s\n", buf);

@@ -8,13 +8,19 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <stdio.h>
+
 extern "C" {
 
 void* memcpy(void* __restrict dest_ptr, const void* __restrict src_ptr, size_t n) {
+	printf("our memcpy\n");
 	uint8_t* pd = (uint8_t*)dest_ptr;
 	uint8_t const* ps = (uint8_t const*)src_ptr;
 	for(; n--;)
 		*pd++ = *ps++;
 	return dest_ptr;
 }
+
+// TODO: memmove
+
 }

@@ -54,15 +54,14 @@ namespace elfldr::detail {
 		memcpy(&trampolineBuf[sizeof(callTemplate) / sizeof(uint32_t)], &callTemplate[0], sizeof(callTemplate));
 
 		// Calculate the start of the original function's instructions.
-		uintptr_t tramp_dest = (uintptr_t)dest + (sizeof(callTemplate));
+		const uintptr_t tramp_dest = (uintptr_t)dest + (sizeof(callTemplate));
 
+		// Place instructions to load the
 		trampolineBuf[sizeof(callTemplate) / sizeof(uint32_t)] = mips::lui(mips::Reg::T0, tramp_dest >> 16);
 		trampolineBuf[sizeof(callTemplate) / sizeof(uint32_t) + 1] = mips::ori(mips::Reg::T0, mips::Reg::T0, tramp_dest & 0xFFFF);
 
-		// Flush D/I cache, just in case.
-		FlushCache(CPU_DATA_CACHE);
-		FlushCache(CPU_INSTRUCTION_CACHE);
-
+		// Flush D/I cache, just in case, and then return the trampoline.
+		FlushCache(CPU_DATA_CACHE | CPU_INSTRUCTION_CACHE);
 		return trampolineBuf;
 	}
 

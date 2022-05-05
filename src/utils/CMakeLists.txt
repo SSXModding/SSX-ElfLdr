@@ -17,6 +17,7 @@ set(__ELFLDR_UTILS_BASE_SOURCES
 add_library(elfldr_utils_elf
         ${__ELFLDR_UTILS_BASE_SOURCES}
         FioFile.cpp
+        FioDirectory.cpp
         )
 
 target_include_directories(elfldr_utils_elf PUBLIC ${PROJECT_SOURCE_DIR}/include/)

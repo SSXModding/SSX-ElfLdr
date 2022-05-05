@@ -65,10 +65,7 @@ int main() {
 			return;
 		}
 
-		elfldr::util::gTabLevel++;
 		patch->Apply();
-		elfldr::util::gTabLevel--;
-
 		elfldr::util::DebugOut("Finished applying patch \"%s\"...", patch->GetName());
 	};
 

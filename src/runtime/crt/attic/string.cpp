@@ -6,6 +6,7 @@
  */
 
 #include <stdint.h>
+#include <stddef.h>
 
 extern "C" {
 
@@ -31,4 +32,15 @@ char* strcat(char* dest, const char* src) {
 		;
 	return rdest;
 }
+
+size_t strlen(const char* __restrict str) {
+	const char* s = str;
+
+	// Iterate through the string until NUL character
+	while(*s)
+		++s;
+
+	return (s - str);
+}
+
 }

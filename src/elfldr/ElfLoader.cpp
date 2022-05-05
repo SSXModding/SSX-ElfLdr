@@ -27,7 +27,7 @@ namespace elfldr {
 	}
 
 	bool ElfLoader::LoadElf(const char* inputPath) {
-		util::DebugOut("Trying to load ELF File \"%s\"...", inputPath);
+		util::DebugOut("[ElfLoader] Loading ELF File \"%s\"...", inputPath);
 
 		SifLoadElf(inputPath, &gExecData);
 
@@ -37,14 +37,14 @@ namespace elfldr {
 	}
 
 	void ElfLoader::ExecElf(int argc, char** argv) {
-		// this function shouldn't be called if
+		// This function shouldn't be called if
 		// the elf didn't load properly.
 		ELFLDR_VERIFY(gExecData.epc > 0);
 
 		for(int i = 0; i < 4; ++i)
 			FlushCaches();
 
-		// Reset the IOP and then ExecPS2 us.
+		// Reset the IOP and then ExecPS2 the loaded ELF.
 		ResetIOP();
 		ExecPS2(reinterpret_cast<void*>(gExecData.epc), reinterpret_cast<void*>(gExecData.gp), argc, argv);
 	}

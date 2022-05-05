@@ -25,15 +25,8 @@ namespace elfldr {
 		virtual const char* GetIdentifier() const = 0;
 
 		/**
-		 * Get whether or not this patch is
-		 * compatiable with the current detected game.
-		 *
-		 * \returns true if compatiable, false otherwise
-		 */
-		virtual bool IsCompatiable() const = 0;
-
-		/**
-		 * Apply the patch.
+		 * Apply the patch. May do nothing if it's not compatible
+		 * with the current game.
 		 */
 		virtual void Apply() = 0;
 	};

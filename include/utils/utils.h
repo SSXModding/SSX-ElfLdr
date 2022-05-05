@@ -19,6 +19,13 @@ namespace elfldr::util {
 	 */
 	constexpr static size_t MaxPath = 260;
 
+	// TODO for utils:
+	//  	- Logger with format
+	//		- Separate log channels (that can be enabled/disabled in cfg file?)
+	//		- Verbose setting?
+	//		- asserts always blast?
+	//		- Uhh.. that's about it
+
 	/**
 	 * Write a message with a prefix.
 	 */

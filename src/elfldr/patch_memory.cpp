@@ -25,11 +25,6 @@ struct MemclrPatch : public Patch {
 		return "memclr";
 	}
 
-	bool IsCompatiable() const override {
-		// Stub
-		return true;
-	}
-
 	void Apply_SSXOG(const GameVersionData& versionData) {
 		switch(versionData.version) {
 			case GameVersion::SSXOG_10:

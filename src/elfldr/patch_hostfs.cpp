@@ -39,11 +39,6 @@ struct HostFsPatch : public Patch {
 		return "hostfs";
 	}
 
-	bool IsCompatiable() const override {
-		// Stub- dropping soon
-		return true;
-	}
-
 	void Apply_SSXOG(const GameVersionData& data) {
 		// ASYNCFILE_init usually gets "cd:".
 		// We replace this with a string which will match "host",

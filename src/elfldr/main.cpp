@@ -29,7 +29,7 @@ int main() {
 
 	// Initialize loader services & probe the game version.
 	// TODO: If config file found, parse it, load in the game version, and verify that
-	// 		that binary exists.
+	// 		that binary exists. If it doesn't exist, bail back to OSD.
 	elfldr::InitLoader();
 	elfldr::AutodetectGameVersion();
 
@@ -59,14 +59,9 @@ int main() {
 		if(patch == nullptr)
 			return;
 
-		elfldr::util::DebugOut("Applying patch \"%s\"...", patch->GetName());
-		if(!patch->IsCompatiable()) {
-			elfldr::util::DebugOut("Patch \"%s\" is not compatible with the current game.", patch->GetName());
-			return;
-		}
-
+		elfldr::util::DebugOut("[Patch %s] Applying patch...", patch->GetName());
 		patch->Apply();
-		elfldr::util::DebugOut("Finished applying patch \"%s\"...", patch->GetName());
+		elfldr::util::DebugOut("[Patch %s] Finished applying.", patch->GetName());
 	};
 
 	ApplyPatch(elfldr::GetPatchById(0x00));

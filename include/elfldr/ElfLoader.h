@@ -24,6 +24,7 @@ namespace elfldr {
 
 		/**
 		 * Execute loaded ELF file.
+		 * Only call this function if ElfLoader::LoadElf() returned true!
 		 *
 		 * \param[in] argc Argc to send to ELF.
 		 * \param[in] argv Argv to send to ELF.
@@ -37,7 +38,8 @@ namespace elfldr {
 	void FlushCaches();
 
 	/**
-	 * Init loader services, reset IOP and load modules, and init libcdvd
+	 * Initialize loader services, reset IOP and load modules.
+	 * Call this before using ElfLoader.
 	 */
 	void InitLoader();
 
@@ -45,6 +47,7 @@ namespace elfldr {
 	 * Reset the IOP.
 	 */
 	void ResetIOP();
+
 } // namespace elfldr
 
 #endif // ELFLOADER_H

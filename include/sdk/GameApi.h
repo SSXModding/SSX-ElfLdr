@@ -18,8 +18,8 @@
 // just like all the other addresses I have.
 //
 
-#include <utils/codeutils.h>
-#include <utils/utils.h>
+#include <utils/CodeUtils.h>
+#include <utils/Utils.h>
 //#include <sdk/structs.h>
 
 // TODO: dynamic function wrappers

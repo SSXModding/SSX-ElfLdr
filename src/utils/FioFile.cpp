@@ -7,7 +7,7 @@
 
 #include <runtime/Assert.h>
 #include <utils/FioFile.h>
-#include <utils/utils.h>
+#include <utils/Utils.h>
 
 namespace elfldr::util {
 

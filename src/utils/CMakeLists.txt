@@ -9,7 +9,7 @@
 # and libutils-erl (the minimized version for the ERL to use.)
 set(__ELFLDR_UTILS_BASE_SOURCES
         assert.cpp
-        codeutils.cpp
+        CodeUtils.cpp
         debugout.cpp
         Hook.cpp
         GameVersion.cpp

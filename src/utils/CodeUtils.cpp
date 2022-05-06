@@ -9,8 +9,8 @@
 // to be inlines
 
 #include <runtime/Assert.h>
-#include <utils/codeutils.h>
-#include <utils/utils.h>
+#include <utils/CodeUtils.h>
+#include <utils/Utils.h>
 
 namespace elfldr::util {
 

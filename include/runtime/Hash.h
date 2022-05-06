@@ -9,7 +9,7 @@
 #define UTILS_HASH_H
 
 #include <runtime/Fnv1a.h>
-#include <utils/utils.h>
+#include <utils/Utils.h>
 
 namespace elfldr {
 

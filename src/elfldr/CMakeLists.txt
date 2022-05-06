@@ -8,15 +8,15 @@
 add_executable(elfldr
         # Elfldr core
         ElfLoader.cpp
-        ../utils/GameVersion.cpp
-        ../utils/VersionProbe.cpp
-        main.cpp
-        patch.cpp
+        Patch.cpp
 
         # patches
-        patch_hostfs.cpp
-        patch_memory.cpp
-        patch_experimental.cpp
+        Patches/HostFS.cpp
+        Patches/MemoryClear.cpp
+        Patches/Experimental.cpp
+
+        # entry point
+        main.cpp
         )
 
 target_include_directories(elfldr PRIVATE ${PROJECT_BINARY_DIR} ${CMAKE_CURRENTS_SOURCE_DIR})

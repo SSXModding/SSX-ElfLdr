@@ -13,7 +13,7 @@
 #include <loadfile.h>
 #include <runtime/Assert.h>
 #include <sifrpc.h>
-#include <utils/utils.h>
+#include <utils/Utils.h>
 
 namespace elfldr {
 

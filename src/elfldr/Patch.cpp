@@ -5,7 +5,7 @@
  * under the terms of the MIT license.
  */
 
-#include "patch.h"
+#include "Patch.h"
 
 #include "BinaryMap.h"
 

@@ -25,7 +25,7 @@ namespace elfldr::util {
 					break;
 			}
 
-			ELFLDR_ASSERT(false);
+			ELFLDR_UNREACHABLE();
 		}
 
 		const char* SSXDVDBinary(GameRegion region, GameVersion version) {
@@ -40,7 +40,7 @@ namespace elfldr::util {
 					break;
 			}
 
-			ELFLDR_ASSERT(false);
+			ELFLDR_UNREACHABLE();
 		}
 
 		const char* SSX3Binary(GameRegion region, GameVersion version) {
@@ -73,14 +73,14 @@ namespace elfldr::util {
 					return "ssx3";
 
 				default:
-					ELFLDR_VERIFY(false && "how'd you get here...?");
+					ELFLDR_VERIFY(false && "Invalid game passed to GameToString()");
 			}
 		}
 
 		StringView RegionToString(GameRegion reg) {
 			switch(reg) {
 				case GameRegion::NotApplicable:
-					return "na";
+					return "notapplicable";
 				case GameRegion::NTSC:
 					return "us";
 				case GameRegion::NTSCJ:

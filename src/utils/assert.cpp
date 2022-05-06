@@ -11,7 +11,7 @@
 //
 
 #include <runtime/Assert.h>
-#include <utils/utils.h>
+#include <utils/Utils.h>
 
 #ifndef NDEBUG
 __attribute__((weak)) void __Elfldr__AssertFailure(const char* exp, const char* function, const char* file, unsigned line) {

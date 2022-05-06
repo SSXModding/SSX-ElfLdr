@@ -7,7 +7,7 @@
 
 #include <runtime/Allocator.h>
 #include <runtime/Assert.h>
-#include <utils/utils.h>
+#include <utils/Utils.h>
 
 namespace elfldr {
 

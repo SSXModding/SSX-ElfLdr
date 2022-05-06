@@ -9,13 +9,13 @@
 #include <runtime/Allocator.h>
 #include <sdk/ErlAbi.h>
 #include <sdk/GameApi.h>
-#include <sdk/structs.h>
-#include <utils/codeutils.h>
+#include <sdk/OGStructs.h>
+#include <utils/CodeUtils.h>
+#include <utils/GameVersion.h>
 #include <utils/Hook.h>
-#include <utils/utils.h>
+#include <utils/Utils.h>
 
-#include "patch.h"
-#include "utils/GameVersion.h"
+#include "../Patch.h"
 
 // addresses of some fun stuff
 constexpr static uintptr_t TheApp_Address = 0x002852f8;
@@ -174,5 +174,4 @@ namespace elfldr {
 	// Register the patch into the patch system
 	static PatchRegistrar<ExpPatch, 0xE0> registrar;
 
-}
-
+} // namespace elfldr

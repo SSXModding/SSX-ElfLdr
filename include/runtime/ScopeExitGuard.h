@@ -8,7 +8,7 @@
 #ifndef ELFLDR_SCOPEEXITGUARD_H
 #define ELFLDR_SCOPEEXITGUARD_H
 
-#include <utils/utils.h>
+#include <utils/Utils.h>
 
 namespace elfldr {
 

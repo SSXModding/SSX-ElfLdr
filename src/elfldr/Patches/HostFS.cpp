@@ -19,11 +19,11 @@
 //
 
 #include <runtime/Assert.h>
-#include <utils/codeutils.h>
-#include <utils/utils.h>
+#include <utils/CodeUtils.h>
+#include <utils/GameVersion.h>
+#include <utils/Utils.h>
 
-#include "patch.h"
-#include "utils/GameVersion.h"
+#include "../Patch.h"
 
 namespace elfldr {
 

@@ -5,12 +5,11 @@
  * under the terms of the MIT license.
  */
 
-#include <elfldr/GameVersion.h>
 #include <runtime/Assert.h>
 #include <stdio.h>
-#include <utils/utils.h>
+#include <utils/GameVersion.h>
 
-namespace elfldr {
+namespace elfldr::util {
 
 	namespace {
 

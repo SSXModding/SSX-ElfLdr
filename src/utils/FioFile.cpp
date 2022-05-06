@@ -16,7 +16,7 @@ namespace elfldr::util {
 	}
 
 	bool FioFile::Good() const {
-		return fd != -1;
+		return fd > 0;
 	}
 
 	FioFile::operator bool() const {

@@ -27,7 +27,7 @@ namespace elfldr::util {
 	}
 
 	bool FioDirectory::Good() const {
-		return fd != -1;
+		return fd > 0;
 	}
 
 	FioDirectory::operator bool() const {

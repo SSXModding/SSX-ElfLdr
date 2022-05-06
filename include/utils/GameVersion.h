@@ -11,7 +11,7 @@
 #include <runtime/String.h>
 #include <stdint.h>
 
-namespace elfldr {
+namespace elfldr::util {
 
 	/**
 	 * Supported games.
@@ -73,13 +73,13 @@ namespace elfldr {
 		/**
 		 * SSX 3 Release
 		 */
-		SSX3_10,
+		SSX3_10 = 20,
 
 		/**
 		 * SSX3 OPSM2 Demo.
 		 * Built early June 2003, from a codebase from May 2003.
 		 */
-		SSX3_OPSM2_DEMO = 20, // unsupported but I'm giving it space here
+		SSX3_OPSM2_DEMO, // unsupported but I'm giving it space here
 
 		/**
 		 * SSX3 Korean demo.
@@ -136,6 +136,6 @@ namespace elfldr {
 	 */
 	[[nodiscard]] GameVersionData& GetGameVersionData();
 
-} // namespace elfldr
+} // namespace elfldr::util
 
 #endif // ELFLDR_GAMEVERSION_H

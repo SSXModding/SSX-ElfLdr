@@ -12,12 +12,16 @@ set(__ELFLDR_UTILS_BASE_SOURCES
         codeutils.cpp
         debugout.cpp
         Hook.cpp
+        GameVersion.cpp
         )
 
 add_library(elfldr_utils_elf
         ${__ELFLDR_UTILS_BASE_SOURCES}
         FioFile.cpp
         FioDirectory.cpp
+        # This depends on FioDirectory, which currently is only provided in the ELF version.
+        # I may move it to the ERL version if FioFile/FioDirectory can be moved there.
+        VersionProbe.cpp
         )
 
 target_include_directories(elfldr_utils_elf PUBLIC ${PROJECT_SOURCE_DIR}/include/)

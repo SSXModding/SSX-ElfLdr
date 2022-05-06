@@ -10,8 +10,9 @@
 #ifndef ERLABI_H
 #define ERLABI_H
 
-#include <elfldr/GameVersion.h>
 #include <stdint.h>
+
+#include <utils/GameVersion.h>
 
 //#define ELFLDR_ERL_HIDDEN __attribute__((visibility("hidden")))
 #define ELFLDR_ERL_EXPORT extern "C" __attribute__((visibility("default")))
@@ -25,7 +26,7 @@ namespace elfldr {
 	constexpr static uint32_t ERL_ABI_VERSION = 0;
 
 	struct InitErlData {
-		GameVersionData verData;
+		util::GameVersionData verData;
 		void* (*Alloc)(uint32_t);
 		void (*Free)(void*);
 		// any additional data. Requires an ABI bump.

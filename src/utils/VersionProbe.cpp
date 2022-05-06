@@ -5,16 +5,13 @@
  * under the terms of the MIT license.
  */
 
-#include <elfldr/GameVersion.h>
 #include <utils/FioDirectory.h>
+#include <utils/GameVersion.h>
 
-// in main.cpp
-extern const char* gHostFsPath;
-
-namespace elfldr {
+namespace elfldr::util {
 
 	void AutodetectGameVersion() {
-		util::FioDirectory dir(gHostFsPath);
+		util::FioDirectory dir("host:");
 		bool gameDetected = false;
 		auto& versionData = GetGameVersionData();
 
@@ -29,7 +26,7 @@ namespace elfldr {
 
 		dir.Iterate([&](io_dirent_t& ent) {
 			auto TryGame = [&](Game game, GameRegion region, GameVersion version) {
-				//util::DebugOut("trying \"%s\"", GameBinaryFor(game, region, version).CStr());
+				//DebugOut("trying \"%s\"", GameBinaryFor(game, region, version).CStr());
 				if(StrCaseMatch(StringView(ent.name), GameBinaryFor(game, region, version))) {
 					versionData.game = game;
 					versionData.region = region;

@@ -8,7 +8,7 @@
 #ifndef ELFLDR_VERSIONPROBE_H
 #define ELFLDR_VERSIONPROBE_H
 
-namespace elfldr {
+namespace elfldr::util {
 
 	/**
 	 * Attempt to autodetect and fill in the game version data,
@@ -20,6 +20,6 @@ namespace elfldr {
 	 */
 	void AutodetectGameVersion();
 
-} // namespace elfldr
+} // namespace elfldr::util
 
 #endif // ELFLDR_VERSIONPROBE_H

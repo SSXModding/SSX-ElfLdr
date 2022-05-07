@@ -69,7 +69,7 @@ namespace elfldr {
 					break;
 
 				case util::GameVersion::SSXDVD_JAMPACK_DEMO:
-					ELFLDR_VERIFY(false && "doesnt work for now, please bug me later.");
+					//ELFLDR_VERIFY(false && "doesnt work for now, please bug me later.");
 					break;
 
 				default:

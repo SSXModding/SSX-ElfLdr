@@ -143,7 +143,23 @@ namespace elfldr {
 					break;
 
 				case util::GameVersion::SSXDVD_JAMPACK_DEMO:
-					ELFLDR_VERIFY(false && "sorry, this doesnt work atm. please give me at least 5 minutes of research time");
+					util::NopFill<84>(util::Ptr(0x001803ec));
+
+					util::ReplaceString(util::Ptr(0x00381db8), "");
+					util::ReplaceString(util::Ptr(0x00381dc0), "host:");
+
+					util::ReplaceString(util::Ptr(0x00381b10), "host:data/modules/ioprp224.img");
+
+					util::WriteString(util::Ptr(0x00381bd0), "host:data/modules/sio2man.irx");
+
+					//util::WriteString(util::Ptr(0x00381bd0), "");
+					util::WriteString(util::Ptr(0x00381c00), "host:data/modules/padman.irx");
+					util::WriteString(util::Ptr(0x00381c90), "host:data/modules/libsd.irx");
+					util::WriteString(util::Ptr(0x00381ca8), "host:data/modules/snddrv.irx");
+					util::WriteString(util::Ptr(0x00381ca8), "host:data/modules/mcman.irx");
+					util::WriteString(util::Ptr(0x00381d38), "host:data/modules/mcserv.irx");
+
+					//ELFLDR_VERIFY(false && "sorry, this doesnt work atm. please give me at least 5 minutes of research time");
 					break;
 			}
 		}

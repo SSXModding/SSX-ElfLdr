@@ -38,6 +38,8 @@ namespace elfldr::util {
 							ELFLDR_ASSERT(false && "Invalid region!");
 					}
 					break;
+				case GameVersion::SSXDVD_JAMPACK_DEMO:
+					return "SSXDEMO.ELF";
 			}
 
 			ELFLDR_UNREACHABLE();

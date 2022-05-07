@@ -252,14 +252,14 @@ namespace elfldr {
 	template <class CharT, template<class> class Traits, class Allocator>
 	struct Hash<BasicString<CharT, Traits<CharT>, Allocator>> {
 		inline static uint32_t hash(const BasicString<CharT, Traits<CharT>>& str) {
-			return detail::fnv1a_hash(UBCast<const void*>(str.c_str()), str.length() * sizeof(CharT), 0);
+			return detail::fnv1a_hash(reinterpret_cast<const void*>(str.c_str()), str.length() * sizeof(CharT), 0);
 		}
 	};
 
 	template <class CharT, template<class> class Traits>
 	struct Hash<BasicStringView<CharT, Traits<CharT>>> {
 		inline static uint32_t hash(const BasicStringView<CharT, Traits<CharT>>& str) {
-			return detail::fnv1a_hash(UBCast<const void*>(str.Data()), str.Length() * sizeof(CharT), 0);
+			return detail::fnv1a_hash(reinterpret_cast<const void*>(str.Data()), str.Length() * sizeof(CharT), 0);
 		}
 	};
 

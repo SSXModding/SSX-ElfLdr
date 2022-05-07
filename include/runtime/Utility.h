@@ -87,7 +87,7 @@ namespace elfldr {
 	 * \return Dest-casted value.
 	 */
 	template <class Dest, class Source>
-	constexpr Dest UBCast(Source source) {
+	[[deprecated("Use reinterpret_cast<...> where possible")]] constexpr Dest UBCast(Source source) {
 		// FIXME: actually using this at compile time
 		// causes some uninitialized member errors.
 

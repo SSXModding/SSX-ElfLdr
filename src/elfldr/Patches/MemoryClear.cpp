@@ -93,6 +93,10 @@ namespace elfldr {
 					// SSX3 release does not actually clear the memory,
 					// so patch data for it isn't needed!
 					// go EA
+
+
+				default:
+					break;
 			}
 		}
 	};

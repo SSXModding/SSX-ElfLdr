@@ -15,6 +15,9 @@
 #include <stdint.h>
 #include <string.h>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-overflow="
+
 namespace elfldr::util {
 
 	/**
@@ -48,14 +51,14 @@ namespace elfldr::util {
 		constexpr void assign_function() {
 			// ?
 			static_assert(sizeof(Func) == sizeof(void*), "Don't put in a virtual PMF...");
-			function_ptr = UBCast<void*>(Func);
+			function_ptr = reinterpret_cast<void*>(Func);
 		}
 
 		// I think? this isn't going to be used worth a damn yet
 		template <class Res = void, class... Args>
 		inline Res operator()(void* pObj, Args&&... args) const {
 			ELFLDR_ASSERT(function_ptr != nullptr);
-			return CallFunction<Res>(function_ptr, (uintptr_t)pObj + adj_upper, Forward<Args>(args)...);
+			return CallFunction<Res>(function_ptr, reinterpret_cast<uintptr_t>(pObj) + adj_upper, Forward<Args>(args)...);
 		}
 	};
 
@@ -113,8 +116,8 @@ namespace elfldr::util {
 	 * \param[in] address Address.
 	 * \return void* pointer
 	 */
-	constexpr void* Ptr(uintptr_t address) {
-		return UBCast<void*>(address);
+	inline void* Ptr(uintptr_t address) {
+		return reinterpret_cast<void*>(address);
 	}
 
 	/**
@@ -125,7 +128,7 @@ namespace elfldr::util {
 	 */
 	template <class T>
 	constexpr T& MemRefTo(void* addr) {
-		return *UBCast<T*>(addr);
+		return *reinterpret_cast<T*>(addr);
 	}
 
 	/**
@@ -144,7 +147,7 @@ namespace elfldr::util {
 	template <class Ret = void, class... Args>
 	constexpr Ret CallFunction(void* ptr, Args... args) {
 		using FuncT = Ret (*)(Args...);
-		return (UBCast<FuncT>(ptr))(args...);
+		return (reinterpret_cast<FuncT>(ptr))(args...);
 	}
 
 	/**
@@ -202,4 +205,6 @@ namespace elfldr::util {
 
 } // namespace elfldr::util
 
+
+#pragma GCC diagnostic pop
 #endif // CODEUTILS_H

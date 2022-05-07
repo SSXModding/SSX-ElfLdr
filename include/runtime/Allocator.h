@@ -54,6 +54,17 @@ namespace elfldr {
 	// use a probe routine which does the below automatically
 	// as soon as the ELF is loaded.
 
+	struct AllocatorData {
+		AllocFreePair allocAndFree;
+
+		/**
+		 * This is an optional function which initializes the memory allocator, if it's required.
+		 * If this is not required, please set it to nullptr.
+		 * @return
+		 */
+		void(*Init)();
+	};
+
 	/**
 	 * Set the Runtime's memory allocation/deallocation
 	 * functions.

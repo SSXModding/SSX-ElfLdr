@@ -152,14 +152,17 @@ namespace elfldr {
 
 					util::WriteString(util::Ptr(0x00381bd0), "host:data/modules/sio2man.irx");
 
-					//util::WriteString(util::Ptr(0x00381bd0), "");
+					// util::WriteString(util::Ptr(0x00381bd0), "");
 					util::WriteString(util::Ptr(0x00381c00), "host:data/modules/padman.irx");
 					util::WriteString(util::Ptr(0x00381c90), "host:data/modules/libsd.irx");
 					util::WriteString(util::Ptr(0x00381ca8), "host:data/modules/snddrv.irx");
 					util::WriteString(util::Ptr(0x00381ca8), "host:data/modules/mcman.irx");
 					util::WriteString(util::Ptr(0x00381d38), "host:data/modules/mcserv.irx");
 
-					//ELFLDR_VERIFY(false && "sorry, this doesnt work atm. please give me at least 5 minutes of research time");
+					// ELFLDR_VERIFY(false && "sorry, this doesnt work atm. please give me at least 5 minutes of research time");
+					break;
+
+				default:
 					break;
 			}
 		}
@@ -185,6 +188,9 @@ namespace elfldr {
 
 							util::WriteString(util::Ptr(0x00495828), "host:");
 							break;
+
+						default:
+							break;
 					}
 					break;
 					// doesn't work yet :( idk why
@@ -198,6 +204,9 @@ namespace elfldr {
 
 					// 0049efc8
 					util::ReplaceString(util::Ptr(0x0049efc8), "%sdata/modules/");
+					break;
+
+				default:
 					break;
 			}
 		}
@@ -218,6 +227,9 @@ namespace elfldr {
 					break;
 				case util::Game::SSX3:
 					Apply_SSX3(data);
+					break;
+
+				default:
 					break;
 			}
 		}

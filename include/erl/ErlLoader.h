@@ -44,7 +44,7 @@ namespace elfldr::erl {
 
 		template <class T>
 		constexpr T* As() const {
-			return UBCast<T*>(_ptr);
+			return reinterpret_cast<T*>(_ptr);
 		}
 
 		// do not touch, this is only to keep the POD contract true

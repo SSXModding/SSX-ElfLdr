@@ -23,7 +23,7 @@ set(CMAKE_CXX_COMPILER mips64r5900el-ps2-elf-g++)
 
 # We define NEWLIB_PORT_AWARE globally because
 # we don't use libc for file IO (by choice, to save space).
-set(CMAKE_C_FLAGS_INIT "-I$ENV{PS2SDK}/ee/include -I$ENV{PS2SDK}/common/include -D_EE -DNEWLIB_PORT_AWARE -G0 -fno-stack-protector -fno-ident -fno-unwind-tables -fno-asynchronous-unwind-tables")
+set(CMAKE_C_FLAGS_INIT "-I$ENV{PS2SDK}/ee/include -I$ENV{PS2SDK}/common/include -D_EE -DNEWLIB_PORT_AWARE -G0 -fno-stack-protector -fno-ident -fno-unwind-tables -fno-asynchronous-unwind-tables -Wall -Wextra -Wno-array-bounds -Wno-stringop-overflow")
 set(CMAKE_C_FLAGS_RELEASE_INIT "${CMAKE_C_FLAGS_INIT} -fomit-frame-pointer")
 set(CMAKE_CXX_FLAGS_INIT "${CMAKE_C_FLAGS_INIT} -fno-rtti -fno-exceptions -fno-threadsafe-statics")
 set(CMAKE_CXX_FLAGS_RELEASE_INIT "${CMAKE_C_FLAGS_RELEASE_INIT} ${CMAKE_CXX_FLAGS_INIT}")

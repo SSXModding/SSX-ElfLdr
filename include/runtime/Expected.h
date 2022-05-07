@@ -9,89 +9,11 @@
 #define ELFLDR_EXPECTED_H
 
 #include <runtime/Assert.h>
+#include <runtime/detail/DeferredHolder.h>
 #include <runtime/Utility.h>
 #include <stdint.h>
 
 namespace elfldr {
-
-	// MAYBE: Move this to a shared spot, so we can do
-	// Maybe<T> (or Optional<T>)
-	namespace detail {
-
-		/**
-		 * A safe deferred container for class types.
-		 * Performs no heap allocations.
-		 */
-		template <class T>
-		struct DeferredHolderFor {
-			constexpr ~DeferredHolderFor() {
-				if(constructed)
-					Get()->~T();
-			}
-
-			constexpr DeferredHolderFor() = default; // do not initalize anything
-
-			explicit DeferredHolderFor(const T& t) {
-				// call the copy constructor
-				Construct(t);
-			}
-
-			constexpr DeferredHolderFor& operator=(const DeferredHolderFor& df) {
-				if(this == &df)
-					return *this;
-
-				(*this->Get()) = (*df->Get());
-			}
-
-			constexpr DeferredHolderFor& operator=(const T& t) {
-				Construct(t);
-			}
-
-			template <class... Args>
-			constexpr void Construct(Args&&... args) {
-				if(constructed)
-					Destruct();
-
-				// construct new T
-				constructed = true;
-				new(Get()) T(Forward<Args>(args)...);
-			}
-
-			constexpr void Destruct() {
-				if(constructed) {
-					constructed = false;
-					Get()->~T();
-				}
-			}
-
-			[[nodiscard]] constexpr bool IsConstructed() const {
-				return constructed;
-			}
-
-			constexpr T& GetConstructed() {
-				ELFLDR_ASSERT(constructed);
-				return *Get();
-			}
-
-			constexpr const T& GetConstructed() const {
-				ELFLDR_ASSERT(constructed);
-				return *Get();
-			}
-
-		   private:
-			constexpr T* Get() {
-				return UBCast<T*>(&storage[0]);
-			}
-
-			constexpr const T* Get() const {
-				return UBCast<const T*>(&storage[0]);
-			}
-
-			bool constructed { false };
-			alignas(T) uint8_t storage[sizeof(T)] {};
-		};
-
-	} // namespace detail
 
 	/**
 	 * A class template for working with deterministic errors.
@@ -103,26 +25,26 @@ namespace elfldr {
 		constexpr Expected() = default;
 
 		constexpr Expected(const T& t) // NOLINT
-			: t(t) {
+			: value(t) {
 		}
 
 		constexpr Expected(const E& e) // NOLINT
-			: e(e) {
+			: error(e) {
 		}
 
 		constexpr Expected& operator=(const T& t) {
-			if(e.IsConstructed())
-				e.Destruct();
+			if(error.IsConstructed())
+				error.Destruct();
 
-			this->t = t;
+			this->value = t;
 			return *this;
 		}
 
 		constexpr Expected& operator=(const E& e) {
-			if(t.IsConstructed())
-				t.Destruct();
+			if(value.IsConstructed())
+				value.Destruct();
 
-			this->e = e;
+			this->error = e;
 			return *this;
 		}
 
@@ -134,37 +56,37 @@ namespace elfldr {
 				this->t = e.Value();
 
 			if(e.HasError())
-				this->e = e.Error();
+				this->error = e.Error();
 
 			return *this;
 		}
 
 		[[nodiscard]] constexpr bool HasError() const {
-			return e.IsConstructed();
+			return error.IsConstructed();
 		}
 
 		[[nodiscard]] constexpr bool HasValue() const {
-			return t.IsConstructed();
+			return value.IsConstructed();
 		}
 
 		constexpr T& Value() {
 			ELFLDR_VERIFY(HasValue() && !HasError());
-			return t.GetConstructed();
+			return value.GetConstructed();
 		}
 
 		constexpr E& Error() {
 			ELFLDR_VERIFY(!HasValue() && HasError());
-			return e.GetConstructed();
+			return error.GetConstructed();
 		}
 
 		constexpr const T& Value() const {
 			ELFLDR_VERIFY(HasValue() && !HasError());
-			return t.GetConstructed();
+			return value.GetConstructed();
 		}
 
 		constexpr const E& Error() const {
 			ELFLDR_VERIFY(!HasValue() && HasError());
-			return e.GetConstructed();
+			return error.GetConstructed();
 		}
 
 		// Dereference operators.
@@ -187,8 +109,8 @@ namespace elfldr {
 		}
 
 	   private:
-		detail::DeferredHolderFor<T> t;
-		detail::DeferredHolderFor<E> e;
+		detail::DeferredHolder<T> value;
+		detail::DeferredHolder<E> error;
 	};
 
 	template <class E>
@@ -196,11 +118,11 @@ namespace elfldr {
 		constexpr Expected() = default;
 
 		constexpr Expected(const E& e) // NOLINT
-			: e(e) {
+			: error(e) {
 		}
 
 		constexpr Expected& operator=(const E& e) {
-			this->e = e;
+			this->error = e;
 			return *this;
 		}
 
@@ -209,27 +131,27 @@ namespace elfldr {
 				return *this;
 
 			if(e.HasError())
-				this->e = e.Error();
+				this->error = e.Error();
 
 			return *this;
 		}
 
 		[[nodiscard]] constexpr bool HasError() const {
-			return e.IsConstructed();
+			return error.IsConstructed();
 		}
 
 		constexpr E& Error() {
 			ELFLDR_ASSERT(HasError());
-			return e.GetConstructed();
+			return error.GetConstructed();
 		}
 
 		constexpr const E& Error() const {
 			ELFLDR_ASSERT(HasError());
-			return e.GetConstructed();
+			return error.GetConstructed();
 		}
 
 	   private:
-		detail::DeferredHolderFor<E> e;
+		detail::DeferredHolder<E> error;
 	};
 
 	template <class E>

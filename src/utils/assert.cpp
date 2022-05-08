@@ -5,10 +5,10 @@
  * under the terms of the MIT license.
  */
 
+// Helper code in Utils for handling mlstd's MLSTD_ASSERT()
+// and MLSTD_VERIFY().
 //
-// Helper code in Utils for handling Runtime's MLSTD_ASSERT()
-// and MLSTD_VERIFY()
-//
+// These are defined weak so they can be replaced if desired.
 
 #include <mlstd/Assert.h>
 #include <utils/Utils.h>

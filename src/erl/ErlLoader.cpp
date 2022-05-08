@@ -8,11 +8,11 @@
 #include <elf.h>
 #include <elfldr/ElfLoader.h>
 #include <erl/ErlLoader.h>
-#include <runtime/Allocator.h>
-#include <runtime/DynamicArray.h>
-#include <runtime/HashTable.h>
-#include <runtime/ScopeExitGuard.h>
-#include <runtime/String.h>
+#include <mlstd/Allocator.h>
+#include <mlstd/DynamicArray.h>
+#include <mlstd/HashTable.h>
+#include <mlstd/ScopeExitGuard.h>
+#include <mlstd/String.h>
 #include <utils/CodeUtils.h>
 #include <utils/FioFile.h>
 
@@ -67,7 +67,7 @@ namespace elfldr::erl {
 			//        that's a new[], memcpy(), and delete[] just to look up a symbol.
 			//        Too expensive for my liking, but it shouldn't happen frequently.
 
-			if(auto sym = symbol_table.MaybeGet(String(symbolName)); sym != nullptr) {
+			if(auto sym = symbol_table.MaybeGet(mlstd::String(symbolName)); sym != nullptr) {
 				return *sym;
 			}
 
@@ -80,9 +80,9 @@ namespace elfldr::erl {
 
 		// Implementation data
 
-		HashTable<String, Symbol> symbol_table;
-		String filename;
-		DynamicArray<uint8_t> bytes;
+		mlstd::HashTable<mlstd::String, Symbol> symbol_table;
+		mlstd::String filename;
+		mlstd::DynamicArray<uint8_t> bytes;
 	};
 
 	/**
@@ -122,7 +122,7 @@ namespace elfldr::erl {
 			shdrs_ = &(*sections);
 
 
-			return NO_ERROR<ErlLoadError>;
+			return mlstd::NO_ERROR<ErlLoadError>;
 		}
 
 		LoadResult<Elf32_Ehdr> LoadHeader() {
@@ -153,8 +153,8 @@ namespace elfldr::erl {
 			return header;
 		}
 
-		LoadResult<DynamicArray<Elf32_Shdr>> LoadSectionHeaders() {
-			DynamicArray<Elf32_Shdr> res;
+		LoadResult<mlstd::DynamicArray<Elf32_Shdr>> LoadSectionHeaders() {
+			mlstd::DynamicArray<Elf32_Shdr> res;
 			res.Resize(header_->e_shnum);
 
 			file.Seek(header_->e_shoff, SEEK_SET);
@@ -169,7 +169,7 @@ namespace elfldr::erl {
 		util::FioFile file;
 		ImageImpl* image;
 		Elf32_Ehdr* header_ {};
-		DynamicArray<Elf32_Shdr>* shdrs_;
+		mlstd::DynamicArray<Elf32_Shdr>* shdrs_;
 	};
 
 	// helper to reduce the boilerplate.

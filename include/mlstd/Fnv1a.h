@@ -15,7 +15,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-namespace elfldr::detail {
+namespace mlstd::detail {
 
 	/**
 	 * FNV1a hash. Pretty self explanatory.

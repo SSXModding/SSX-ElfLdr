@@ -8,11 +8,11 @@
 #ifndef ELFLDR_STRING_H
 #define ELFLDR_STRING_H
 
-#include <runtime/Allocator.h>
-#include <runtime/CharTraits.h>
-#include <runtime/Hash.h>
+#include <mlstd/Allocator.h>
+#include <mlstd/CharTraits.h>
+#include <mlstd/Hash.h>
 
-namespace elfldr {
+namespace mlstd {
 
 	/**
 	 * A "view" of a string. Does not own the memory,

@@ -7,11 +7,11 @@
 
 // FNV1a hash algorithm.
 
-#include <runtime/Hash.h>
+#include <mlstd/Hash.h>
 
 //#define USE_PRIME // Use magic prime from original C FNV1a implementation
 
-namespace elfldr::detail {
+namespace mlstd::detail {
 	uint32_t fnv1a_hash(const void* input, size_t length, uint32_t lastval) {
 		auto* ptr = reinterpret_cast<const uint8_t*>(input);
 		auto* end = ptr + length;

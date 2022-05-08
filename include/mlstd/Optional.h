@@ -8,9 +8,9 @@
 #ifndef ELFLDR_OPTIONAL_H
 #define ELFLDR_OPTIONAL_H
 
-#include <runtime/detail/DeferredHolder.h>
+#include <mlstd/detail/DeferredHolder.h>
 
-namespace elfldr {
+namespace mlstd {
 
 	/**
 	 * Safe optional object.

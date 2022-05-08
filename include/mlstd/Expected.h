@@ -8,12 +8,12 @@
 #ifndef ELFLDR_EXPECTED_H
 #define ELFLDR_EXPECTED_H
 
-#include <runtime/Assert.h>
-#include <runtime/detail/DeferredHolder.h>
-#include <runtime/Utility.h>
+#include <mlstd/Assert.h>
+#include <mlstd/detail/DeferredHolder.h>
+#include <mlstd/Utility.h>
 #include <stdint.h>
 
-namespace elfldr {
+namespace mlstd {
 
 	/**
 	 * A class template for working with deterministic errors.

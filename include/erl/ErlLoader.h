@@ -8,9 +8,9 @@
 #ifndef ERLLOADER_H
 #define ERLLOADER_H
 
-#include <runtime/Expected.h>
-#include <runtime/String.h>
-#include <runtime/Utility.h>
+#include <mlstd/Expected.h>
+#include <mlstd/String.h>
+#include <mlstd/Utility.h>
 #include <stdint.h>
 
 // The public API surface for LibErl.
@@ -35,7 +35,7 @@ namespace elfldr::erl {
 		}
 
 		[[nodiscard]] constexpr bool IsValid() const {
-			return UBCast<int>(_ptr) != -1;
+			return mlstd::UBCast<int>(_ptr) != -1;
 		}
 
 		uintptr_t AsRaw() const {
@@ -69,7 +69,7 @@ namespace elfldr::erl {
 	/**
 	 * Convert a ErlLoadError to string.
 	 */
-	static StringView LoadErrorToString(ErlLoadError e) {
+	static mlstd::StringView LoadErrorToString(ErlLoadError e) {
 		constexpr static const char* table[] {
 			"ERL file not found",
 			"Not ELF file",
@@ -86,7 +86,7 @@ namespace elfldr::erl {
 	 * Helper typedef for the load result.
 	 */
 	template <class T>
-	using LoadResult = Expected<T, ErlLoadError>;
+	using LoadResult = mlstd::Expected<T, ErlLoadError>;
 
 	/**
 	 * An ERL image.

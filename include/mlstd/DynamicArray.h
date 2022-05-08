@@ -8,11 +8,11 @@
 #ifndef ELFLDR_DYNAMICARRAY_H
 #define ELFLDR_DYNAMICARRAY_H
 
-#include <runtime/Allocator.h>
-#include <runtime/TypeTraits.h>
-#include <runtime/Utility.h>
+#include <mlstd/Allocator.h>
+#include <mlstd/TypeTraits.h>
+#include <mlstd/Utility.h>
 
-namespace elfldr {
+namespace mlstd {
 
 	// some stuff to do:
 	// - implement push operation

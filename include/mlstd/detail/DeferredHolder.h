@@ -9,9 +9,9 @@
 #define ELFLDR_DEFERREDHOLDER_H
 
 #include <stdint.h>
-#include <runtime/Assert.h>
+#include <mlstd/Assert.h>
 
-namespace elfldr::detail {
+namespace mlstd::detail {
 
 	/**
 	 * A safe deferred container for class types.

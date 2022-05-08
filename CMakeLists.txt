@@ -46,7 +46,7 @@ set_source_files_properties(${PROJECT_BINARY_DIR}/Version.h PROPERTIES GENERATED
 include(MkDocs)
 
 # Include elfldr modules
-add_subdirectory(src/runtime)
+add_subdirectory(src/mlstd)
 add_subdirectory(src/utils)
 add_subdirectory(src/erl)
 
@@ -75,7 +75,7 @@ endif()
 install(TARGETS elfldr)
 
 # SDK stuffs.
-install(TARGETS elfldr_runtime elfldr_utils_erl DESTINATION /sdk/lib)
+install(TARGETS mlstd elfldr_utils_erl DESTINATION /sdk/lib)
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/ DESTINATION /sdk/include)
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/cmake/Toolchain/ DESTINATION /sdk/toolchain)
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/sampleerl/ DESTINATION /sdk/samples/sample_ch)

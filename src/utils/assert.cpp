@@ -10,7 +10,7 @@
 // and ELFLDR_VERIFY()
 //
 
-#include <runtime/Assert.h>
+#include <mlstd/Assert.h>
 #include <utils/Utils.h>
 
 #ifndef NDEBUG

@@ -5,8 +5,8 @@
  * under the terms of the MIT license.
  */
 
-#include <runtime/Allocator.h>
-#include <runtime/Optional.h>
+#include <mlstd/Allocator.h>
+#include <mlstd/Optional.h>
 #include <sdk/GameApi.h>
 #include <utils/GameVersion.h>
 
@@ -97,7 +97,7 @@ namespace elfldr::util {
 				// clang-format off
 
 				// Setup allocation functions
-				SetAllocationFunctions({
+				mlstd::SetAllocationFunctions({
 						[](uint32_t size) {
 							return bx::real::MEM_alloc("Lily <3", size, 0x0 /* i forgor mbflags :( */);
 						}, [](void* obj) {

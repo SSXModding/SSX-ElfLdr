@@ -6,7 +6,7 @@
  */
 
 #include <kernel.h>
-#include <runtime/Allocator.h>
+#include <mlstd/Allocator.h>
 #include <stdint.h>
 #include <string.h>
 #include <utils/Hook.h>
@@ -22,7 +22,7 @@ namespace elfldr::util::detail {
 	};
 
 	uint32_t* AllocTrampoline() {
-		return static_cast<uint32_t*>(AllocAligned(sizeof(callTemplate) * 2));
+		return static_cast<uint32_t*>(mlstd::AllocAligned(sizeof(callTemplate) * 2));
 	}
 
 	void* HookFunctionBase(void* dest, const void* hook) {

@@ -8,11 +8,11 @@
 #ifndef ELFLDR_UTILITY_H
 #define ELFLDR_UTILITY_H
 
-#include <runtime/TypeTraits.h>
+#include <mlstd/TypeTraits.h>
 #include <stddef.h>
 #include <string.h> // memcpy()
 
-namespace elfldr {
+namespace mlstd {
 
 	template <class T>
 	constexpr T&& Move(T&& t) {

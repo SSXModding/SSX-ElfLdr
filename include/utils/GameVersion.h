@@ -8,7 +8,7 @@
 #ifndef ELFLDR_GAMEVERSION_H
 #define ELFLDR_GAMEVERSION_H
 
-#include <runtime/String.h>
+#include <mlstd/String.h>
 #include <stdint.h>
 
 namespace elfldr::util {
@@ -113,7 +113,7 @@ namespace elfldr::util {
 		/**
 		 * Get the game binary filename
 		 */
-		[[nodiscard]] StringView GetGameBinary() const;
+		[[nodiscard]] mlstd::StringView GetGameBinary() const;
 
 		/**
 		 * Converts this version data to a string applicable
@@ -121,7 +121,7 @@ namespace elfldr::util {
 		 *
 		 * This function is not reentrant; copy data if you need to call this function multiple times.
 		 */
-		[[nodiscard]] StringView GameID() const;
+		[[nodiscard]] mlstd::StringView GameID() const;
 
 		// LoadFromString(), which parses each component to load the game/region/ver?
 	};
@@ -129,7 +129,7 @@ namespace elfldr::util {
 	/**
 	 * Get view of string of the game binary for the provided game/region/version.
 	 */
-	[[nodiscard]] StringView GameBinaryFor(Game game, GameRegion region, GameVersion version);
+	[[nodiscard]] mlstd::StringView GameBinaryFor(Game game, GameRegion region, GameVersion version);
 
 	/**
 	 * Get global singleton copy of the game version data.

@@ -8,9 +8,9 @@
 #ifndef ALLOCATOR_H
 #define ALLOCATOR_H
 
-#include <runtime/Assert.h>
-#include <runtime/TypeTraits.h>
-#include <runtime/Utility.h>
+#include <mlstd/Assert.h>
+#include <mlstd/TypeTraits.h>
+#include <mlstd/Utility.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -29,7 +29,7 @@ void* operator new[](size_t, void* p) noexcept;
 void operator delete(void*, void*) noexcept;
 void operator delete[](void*, void*) noexcept;
 
-namespace elfldr {
+namespace mlstd {
 
 	// C style malloc() api
 	void* Alloc(uint32_t size);

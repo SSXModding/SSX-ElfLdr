@@ -21,7 +21,7 @@ set_target_properties(sample_erl PROPERTIES
         )
 
 target_link_libraries(sample_erl PUBLIC
-        elfldr::runtime
+        elfldr::mlstd
         elfldr::utils_erl
         # Apparently this ps2sdk library doesn't require bringing libc with it.
         # Cool. At least I won't have to do *that* by hand :V

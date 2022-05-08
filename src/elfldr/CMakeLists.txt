@@ -35,7 +35,7 @@ target_link_libraries(elfldr
 
         # Project libraries
         elfldr::utils_elf
-        elfldr::runtime
+        elfldr::mlstd
 
         # add for v0.6.0
         #elfldr::erl

@@ -11,7 +11,7 @@
 #ifndef UTILS_TYPETRAITS_H
 #define UTILS_TYPETRAITS_H
 
-namespace elfldr {
+namespace mlstd {
 
 	// declares ::type using,
 	// useful since you can just baseclass TypeConstant<T>

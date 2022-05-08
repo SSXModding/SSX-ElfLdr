@@ -8,11 +8,11 @@
 #ifndef ELFLDR_CHARTRAITS_H
 #define ELFLDR_CHARTRAITS_H
 
-#include <runtime/Assert.h>
+#include <mlstd/Assert.h>
 #include <stddef.h>
 #include <string.h>
 
-namespace elfldr {
+namespace mlstd {
 
 	/**
 	 * Basic character traits.

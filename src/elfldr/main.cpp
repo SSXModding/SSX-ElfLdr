@@ -6,7 +6,7 @@
  */
 
 #include <elfldr/ElfLoader.h>
-#include <runtime/Assert.h>
+#include <mlstd/Assert.h>
 #include <utils/Utils.h>
 
 #include "Patch.h"
@@ -76,7 +76,7 @@ int main() {
 
 	// Execute the game ELF.
 	char* argv[1];
-	argv[0] = elfldr::UBCast<char*>("host:"); // I hate this
+	argv[0] = mlstd::UBCast<char*>("host:"); // I hate this
 
 	gLoader.ExecElf(sizeof(argv) / sizeof(argv[0]), argv);
 

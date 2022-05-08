@@ -27,7 +27,7 @@ namespace elfldr::util {
 		dir.Iterate([&](io_dirent_t& ent) {
 			auto TryGame = [&](Game game, GameRegion region, GameVersion version) {
 				//DebugOut("trying \"%s\"", GameBinaryFor(game, region, version).CStr());
-				if(StrCaseMatch(StringView(ent.name), GameBinaryFor(game, region, version))) {
+				if(mlstd::StrCaseMatch(mlstd::StringView(ent.name), GameBinaryFor(game, region, version))) {
 					versionData.game = game;
 					versionData.region = region;
 					versionData.version = version;

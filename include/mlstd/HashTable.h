@@ -1,10 +1,10 @@
 #ifndef HASHTABLE_H
 #define HASHTABLE_H
 
-#include <runtime/Hash.h>
-#include <runtime/Utility.h>
+#include <mlstd/Hash.h>
+#include <mlstd/Utility.h>
 
-namespace elfldr {
+namespace mlstd {
 
 	// TODO:
 	// - Multi dimension/linked buckets for hash collisions maybe
@@ -21,7 +21,7 @@ namespace elfldr {
 	 * \tparam Key Key type. Must have a Hash implementation.
 	 * \tparam Value The value type.
 	 * \tparam Hash The Hash algorithm to use.
-	 * \tparam Allocator The Allocator (see runtime/Allocator.h for the concept definition) to use.
+	 * \tparam Allocator The Allocator (see mlstd/Allocator.h for the concept definition) to use.
 	 */
 	template <class Key, class Value, class Hash = Hash<Key>, template <class> class Allocator = StdAllocator>
 	struct HashTable {

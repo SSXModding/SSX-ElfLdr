@@ -8,7 +8,7 @@
 // Explicitly instantiates the String classes,
 // so that only one copy ALWAYS ends up in the binary.
 
-#include <runtime/String.h>
+#include <mlstd/String.h>
 
-template struct elfldr::BasicStringView<char>;
-template struct elfldr::BasicString<char>;
+template struct mlstd::BasicStringView<char>;
+template struct mlstd::BasicString<char>;

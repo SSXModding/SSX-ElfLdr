@@ -11,7 +11,7 @@
 #include <iopheap.h>
 #include <kernel.h>
 #include <loadfile.h>
-#include <runtime/Assert.h>
+#include <mlstd/Assert.h>
 #include <sifrpc.h>
 #include <utils/Utils.h>
 

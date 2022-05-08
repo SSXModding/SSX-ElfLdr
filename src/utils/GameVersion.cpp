@@ -5,7 +5,7 @@
  * under the terms of the MIT license.
  */
 
-#include <runtime/Assert.h>
+#include <mlstd/Assert.h>
 #include <stdio.h>
 #include <utils/GameVersion.h>
 
@@ -63,7 +63,7 @@ namespace elfldr::util {
 			ELFLDR_UNREACHABLE();
 		}
 
-		StringView GameToString(Game g) {
+		mlstd::StringView GameToString(Game g) {
 			ELFLDR_ASSERT(g != Game::Invalid && "this codepath shouldn't be called with an invalid game");
 
 			switch(g) {
@@ -79,7 +79,7 @@ namespace elfldr::util {
 			}
 		}
 
-		StringView RegionToString(GameRegion reg) {
+		mlstd::StringView RegionToString(GameRegion reg) {
 			switch(reg) {
 				case GameRegion::NotApplicable:
 					return "notapplicable";
@@ -93,7 +93,7 @@ namespace elfldr::util {
 			ELFLDR_UNREACHABLE();
 		}
 
-		StringView VersionToString(GameVersion ver) {
+		mlstd::StringView VersionToString(GameVersion ver) {
 			switch(ver) {
 				case GameVersion::SSXOG_10:
 				case GameVersion::SSXDVD_10:
@@ -115,7 +115,7 @@ namespace elfldr::util {
 
 	} // namespace
 
-	StringView GameBinaryFor(Game game, GameRegion region, GameVersion version) {
+	mlstd::StringView GameBinaryFor(Game game, GameRegion region, GameVersion version) {
 		switch(game) {
 			case Game::SSXOG:
 				return SSXOGBinary(region, version);
@@ -128,11 +128,11 @@ namespace elfldr::util {
 		}
 	}
 
-	StringView GameVersionData::GetGameBinary() const {
+	mlstd::StringView GameVersionData::GetGameBinary() const {
 		return GameBinaryFor(game, region, version);
 	}
 
-	StringView GameVersionData::GameID() const {
+	mlstd::StringView GameVersionData::GameID() const {
 		static char tempBuf[128];
 		int res = snprintf(&tempBuf[0], sizeof(tempBuf), "%s/%s/%s", GameToString(game).CStr(), RegionToString(region).CStr(), VersionToString(version).CStr());
 

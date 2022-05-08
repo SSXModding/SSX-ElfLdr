@@ -10,7 +10,7 @@
 
 #include <stddef.h>
 
-namespace elfldr {
+namespace mlstd {
 
 	/**
 	 * A POD array.

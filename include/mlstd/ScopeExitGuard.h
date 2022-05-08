@@ -10,7 +10,7 @@
 
 #include <utils/Utils.h>
 
-namespace elfldr {
+namespace mlstd {
 
 	/**
 	 * A scope exit guard.
@@ -21,7 +21,7 @@ namespace elfldr {
 	template <class ScopeExitT>
 	struct ScopeExitGuard {
 		constexpr ScopeExitGuard(ScopeExitT se)
-			: scope_exited(elfldr::Move(se)) {
+			: scope_exited(mlstd::Move(se)) {
 		}
 
 		constexpr ~ScopeExitGuard() {

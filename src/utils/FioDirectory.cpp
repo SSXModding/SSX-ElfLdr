@@ -9,7 +9,7 @@
 
 namespace elfldr::util {
 
-	FioDirectory::FioDirectory(StringView path) {
+	FioDirectory::FioDirectory(mlstd::StringView path) {
 		Open(path);
 	}
 
@@ -18,7 +18,7 @@ namespace elfldr::util {
 			fioDclose(fd);
 	}
 
-	bool FioDirectory::Open(StringView path) {
+	bool FioDirectory::Open(mlstd::StringView path) {
 		fd = fioDopen(path.CStr());
 		if(!Good())
 			return false;

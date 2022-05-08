@@ -8,10 +8,10 @@
 #ifndef UTILS_HASH_H
 #define UTILS_HASH_H
 
-#include <runtime/Fnv1a.h>
+#include <mlstd/Fnv1a.h>
 #include <utils/Utils.h>
 
-namespace elfldr {
+namespace mlstd {
 
 	/**
 	 * Hash trait template. Provides a function

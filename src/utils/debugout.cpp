@@ -7,15 +7,15 @@
 
 #include <utils/Utils.h>
 
-#include <cstdio>
-#include <cstring>
+#include <stdio.h>
+#include <string.h>
 
 #ifdef ERL
-	#include <elfldr/GameApi.h>
+	#include <sdk/GameApi.h>
 #endif
 
-// internal symbol from Runtime
-extern "C" int elfldr_printf(const char* __restrict format, ...);
+// internal symbol from MLSTD
+extern "C" int mlstd_printf(const char* __restrict format, ...);
 
 namespace elfldr::util {
 

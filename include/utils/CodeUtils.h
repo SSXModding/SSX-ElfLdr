@@ -10,8 +10,8 @@
 #ifndef CODEUTILS_H
 #define CODEUTILS_H
 
-#include <runtime/Assert.h>
-#include <runtime/Utility.h>
+#include <mlstd/Assert.h>
+#include <mlstd/Utility.h>
 #include <stdint.h>
 #include <string.h>
 

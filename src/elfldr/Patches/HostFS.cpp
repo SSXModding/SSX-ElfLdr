@@ -18,7 +18,7 @@
 //  - SSX 3 Retail
 //
 
-#include <runtime/Assert.h>
+#include <mlstd/Assert.h>
 #include <utils/CodeUtils.h>
 #include <utils/GameVersion.h>
 #include <utils/Utils.h>

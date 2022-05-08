@@ -9,7 +9,7 @@
 #define ELFLDR_FIODIRECTORY_H
 
 #include <fileio.h>
-#include <runtime/String.h>
+#include <mlstd/String.h>
 
 namespace elfldr::util {
 
@@ -29,7 +29,7 @@ namespace elfldr::util {
 		 * Shorthand constructor to do Open(path).
 		 * \param[in] path Directory to open and iterate.
 		 */
-		explicit FioDirectory(StringView path);
+		explicit FioDirectory(mlstd::StringView path);
 
 		/**
 		 * Initialize this FioDirectory with an existing file descriptor.
@@ -48,7 +48,7 @@ namespace elfldr::util {
 		 * \param[in] path Directory to open and iterate.
 		 * \return True if open succeeded, false if not.
 		 */
-		bool Open(StringView path);
+		bool Open(mlstd::StringView path);
 
 		/**
 		 * Is the FioDirectory opened successfully?

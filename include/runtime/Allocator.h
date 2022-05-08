@@ -38,25 +38,20 @@ namespace elfldr {
 	void* AllocAligned(uint32_t size);
 	void FreeAligned(void* ptr);
 
-	/**
-	 * malloc() callback type for the ERL loader.
-	 */
-	using Alloc_t = void* (*)(uint32_t);
 
-	/**
-	 * free() callback type for the ERL loader.
-	 */
+	using Alloc_t = void* (*)(uint32_t);
 	using Free_t = void (*)(void*);
 
 	using AllocFreePair = Pair<Alloc_t, Free_t>;
 
 	/**
-	 * Set the Runtime's memory allocation/deallocation
+	 * Set the Runtime memory allocation/free
 	 * functions manually.
 	 *
 	 * This function needs to be called before
 	 * any Runtime heap management (and containers) can be used.
-	 * This function should not need to be called.
+	 * This function should not need to be called by the user,
+	 * use Utils' SetupAllocator() function instead.
 	 */
 	void SetAllocationFunctions(AllocFreePair memoryRoutines);
 

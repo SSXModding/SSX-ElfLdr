@@ -13,7 +13,6 @@ add_executable(elfldr
         # patches
         Patches/HostFS.cpp
         Patches/MemoryClear.cpp
-        Patches/Experimental.cpp
 
         # entry point
         main.cpp

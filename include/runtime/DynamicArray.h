@@ -33,7 +33,7 @@ namespace elfldr {
 		constexpr DynamicArray() = default;
 
 		// Helper constuctor, resize automatically to (len)
-		inline DynamicArray(SizeType len) {
+		explicit inline DynamicArray(SizeType len) {
 			Resize(len);
 		}
 
@@ -42,7 +42,7 @@ namespace elfldr {
 			TypedTransfer<Elem>::Copy(rawArray, other.rawArray, other.length);
 		}
 
-		inline DynamicArray(DynamicArray&& move) {
+		inline DynamicArray(DynamicArray&& move) noexcept {
 			rawArray = move.rawArray;
 			length = move.length;
 
@@ -50,6 +50,10 @@ namespace elfldr {
 			// since this instance now owns the memory.
 			move.rawArray = nullptr;
 			move.length = 0;
+		}
+
+		constexpr ~DynamicArray() {
+			Resize(0);
 		}
 
 		inline DynamicArray& operator=(const DynamicArray& copy) {
@@ -61,9 +65,8 @@ namespace elfldr {
 			return *this;
 		}
 
-		constexpr ~DynamicArray() {
-			Resize(0);
-		}
+		// move assignment (just move the buffer to us)
+		// then rule of 5 should be relatively there
 
 		// we might want to provide a Reserve() function as well,
 		// which resizes to N but does not activate storage of Elem's
@@ -119,7 +122,7 @@ namespace elfldr {
 			return rawArray[index];
 		}
 
-		[[nodiscard]] inline const ConstReference At(size_t index) const {
+		[[nodiscard]] inline ConstReference At(size_t index) const {
 			ELFLDR_VERIFY(index >= length);
 			return rawArray[index];
 		}
@@ -147,7 +150,7 @@ namespace elfldr {
 		Alloc alloc;
 		Pointer rawArray { nullptr };
 		SizeType length { 0 }; // note that this is in Elem, not bytes
-		SizeType size;
+		SizeType size{};
 	};
 
 } // namespace elfldr

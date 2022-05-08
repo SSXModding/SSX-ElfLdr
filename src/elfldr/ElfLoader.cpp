@@ -17,13 +17,45 @@
 
 namespace elfldr {
 
+
+	void FlushCaches() {
+		FlushCache(CPU_INSTRUCTION_CACHE | CPU_DATA_CACHE);
+	}
+
+	void ResetIOP() {
+		SifInitRpc(0);
+
+		while(!SifIopReset("", 0))
+			;
+		while(!SifIopSync())
+			;
+
+		SifInitRpc(0);
+	}
+
+	void InitLoader() {
+		// Reboot the IOP.
+		ResetIOP();
+		SifInitIopHeap();
+		SifLoadFileInit();
+
+		// Load ROM IOP modules.
+		SifLoadModule("rom0:SIO2MAN", 0, nullptr);
+		SifLoadModule("rom0:MCMAN", 0, nullptr);
+		SifLoadModule("rom0:MCSERV", 0, nullptr);
+		SifLoadModule("rom0:PADMAN", 0, nullptr);
+
+		// Initialize FIO.
+		fioInit();
+	}
+
 	// Global exec data, written by SifLoadElf(...)
 	// We use this to run the elf in ElfLoader::ExecElf
 	static t_ExecData gExecData {};
 
-	void FlushCaches() {
-		FlushCache(0);
-		FlushCache(2);
+	ElfLoader::ElfLoader() {
+		// Initialize loader services.
+		InitLoader();
 	}
 
 	bool ElfLoader::LoadElf(const char* inputPath) {
@@ -41,38 +73,13 @@ namespace elfldr {
 		// the elf didn't load properly.
 		ELFLDR_VERIFY(gExecData.epc > 0);
 
-		//for(int i = 0; i < 4; ++i)
-			FlushCaches();
+		FlushCaches();
 
 		// Reset the IOP and then ExecPS2 the loaded ELF.
 		ResetIOP();
 		ExecPS2(reinterpret_cast<void*>(gExecData.epc), reinterpret_cast<void*>(gExecData.gp), argc, argv);
 	}
 
-	void InitLoader() {
-		ResetIOP();
-		SifInitIopHeap();
-		SifLoadFileInit();
 
-		// Load ROM IOP modules.
-		SifLoadModule("rom0:SIO2MAN", 0, nullptr);
-		SifLoadModule("rom0:MCMAN", 0, nullptr);
-		SifLoadModule("rom0:MCSERV", 0, nullptr);
-		SifLoadModule("rom0:PADMAN", 0, nullptr);
-
-		// init fio as we use it independently of C file io routines
-		fioInit();
-	}
-
-	void ResetIOP() {
-		SifInitRpc(0);
-
-		while(!SifIopReset("", 0))
-			;
-		while(!SifIopSync())
-			;
-
-		SifInitRpc(0);
-	}
 
 } // namespace elfldr

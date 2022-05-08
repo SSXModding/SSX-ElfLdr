@@ -26,10 +26,9 @@ int main() {
 	elfldr::util::DebugOut("SSX-ElfLdr version " ELFLDR_VERSION_TAG);
 #endif
 
-	// Initialize loader services & probe the game version.
+	// Probe the game version.
 	// TODO: If config file found, parse it, load in the game version, and verify that
 	// 		that binary exists. If it doesn't exist, bail back to OSD.
-	elfldr::InitLoader();
 	elfldr::util::AutodetectGameVersion();
 
 	const auto& gdata = elfldr::util::GetGameVersionData();
@@ -42,7 +41,7 @@ int main() {
 			;
 	}
 
-	// TODO: only display if autodetecting
+	// TODO: only display if auto-detecting the game
 	elfldr::util::DebugOut("GameID: \"%s\"", gdata.GameID().CStr());
 
 	// Load the ELF.
@@ -52,12 +51,14 @@ int main() {
 		ELFLDR_VERIFY(gLoader.LoadElf(elfPath));
 	}
 
-	// Setup the Runtime memory allocator.
-	// Once this is called we can use all the fun containers
-	// the C++ environment has.
+	// Set up the Runtime memory allocator automagically.
+	//
+	// Once this is called we can use all the fun things
+	// the C++ environment has, and have effectively left
+	// "bootstrap".
 	elfldr::util::SetupAllocator();
 
-	auto ApplyPatch = [](elfldr::ElfPatch* patch) {
+	auto ApplyElfPatch = [](elfldr::ElfPatch* patch) {
 		if(patch == nullptr)
 			return;
 
@@ -66,20 +67,18 @@ int main() {
 		elfldr::util::DebugOut("[Patch %s] Finished applying.", patch->GetName());
 	};
 
-	ApplyPatch(elfldr::GetPatchById(0x00));
-	ApplyPatch(elfldr::GetPatchById(0x01));
+	// Apply the basic ELF patches, HostFS and MemoryClear.
+	ApplyElfPatch(elfldr::GetPatchById(0x00));
+	ApplyElfPatch(elfldr::GetPatchById(0x01));
 
-	// testing this patch for regular inclusion,
-	// it will PROBABLY have a different ID
-	ApplyPatch(elfldr::GetPatchById(0xE0));
+	// Load codehooks into memory and initialize them.
 
+
+	// Execute the game ELF.
 	char* argv[1];
 	argv[0] = elfldr::UBCast<char*>("host:"); // I hate this
 
-	// Execute the elf
 	gLoader.ExecElf(sizeof(argv) / sizeof(argv[0]), argv);
 
-	// elfldr shouldn't return.
-	while(true)
-		;
+	return 0;
 }

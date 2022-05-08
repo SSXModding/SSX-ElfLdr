@@ -21,7 +21,7 @@ namespace elfldr::util {
 	void AutodetectGameVersion();
 
 	/**
-	 * Setup and initialize the allocator, if required.
+	 * Setup and initialize the Mmlstd allocator, if required.
 	 * This function needs to be called once the ELF is loaded.
 	 */
 	void SetupAllocator();

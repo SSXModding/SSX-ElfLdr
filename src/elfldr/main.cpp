@@ -51,7 +51,7 @@ int main() {
 		MLSTD_VERIFY(gLoader.LoadElf(elfPath));
 	}
 
-	// Set up the Runtime memory allocator automagically.
+	// Set up the mlstd memory allocator automagically.
 	//
 	// Once this is called we can use all the fun things
 	// the C++ environment has, and have effectively left

@@ -12,8 +12,6 @@
 
 namespace elfldr::util {
 
-	using Init_t = void (*)();
-
 	void SetupAllocator() {
 		const auto& verData = GetGameVersionData();
 
@@ -72,11 +70,12 @@ namespace elfldr::util {
 		}
 
 		// seems like all regions and versions use the same exact params, so I guess I can wing it this time
+
 		uintptr_t oldreal_memstart = 0x002d9440;
 		int oldreal_memsize = 30432192;
 		uintptr_t oldreal_unk_before_memstart = 0x002d8c20;
 
-		// Then actually initalize the allocator.
+		// Then actually initialize the allocator.
 
 		switch(verData.game) {
 			case Game::SSXOG:
@@ -88,8 +87,11 @@ namespace elfldr::util {
 					oldreal_unk_before_memstart = oldreal_memstart - 0x800;
 				}
 
+
+				// Initialize the allocator if we're not the ERL.
+				// If we are the ERL then the main ML ELF has done the work
+				// for us and we can leave it be.
 #ifndef ERL
-				// Initialize the allocator
 				bx::real::MEM_init(util::Ptr(oldreal_memstart), oldreal_memsize);
 				bx::real::initheapdebug(oldreal_memstart, oldreal_unk_before_memstart, oldreal_memstart + oldreal_memsize);
 #endif

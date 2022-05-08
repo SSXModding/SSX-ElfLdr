@@ -37,8 +37,8 @@ void test() {
 	bx::printf("test()\n");
 }
 
-ELFLDR_ERL_EXPORT void elfldr_erl_init(elfldr::InitErlData* erlData) {
-	bx::printf("elfldr_erl_init() %s\n", test2);
+ELFLDR_CODEHOOK_EXPORT void elfldr_codehook_init(elfldr::CodehookInitData* codehookInitData) {
+	bx::printf("elfldr_codehook_init() %s\n", test2);
 
 	// elfldr::SetAllocationFunctions(erlData->Alloc, erlData->Free);
 
@@ -54,7 +54,7 @@ ELFLDR_ERL_EXPORT void elfldr_erl_init(elfldr::InitErlData* erlData) {
 	//	return MEM_free_orig(ptr);
 	// });
 
-	bx::printf("elfldr_erl_init() end\n");
+	bx::printf("elfldr_codehook_init() end\n");
 }
 
-ELFLDR_ERL("sample_erl");
+ELFLDR_ERL("sample_codehook");

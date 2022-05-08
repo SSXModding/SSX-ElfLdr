@@ -10,12 +10,6 @@
 
 namespace elfldr::util {
 
-
-
-	void ProbeAllocator() {
-
-	}
-
 	void AutodetectGameVersion() {
 		util::FioDirectory dir("host:");
 		bool gameDetected = false;

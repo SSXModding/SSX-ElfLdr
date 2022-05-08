@@ -20,6 +20,12 @@ namespace elfldr::util {
 	 */
 	void AutodetectGameVersion();
 
+	/**
+	 * Setup and initialize the allocator, if required.
+	 * This function needs to be called once the ELF is loaded.
+	 */
+	void SetupAllocator();
+
 } // namespace elfldr::util
 
 #endif // ELFLDR_VERSIONPROBE_H

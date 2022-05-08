@@ -12,36 +12,36 @@
 // that we can call into, using instances of the codeutils
 // function wrapper objects.
 //
-// This header file is usable for both ERLs and the main
-// ElfLdr elf. However, any usage will have to wait until the
-// ELF has been loaded, obviously. Also, these are US/SLUS-20095,
-// just like all the other addresses I have.
+// This header file is used for things which can be shared across
+// the SSX games. Any game-independent structures, functions, or such,
+// should be left to individual game specific headers.
+//
+// This header file is usable for both codehooks and the main
+// ModLoader elf. However, any usage will have to wait until the
+// ELF has been loaded, obviously.
 //
 
 #include <utils/CodeUtils.h>
 #include <utils/Utils.h>
-//#include <sdk/structs.h>
-
-// TODO: dynamic function wrappers
 
 namespace bx {
 
-	constexpr static elfldr::util::VarFunction<0x0018ac08, void, const char*> printf {};
+	extern elfldr::util::VarFunction<void, const char*> printf;
 
 	// These are PS2 EE kernel system calls which we can (ab)use
 	namespace eekernel {
-		constexpr static elfldr::util::Function<0x002645c0, void*> EndOfHeap {};
+		extern elfldr::util::Function<void*> EndOfHeap;
 	} // namespace eekernel
 
 	namespace real {
-		constexpr static elfldr::util::Function<0x0023b2a0, void, void* /* begin */, int /* length */> MEM_init {};
-		constexpr static elfldr::util::Function<0x0018a280, void, uintptr_t, uintptr_t, int> initheapdebug {};
+		extern elfldr::util::Function<void, void* /* begin */, int /* length */> MEM_init;
+		extern elfldr::util::Function<void, uintptr_t, uintptr_t, int> initheapdebug;
 
 		// In REAL headers, this may be char*.
 		// For ease of use, it's void* here.
 
-		constexpr static elfldr::util::Function<0x0023a448, void*, const char* /* label */, uint64_t /* size */, int /* flags */> MEM_alloc {};
-		constexpr static elfldr::util::Function<0x0023a998, void, void*> MEM_free {};
+		extern elfldr::util::Function<void*, const char* /* label */, uint64_t /* size */, int /* flags */> MEM_alloc;
+		extern elfldr::util::Function<void, void*> MEM_free;
 	} // namespace real
 
 } // namespace bx

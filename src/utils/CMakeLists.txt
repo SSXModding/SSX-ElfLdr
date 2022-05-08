@@ -12,7 +12,11 @@ set(__ELFLDR_UTILS_BASE_SOURCES
         CodeUtils.cpp
         debugout.cpp
         Hook.cpp
+        AllocatorSetup.cpp
         GameVersion.cpp
+
+        # SDK things:
+        GameApi.cpp
         )
 
 add_library(elfldr_utils_elf

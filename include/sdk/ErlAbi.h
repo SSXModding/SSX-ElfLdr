@@ -5,48 +5,46 @@
  * under the terms of the MIT license.
  */
 
-// ABI for the ERL layer.
+// ABI for the Codehook system.
 
-#ifndef ERLABI_H
-#define ERLABI_H
+#ifndef ELFLDR_SDK_ERLABI_H
+#define ELFLDR_SDK_ERLABI_H
 
 #include <stdint.h>
-
 #include <utils/GameVersion.h>
 
-//#define ELFLDR_ERL_HIDDEN __attribute__((visibility("hidden")))
-#define ELFLDR_ERL_EXPORT extern "C" __attribute__((visibility("default")))
+//#define ELFLDR_CODEHOOK_HIDDEN __attribute__((visibility("hidden")))
+#define ELFLDR_CODEHOOK_EXPORT extern "C" __attribute__((visibility("default")))
 
 namespace elfldr {
 
 	/**
 	 * ERL ABI version. Should be bumped on any incompatible
-	 * changes to any structures passed to/from ERL, especially InitErlData.
+	 * changes to any structures passed to/from codehooks, especially InitErlData.
 	 */
-	constexpr static uint32_t ERL_ABI_VERSION = 0;
+	constexpr static uint32_t CODEHOOK_ABI_VERSION = 0;
 
-	struct InitErlData {
+	struct CodehookInitData {
+		size_t structureSize; // if this isn't equal, we've got problems.
 		util::GameVersionData verData;
-		void* (*Alloc)(uint32_t);
-		void (*Free)(void*);
 		// any additional data. Requires an ABI bump.
 	};
 
-	// the expected type of elfldr_erl_abiversion
-	using ErlAbiVersionT = uint32_t (*)();
+	// the expected type of elfldr_codehook_abi_version
+	using CodehookAbiVersionT = uint32_t (*)();
 
-	// the expected type of elfldr_erl_init
-	using ErlInitT = void (*)(InitErlData*);
+	// the expected type of elfldr_codehook_init
+	using CodehookInitT = void (*)(CodehookInitData*);
 
 	// Declare all needed exports for a Elfldr ERL.
 	// elfldr_erl_init() needs to be implemented still.
-#define ELFLDR_ERL(name)                                 \
-	ELFLDR_ERL_EXPORT uint32_t elfldr_erl_abiversion() { \
-		return elfldr::ERL_ABI_VERSION;                  \
-	}                                                    \
-	ELFLDR_ERL_EXPORT int _start() {                     \
-		return 0;                                        \
+#define ELFLDR_ERL(name)                                           \
+	ELFLDR_CODEHOOK_EXPORT uint32_t elfldr_codehook_abiversion() { \
+		return elfldr::CODEHOOK_ABI_VERSION;                       \
+	}                                                              \
+	ELFLDR_CODEHOOK_EXPORT int _start() {                          \
+		return 0;                                                  \
 	}
 } // namespace elfldr
 
-#endif // ERLABI_H
+#endif // ELFLDR_SDK_ERLABI_H

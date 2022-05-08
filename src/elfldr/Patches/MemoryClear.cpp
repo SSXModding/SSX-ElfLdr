@@ -16,7 +16,7 @@
 
 namespace elfldr {
 
-	struct MemclrPatch : public Patch {
+	struct MemclrPatch : public ElfPatch {
 		const char* GetName() const override {
 			return "MemoryClear";
 		}
@@ -33,8 +33,9 @@ namespace elfldr {
 							// NOP fill the direct memory clearing loop in bxPreInit()
 							util::NopFill<10>(util::Ptr(0x0018a6d8));
 
-							util::MemRefTo<uint32_t>(util::Ptr(0x0018a2a0)) = 0x10000016; // b to the jr ra in initheapdebug() once the needed logic is done.
-							util::MemRefTo<uint32_t>(util::Ptr(0x0018a2a4)) = 0x00000000; // nop out the new delay slot
+							// initheapdebug()
+							util::MemRefTo<uint32_t>(util::Ptr(0x0018a2a0)) = 0x10000016; // b to the jr ra once the needed logic for the game not to crash is done
+							util::MemRefTo<uint32_t>(util::Ptr(0x0018a2a4)) = 0x00000000; // clear out the newly created delay slot to avoid side effects
 
 							util::DebugOut("Disabling MEM_init and initheapdebug");
 							util::NopFill<6>(util::Ptr(0x0018a704));
@@ -62,6 +63,8 @@ namespace elfldr {
 							// nopping out the writes themselves seems to be the best here.
 							util::MemRefTo<uint32_t>(util::Ptr(0x001826c8)) = 0x00000000;
 							util::MemRefTo<uint32_t>(util::Ptr(0x00182700)) = 0x00000000;
+
+							// still need to nop out MEM_init and initheapdebug()
 							break;
 						default:
 							break;

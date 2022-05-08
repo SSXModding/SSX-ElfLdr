@@ -27,7 +27,7 @@
 
 namespace elfldr {
 
-	struct HostFsPatch : public Patch {
+	struct HostFsPatch : public ElfPatch {
 		const char* GetName() const override {
 			return "HostFS";
 		}

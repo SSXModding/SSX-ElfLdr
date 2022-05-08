@@ -13,9 +13,9 @@
 namespace elfldr {
 
 	/**
-	 * Abstract interface for patches to follow.
+	 * Abstract interface for simple ELF patches to follow.
 	 */
-	struct Patch {
+	struct ElfPatch {
 		/**
 		 * Get the name of this patch.
 		 */
@@ -41,7 +41,7 @@ namespace elfldr {
 
 	// only exposed for PatchRegistrar
 	namespace detail {
-		void RegisterPatch(PatchId id, Patch* patch);
+		void RegisterPatch(PatchId id, ElfPatch* patch);
 	}
 
 	/**
@@ -69,9 +69,9 @@ namespace elfldr {
 	 * \param[in] id The ID of the patch to try and get.
 	 * \returns Singleton pointer, or nullptr if invalid ID.
 	 */
-	Patch* GetPatchById(PatchId id);
+	ElfPatch* GetPatchById(PatchId id);
 
-	// Patch* GetPatchByIdentifier(const char* ident);
+	// ElfPatch* GetPatchByIdentifier(const char* ident);
 
 } // namespace elfldr
 

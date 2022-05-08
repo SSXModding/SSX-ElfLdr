@@ -16,12 +16,12 @@
 constexpr static uint32_t MAX_PATCHES = 4;
 
 // TODO: replace with hashmap, only allow init after memory probing done
-static elfldr::BinaryMap<elfldr::PatchId, elfldr::Patch*, MAX_PATCHES> gPatchMap;
+static elfldr::BinaryMap<elfldr::PatchId, elfldr::ElfPatch*, MAX_PATCHES> gPatchMap;
 
 namespace elfldr {
 
 	namespace detail {
-		void RegisterPatch(PatchId id, Patch* patch) {
+		void RegisterPatch(PatchId id, ElfPatch* patch) {
 			// Don't allow a null patch
 			if(patch == nullptr)
 				return;
@@ -30,7 +30,7 @@ namespace elfldr {
 		}
 	} // namespace detail
 
-	Patch* GetPatchById(PatchId id) {
+	ElfPatch* GetPatchById(PatchId id) {
 		auto** patch = gPatchMap.MaybeGetValue(id);
 
 		if(!patch)
@@ -40,7 +40,7 @@ namespace elfldr {
 	}
 
 	/*
-	Patch* GetPatchByIdentifier(const char* ident) {
+	ElfPatch* GetPatchByIdentifier(const char* ident) {
 		// ident must be a valid string pointer
 		ELFLDR_ASSERT(ident);
 

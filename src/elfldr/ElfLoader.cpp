@@ -41,7 +41,7 @@ namespace elfldr {
 		// the elf didn't load properly.
 		ELFLDR_VERIFY(gExecData.epc > 0);
 
-		for(int i = 0; i < 4; ++i)
+		//for(int i = 0; i < 4; ++i)
 			FlushCaches();
 
 		// Reset the IOP and then ExecPS2 the loaded ELF.

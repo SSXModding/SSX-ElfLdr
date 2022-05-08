@@ -50,28 +50,13 @@ namespace elfldr {
 
 	using AllocFreePair = Pair<Alloc_t, Free_t>;
 
-	// TODO: for multi game support, we need to probably
-	// use a probe routine which does the below automatically
-	// as soon as the ELF is loaded.
-
-	struct AllocatorData {
-		AllocFreePair allocAndFree;
-
-		/**
-		 * This is an optional function which initializes the memory allocator, if it's required.
-		 * If this is not required, please set it to nullptr.
-		 * @return
-		 */
-		void(*Init)();
-	};
-
 	/**
 	 * Set the Runtime's memory allocation/deallocation
-	 * functions.
+	 * functions manually.
 	 *
-	 * This is important, and needs to be called before
-	 * any Runtime memory management (subsequently, Runtime containers)
-	 * routines can be used.
+	 * This function needs to be called before
+	 * any Runtime heap management (and containers) can be used.
+	 * This function should not need to be called.
 	 */
 	void SetAllocationFunctions(AllocFreePair memoryRoutines);
 
@@ -80,7 +65,7 @@ namespace elfldr {
 	// template<class T>
 	// struct Allocator {
 	//  using ValueType = RemoveCvRefT<T>;
-	//	using SizeType = appropriate_size_type; (or size_t if you're lazy)
+	//	using SizeType = size_t;
 	//
 	//  // NOTE: Only allocates, does not start lifetime
 	//  [[nodiscard]] constexpr ValueType* Allocate(SizeType n);
@@ -93,8 +78,7 @@ namespace elfldr {
 	// };
 
 	/**
-	 * Allocator using the global runtime heap.
-	 * Implements the Runtime version of the Allocator concept.
+	 * Standard allocator that uses the Runtime heap functions.
 	 */
 	template <class T>
 	struct StdAllocator {
@@ -125,7 +109,39 @@ namespace elfldr {
 		}
 	};
 
-	// maybe: Allocator<const T>
+	// maybe: StdAllocator<const T>
+
+	// Concept for a fixed allocator which could maybe be used to bootstrap?
+
+#if 0
+	template<size_t FIXED_SIZE_IN_BYTES>
+	struct FixedHeap {
+
+
+	   private:
+
+		// a segment in the heap
+		// they can be coalesced when required
+		struct HeapBlock {
+			constexpr auto VALID_COOKIE = 0xA10C; // the cookie. if the cookie in the block is wrong the heap's been corrupted.
+
+			uint16_t cookie; // used to ensure validity of the block
+
+			HeapBlock* prevBlock; // nullptr = first allocation
+			HeapBlock* nextBlock; // nullptr = last allocation in the heap
+
+			SizeType segmentSize; // allocation size of this block, starting after the block header.
+
+			constexpr HeapBlock() { cookie = VALID_COOKIE; }
+		};
+
+	};
+
+	template<class T>
+	struct FixedHeapAllocator {
+
+	};
+#endif
 
 } // namespace elfldr
 

@@ -15,6 +15,8 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <utils/Utils.h>
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstringop-overflow="
 
@@ -168,14 +170,17 @@ namespace elfldr::util {
 	 * \tparam Ret The return type of the wrapped function.
 	 * \tparam ArgTypes All argument types.
 	 */
-	template <uintptr_t FunctionAddress, bool IsVaradic, class Ret, class... BaseArgTypes>
-	struct BasicFunctionWrappa {
+	template <bool IsVaradic, class Ret, class... BaseArgTypes>
+	struct BasicFunctionWrapper {
+		// TODO: perfect forwarding
+
 		/**
 		 * Call operator, for non-varadic functions.
 		 * Only takes base argument types.
 		 */
 		constexpr Ret operator()(BaseArgTypes... args) const {
-			return CallFunction<Ret>(Ptr(FunctionAddress), args...);
+			DebugOut("address is 0x%08x", functionAddress);
+			return CallFunction<Ret>(Ptr(functionAddress), args...);
 		}
 
 		/**
@@ -187,21 +192,28 @@ namespace elfldr::util {
 		 */
 		template <class... VarArgTypes>
 		requires(IsVaradic) constexpr Ret operator()(BaseArgTypes... args, VarArgTypes... varargs) const {
-			return CallFunction<Ret>(Ptr(FunctionAddress), args..., varargs...);
+			return CallFunction<Ret>(Ptr(functionAddress), args..., varargs...);
 		}
+
+		constexpr void SetFunctionAddress(uintptr_t addr) {
+			functionAddress = addr;
+		}
+
+	   private:
+		uintptr_t functionAddress;
 	};
 
 	/**
 	 * A wrapper for a varadic function (i.e: printf)
 	 */
-	template <uintptr_t FunctionAddress, class Ret, class... ArgTypes>
-	using VarFunction = BasicFunctionWrappa<FunctionAddress, true, Ret, ArgTypes...>;
+	template <class Ret, class... ArgTypes>
+	using VarFunction = BasicFunctionWrapper<true, Ret, ArgTypes...>;
 
 	/**
 	 * A wrapper for a regular function.
 	 */
-	template <uintptr_t FunctionAddress, class Ret, class... ArgTypes>
-	using Function = BasicFunctionWrappa<FunctionAddress, false, Ret, ArgTypes...>;
+	template<class Ret, class... ArgTypes>
+	using Function = BasicFunctionWrapper<false, Ret, ArgTypes...>;
 
 } // namespace elfldr::util
 

@@ -6,10 +6,10 @@
  */
 
 // This file declares my own implementation
-// of C++ type traits in Runtime.
+// of C++ type traits in MLSTD.
 
-#ifndef UTILS_TYPETRAITS_H
-#define UTILS_TYPETRAITS_H
+#ifndef MLSTD_TYPETRAITS_H
+#define MLSTD_TYPETRAITS_H
 
 namespace mlstd {
 
@@ -147,6 +147,6 @@ namespace mlstd {
 	template <class T>
 	using RemoveCvPtrT = typename RemoveCvPtr<T>::type;
 
-} // namespace elfldr
+} // namespace mlstd
 
-#endif // UTILS_TYPETRAITS_H
+#endif // MLSTD_TYPETRAITS_H

@@ -1,5 +1,12 @@
-#ifndef HASHTABLE_H
-#define HASHTABLE_H
+/**
+ * SSX-Elfldr
+ *
+ * (C) 2021-2022 Lily/modeco80 <lily.modeco80@protonmail.ch>
+ * under the terms of the MIT license.
+ */
+
+#ifndef MLSTD_HASHTABLE_H
+#define MLSTD_HASHTABLE_H
 
 #include <mlstd/Hash.h>
 #include <mlstd/Utility.h>
@@ -86,7 +93,7 @@ namespace mlstd {
 		 */
 		Value& operator[](const Key& k) {
 			auto* bucket = MaybeGetBucket(k);
-			ELFLDR_VERIFY(bucket != nullptr);
+			MLSTD_VERIFY(bucket != nullptr);
 
 			// Mark this bucket as used,
 			// ala std::*_map<K,V>... Sorry :(
@@ -150,6 +157,6 @@ namespace mlstd {
 		size_t bucket_size {};
 	};
 
-} // namespace elfldr
+} // namespace mlstd
 
-#endif // HASHTABLE_H
+#endif // MLSTD_HASHTABLE_H

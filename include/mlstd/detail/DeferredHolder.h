@@ -5,11 +5,11 @@
  * under the terms of the MIT license.
  */
 
-#ifndef ELFLDR_DEFERREDHOLDER_H
-#define ELFLDR_DEFERREDHOLDER_H
+#ifndef MLSTD_DETAIL_DEFERREDHOLDER_H
+#define MLSTD_DETAIL_DEFERREDHOLDER_H
 
-#include <stdint.h>
 #include <mlstd/Assert.h>
+#include <stdint.h>
 
 namespace mlstd::detail {
 
@@ -75,12 +75,12 @@ namespace mlstd::detail {
 		}
 
 		constexpr T& GetConstructed() {
-			ELFLDR_ASSERT(constructed);
+			MLSTD_ASSERT(constructed);
 			return *Get();
 		}
 
 		constexpr const T& GetConstructed() const {
-			ELFLDR_ASSERT(constructed);
+			MLSTD_ASSERT(constructed);
 			return *Get();
 		}
 
@@ -97,6 +97,6 @@ namespace mlstd::detail {
 		alignas(T) uint8_t storage[sizeof(T)] {};
 	};
 
-} // namespace elfldr::detail
+} // namespace mlstd::detail
 
-#endif // ELFLDR_DEFERREDHOLDER_H
+#endif // MLSTD_DETAIL_DEFERREDHOLDER_H

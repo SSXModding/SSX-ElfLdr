@@ -29,7 +29,7 @@ namespace elfldr::util::detail {
 		// Nil dest/hook are not allowed. In Release, we just don't do anything,
 		// but in Debug we will hit this assert.
 
-		ELFLDR_ASSERT(dest != nullptr || hook != nullptr);
+		MLSTD_ASSERT(dest != nullptr || hook != nullptr);
 		if(dest == nullptr || hook == nullptr)
 			return nullptr;
 
@@ -49,7 +49,7 @@ namespace elfldr::util::detail {
 		destInstPtr[0] = mips::lui(mips::Reg::T0, ((uintptr_t)hook >> 16));
 		destInstPtr[1] = mips::ori(mips::Reg::T0, mips::Reg::T0, (uintptr_t)hook & 0xFFFF);
 
-		// ELFLDR_VERIFY(trampolineBuf != nullptr && "Failed to allocate trampoline buffer.");
+		// MLSTD_VERIFY(trampolineBuf != nullptr && "Failed to allocate trampoline buffer.");
 
 		memcpy(&trampolineBuf[sizeof(callTemplate) / sizeof(uint32_t)], &callTemplate[0], sizeof(callTemplate));
 

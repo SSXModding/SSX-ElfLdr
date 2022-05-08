@@ -5,8 +5,8 @@
  * under the terms of the MIT license.
  */
 
-#ifndef ALLOCATOR_H
-#define ALLOCATOR_H
+#ifndef MLSTD_ALLOCATOR_H
+#define MLSTD_ALLOCATOR_H
 
 #include <mlstd/Assert.h>
 #include <mlstd/TypeTraits.h>
@@ -37,7 +37,6 @@ namespace mlstd {
 
 	void* AllocAligned(uint32_t size);
 	void FreeAligned(void* ptr);
-
 
 	using Alloc_t = void* (*)(uint32_t);
 	using Free_t = void (*)(void*);
@@ -86,7 +85,7 @@ namespace mlstd {
 		 * You will have to use Allocator<T>::Construct() or pure placement-new to do so.
 		 */
 		[[nodiscard]] constexpr ValueType* Allocate(SizeType number) {
-			// ELFLDR_ASSERT(number > MaxSize());
+			// MLSTD_ASSERT(number > MaxSize());
 			return static_cast<T*>(Alloc(number * sizeof(T)));
 		}
 
@@ -138,6 +137,6 @@ namespace mlstd {
 	};
 #endif
 
-} // namespace elfldr
+} // namespace mlstd
 
-#endif // ALLOCATOR_H
+#endif // MLSTD_ALLOCATOR_H

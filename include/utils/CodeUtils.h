@@ -59,7 +59,7 @@ namespace elfldr::util {
 		// I think? this isn't going to be used worth a damn yet
 		template <class Res = void, class... Args>
 		inline Res operator()(void* pObj, Args&&... args) const {
-			ELFLDR_ASSERT(function_ptr != nullptr);
+			MLSTD_ASSERT(function_ptr != nullptr);
 			return CallFunction<Res>(function_ptr, reinterpret_cast<uintptr_t>(pObj) + adj_upper, Forward<Args>(args)...);
 		}
 	};
@@ -108,7 +108,7 @@ namespace elfldr::util {
 	 */
 	template <size_t N>
 	constexpr void NopFill(void* start) {
-		ELFLDR_ASSERT(IsInstructionAligned(start));
+		MLSTD_ASSERT(IsInstructionAligned(start));
 		memset(start, 0x0, N * sizeof(uint32_t));
 	}
 

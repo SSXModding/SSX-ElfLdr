@@ -5,8 +5,8 @@
  * under the terms of the MIT license.
  */
 
-#ifndef ELFLDR_ARRAY_H
-#define ELFLDR_ARRAY_H
+#ifndef MLSTD_ARRAY_H
+#define MLSTD_ARRAY_H
 
 #include <stddef.h>
 
@@ -33,6 +33,6 @@ namespace mlstd {
 		T _arr_notouchy[N];
 	};
 
-} // namespace elfldr
+} // namespace mlstd
 
-#endif // ELFLDR_ARRAY_H
+#endif // MLSTD_

@@ -5,8 +5,8 @@
  * under the terms of the MIT license.
  */
 
-#ifndef ELFLDR_EXPECTED_H
-#define ELFLDR_EXPECTED_H
+#ifndef MLSTD_EXPECTED_H
+#define MLSTD_EXPECTED_H
 
 #include <mlstd/Assert.h>
 #include <mlstd/detail/DeferredHolder.h>
@@ -70,22 +70,22 @@ namespace mlstd {
 		}
 
 		constexpr T& Value() {
-			ELFLDR_VERIFY(HasValue() && !HasError());
+			MLSTD_VERIFY(HasValue() && !HasError());
 			return value.GetConstructed();
 		}
 
 		constexpr E& Error() {
-			ELFLDR_VERIFY(!HasValue() && HasError());
+			MLSTD_VERIFY(!HasValue() && HasError());
 			return error.GetConstructed();
 		}
 
 		constexpr const T& Value() const {
-			ELFLDR_VERIFY(HasValue() && !HasError());
+			MLSTD_VERIFY(HasValue() && !HasError());
 			return value.GetConstructed();
 		}
 
 		constexpr const E& Error() const {
-			ELFLDR_VERIFY(!HasValue() && HasError());
+			MLSTD_VERIFY(!HasValue() && HasError());
 			return error.GetConstructed();
 		}
 
@@ -141,12 +141,12 @@ namespace mlstd {
 		}
 
 		constexpr E& Error() {
-			ELFLDR_ASSERT(HasError());
+			MLSTD_ASSERT(HasError());
 			return error.GetConstructed();
 		}
 
 		constexpr const E& Error() const {
-			ELFLDR_ASSERT(HasError());
+			MLSTD_ASSERT(HasError());
 			return error.GetConstructed();
 		}
 
@@ -163,6 +163,6 @@ namespace mlstd {
 	template <class E>
 	constexpr static VoidExpected<E> NO_ERROR {};
 
-} // namespace elfldr
+} // namespace mlstd
 
-#endif // ELFLDR_EXPECTED_H
+#endif // MLSTD_EXPECTED_H

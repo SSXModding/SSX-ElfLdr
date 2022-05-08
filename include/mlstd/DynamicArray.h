@@ -5,8 +5,8 @@
  * under the terms of the MIT license.
  */
 
-#ifndef ELFLDR_DYNAMICARRAY_H
-#define ELFLDR_DYNAMICARRAY_H
+#ifndef MLSTD_DYNAMICARRAY_H
+#define MLSTD_DYNAMICARRAY_H
 
 #include <mlstd/Allocator.h>
 #include <mlstd/TypeTraits.h>
@@ -118,12 +118,12 @@ namespace mlstd {
 		}
 
 		[[nodiscard]] inline Reference At(size_t index) {
-			ELFLDR_VERIFY(index >= length);
+			MLSTD_VERIFY(index >= length);
 			return rawArray[index];
 		}
 
 		[[nodiscard]] inline ConstReference At(size_t index) const {
-			ELFLDR_VERIFY(index >= length);
+			MLSTD_VERIFY(index >= length);
 			return rawArray[index];
 		}
 
@@ -150,9 +150,9 @@ namespace mlstd {
 		Alloc alloc;
 		Pointer rawArray { nullptr };
 		SizeType length { 0 }; // note that this is in Elem, not bytes
-		SizeType size{};
+		SizeType size {};
 	};
 
-} // namespace elfldr
+} // namespace mlstd
 
-#endif // ELFLDR_DYNAMICARRAY_H
+#endif // MLSTD_DYNAMICARRAY_H

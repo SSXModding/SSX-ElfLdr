@@ -5,8 +5,8 @@
  * under the terms of the MIT license.
  */
 
-#ifndef ELFLDR_STRING_H
-#define ELFLDR_STRING_H
+#ifndef MLSTD_STRING_H
+#define MLSTD_STRING_H
 
 #include <mlstd/Allocator.h>
 #include <mlstd/CharTraits.h>
@@ -22,7 +22,6 @@ namespace mlstd {
 	 */
 	template <class T, class Traits = CharTraits<T>>
 	struct BasicStringView {
-
 		using CharType = T;
 		using SizeType = size_t;
 
@@ -82,12 +81,12 @@ namespace mlstd {
 		inline BasicString() = default;
 
 		inline BasicString(const T* cstr) {
-			ELFLDR_VERIFY(cstr != nullptr);
+			MLSTD_VERIFY(cstr != nullptr);
 			CopyFromCString(cstr);
 		}
 
 		inline BasicString(const T* mem, int length) {
-			ELFLDR_VERIFY(mem != nullptr);
+			MLSTD_VERIFY(mem != nullptr);
 
 			// TODO: maybe some interning.
 			// 32 chars max intern, before it becomes an allocation.
@@ -249,14 +248,14 @@ namespace mlstd {
 	// instantiations of BasicString or BasicStringView,
 	// respecting custom Traits implementations as well.
 
-	template <class CharT, template<class> class Traits, class Allocator>
+	template <class CharT, template <class> class Traits, class Allocator>
 	struct Hash<BasicString<CharT, Traits<CharT>, Allocator>> {
 		inline static uint32_t hash(const BasicString<CharT, Traits<CharT>>& str) {
 			return detail::fnv1a_hash(reinterpret_cast<const void*>(str.c_str()), str.length() * sizeof(CharT), 0);
 		}
 	};
 
-	template <class CharT, template<class> class Traits>
+	template <class CharT, template <class> class Traits>
 	struct Hash<BasicStringView<CharT, Traits<CharT>>> {
 		inline static uint32_t hash(const BasicStringView<CharT, Traits<CharT>>& str) {
 			return detail::fnv1a_hash(reinterpret_cast<const void*>(str.Data()), str.Length() * sizeof(CharT), 0);
@@ -279,7 +278,7 @@ namespace mlstd {
 
 	// String Algorithms:
 
-	template<class CharT, template<class> class Traits>
+	template <class CharT, template <class> class Traits>
 	constexpr bool StrCaseMatch(BasicStringView<CharT, Traits<CharT>> sv, BasicStringView<CharT, Traits<CharT>> sv2) {
 		if(sv.Length() != sv2.Length())
 			return false; // Quick shortcut
@@ -291,7 +290,7 @@ namespace mlstd {
 		return true;
 	}
 
-	template<class CharT, template<class> class Traits>
+	template <class CharT, template <class> class Traits>
 	constexpr bool StrMatch(BasicStringView<CharT, Traits<CharT>> sv, BasicStringView<CharT, Traits<CharT>> sv2) {
 		if(sv.Length() != sv2.Length())
 			return false; // Quick shortcut
@@ -303,7 +302,6 @@ namespace mlstd {
 		return true;
 	}
 
+} // namespace mlstd
 
-} // namespace elfldr
-
-#endif
+#endif // MLSTD_STRING_H

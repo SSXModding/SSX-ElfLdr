@@ -38,12 +38,12 @@ namespace mlstd {
 	}
 
 	void* Alloc(uint32_t size) {
-		ELFLDR_ASSERT(Alloc_ptr != nullptr);
+		MLSTD_ASSERT(Alloc_ptr != nullptr);
 		return Alloc_ptr(size);
 	}
 
 	void Free(void* ptr) {
-		ELFLDR_ASSERT(Free_ptr != nullptr);
+		MLSTD_ASSERT(Free_ptr != nullptr);
 		return Free_ptr(ptr);
 	}
 
@@ -56,13 +56,13 @@ namespace mlstd {
 
 void* operator new(size_t size) {
 	auto* p = mlstd::Alloc(size);
-	ELFLDR_VERIFY(p != nullptr && "Alloc() returned nullptr!!!");
+	MLSTD_VERIFY(p != nullptr && "Alloc() returned nullptr!!!");
 	return p;
 }
 
 void* operator new[](size_t size) {
 	auto* p = mlstd::Alloc(size);
-	ELFLDR_VERIFY(p != nullptr && "Alloc() returned nullptr!!!");
+	MLSTD_VERIFY(p != nullptr && "Alloc() returned nullptr!!!");
 	return p;
 }
 

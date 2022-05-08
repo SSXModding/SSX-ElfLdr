@@ -6,23 +6,23 @@
  */
 
 //
-// Helper code in Utils for handling Runtime's ELFLDR_ASSERT()
-// and ELFLDR_VERIFY()
+// Helper code in Utils for handling Runtime's MLSTD_ASSERT()
+// and MLSTD_VERIFY()
 //
 
 #include <mlstd/Assert.h>
 #include <utils/Utils.h>
 
 #ifndef NDEBUG
-__attribute__((weak)) void __Elfldr__AssertFailure(const char* exp, const char* function, const char* file, unsigned line) {
-	elfldr::util::DebugOut("ELFLDR_ASSERT(%s) failed. File: %s:%d Function %s", exp, file, line, function);
+__attribute__((weak)) void mlstdAssertionFailure(const char* exp, const char* function, const char* file, unsigned line) {
+	elfldr::util::DebugOut("MLSTD_ASSERT(%s) failed. File: %s:%d Function %s", exp, file, line, function);
 	while(true)
 		;
 }
 #endif
 
-__attribute__((weak)) void __Elfldr__VerifyFailure(const char* exp, const char* file, unsigned line) {
-	elfldr::util::DebugOut("ELFLDR_VERIFY(%s) failed. File: %s:%d", exp, file, line);
+__attribute__((weak)) void mlstdVerifyFailure(const char* exp, const char* file, unsigned line) {
+	elfldr::util::DebugOut("MLSTD_VERIFY(%s) failed. File: %s:%d", exp, file, line);
 	while(true)
 		;
 }

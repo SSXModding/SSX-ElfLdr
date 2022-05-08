@@ -5,38 +5,38 @@
  * under the terms of the MIT license.
  */
 
-// This header provides ELFLDR_ASSERT() and ELFLDR_VERIFY(),
+// This header provides MLSTD_ASSERT() and MLSTD_VERIFY(),
 // alongside definitions of the internal functions
 // which the two macros dispatch to.
 //
-// ELFLDR_ASSERT() behaves similarly to assert(),
+// MLSTD_ASSERT() behaves similarly to assert(),
 // in that when in release, the statement boils away,
 // and the runtime code for it also is gone.
 //
-// ELFLDR_VERIFY(), however, does not go away,
+// MLSTD_VERIFY(), however, does not go away,
 // and is always active regardless of mode.
 //
-// Rule is to put ELFLDR_ASSERT() where something should
-// ideally never happen, and put ELFLDR_VERIFY() where it
+// Rule is to put MLSTD_ASSERT() where something should
+// ideally never happen, and put MLSTD_VERIFY() where it
 // absolutely, totally, should not, ever in the history of the
 // universe happen, and if it does, it would wreak havoc on all
 // of Earth.
 //
 // I'm only kidding of course, but, for the most part,
-// ELFLDR_VERIFY() is used for sanity checking I'd always like in
+// MLSTD_VERIFY() is used for sanity checking I'd always like in
 // the release build.
 
-#ifndef ELFLDR_ASSERT_H
-#define ELFLDR_ASSERT_H
+#ifndef MLSTD_ASSERT_H
+#define MLSTD_ASSERT_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #ifndef NDEBUG
-void __Elfldr__AssertFailure(const char* exp, const char* function, const char* file, unsigned line);
+extern "C" void mlstdAssertionFailure(const char* exp, const char* function, const char* file, unsigned line);
 #endif
-void __Elfldr__VerifyFailure(const char* exp, const char* file, unsigned line);
+extern "C" void mlstdVerifyFailure(const char* exp, const char* file, unsigned line);
 
 #ifdef __cplusplus
 }
@@ -46,26 +46,25 @@ void __Elfldr__VerifyFailure(const char* exp, const char* file, unsigned line);
 // just enough to assert/verify. Don't go putting this into expressions.
 
 #ifndef NDEBUG
-	#define ELFLDR_ASSERT(x)                                                          \
-		do {                                                                          \
-			if(!(x)) {                                                                \
-				__Elfldr__AssertFailure(#x, __PRETTY_FUNCTION__, __FILE__, __LINE__); \
-				__builtin_unreachable();                                              \
-			}                                                                         \
+	#define MLSTD_ASSERT(x)                                                         \
+		do {                                                                        \
+			if(!(x)) {                                                              \
+				mlstdAssertionFailure(#x, __PRETTY_FUNCTION__, __FILE__, __LINE__); \
+				__builtin_unreachable();                                            \
+			}                                                                       \
 		} while(0)
 #else
-	#define ELFLDR_ASSERT(x)
+	#define MLSTD_ASSERT(x)
 #endif
 
-#define ELFLDR_VERIFY(x)                                     \
-	do {                                                     \
-		if(!(x)) {                                           \
-			__Elfldr__VerifyFailure(#x, __FILE__, __LINE__); \
-			__builtin_unreachable();                         \
-		}                                                    \
+#define MLSTD_VERIFY(x)                                 \
+	do {                                                \
+		if(!(x)) {                                      \
+			mlstdVerifyFailure(#x, __FILE__, __LINE__); \
+			__builtin_unreachable();                    \
+		}                                               \
 	} while(0)
 
+#define MLSTD_UNREACHABLE() __builtin_unreachable()
 
-#define ELFLDR_UNREACHABLE() __builtin_unreachable()
-
-#endif // ELFLDR_ASSERT_H
+#endif // MLSTD_ASSERT_H

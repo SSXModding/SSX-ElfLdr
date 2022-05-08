@@ -48,7 +48,7 @@ int main() {
 	{
 		static char elfPath[elfldr::util::MaxPath] {};
 		snprintf(&elfPath[0], elfldr::util::MaxPath * sizeof(char), "host:%s", gdata.GetGameBinary().CStr());
-		ELFLDR_VERIFY(gLoader.LoadElf(elfPath));
+		MLSTD_VERIFY(gLoader.LoadElf(elfPath));
 	}
 
 	// Set up the Runtime memory allocator automagically.

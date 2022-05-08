@@ -9,8 +9,8 @@
 // Use the publicly available util::Hash<T> for typed hashing, please :)
 // This note does not apply if you're specializing it though
 
-#ifndef UTILS_FNV_H
-#define UTILS_FNV_H
+#ifndef MLSTD_DETAIL_FNV1A_H
+#define MLSTD_DETAIL_FNV1A_H
 
 #include <stddef.h>
 #include <stdint.h>
@@ -27,6 +27,6 @@ namespace mlstd::detail {
 	 */
 	uint32_t fnv1a_hash(const void* input, size_t length, uint32_t lastval);
 
-} // namespace elfldr::detail
+} // namespace mlstd::detail
 
-#endif // UTILS_FNV_H
+#endif // MLSTD_DETAIL_FNV1A_H

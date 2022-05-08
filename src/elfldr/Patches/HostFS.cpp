@@ -159,7 +159,7 @@ namespace elfldr {
 					util::WriteString(util::Ptr(0x00381ca8), "host:data/modules/mcman.irx");
 					util::WriteString(util::Ptr(0x00381d38), "host:data/modules/mcserv.irx");
 
-					// ELFLDR_VERIFY(false && "sorry, this doesnt work atm. please give me at least 5 minutes of research time");
+					// MLSTD_VERIFY(false && "sorry, this doesnt work atm. please give me at least 5 minutes of research time");
 					break;
 
 				default:

@@ -43,7 +43,7 @@ namespace elfldr::util {
 	}
 
 	int FioFile::Seek(int offset, int whence) {
-		ELFLDR_ASSERT(Good());
+		MLSTD_ASSERT(Good());
 		if(Good())
 			return fioLseek(fd, offset, whence);
 

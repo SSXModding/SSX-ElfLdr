@@ -5,8 +5,8 @@
  * under the terms of the MIT license.
  */
 
-#ifndef ELFLDR_CHARTRAITS_H
-#define ELFLDR_CHARTRAITS_H
+#ifndef MLSTD_CHARTRAITS_H
+#define MLSTD_CHARTRAITS_H
 
 #include <mlstd/Assert.h>
 #include <stddef.h>
@@ -45,8 +45,8 @@ namespace mlstd {
 			// due to the fact that we use __restrict here.
 
 			// Nevertheless, we do need to assert for some idiot-cases.
-			ELFLDR_ASSERT(str1 != nullptr);
-			ELFLDR_ASSERT(str2 != nullptr);
+			MLSTD_ASSERT(str1 != nullptr);
+			MLSTD_ASSERT(str2 != nullptr);
 			return strcmp(str1, str2);
 		}
 
@@ -61,6 +61,6 @@ namespace mlstd {
 	// TODO: implementation of CharTraits for UTF-8,
 	// 	so we can switch to utf-8 safe code (where we're not touching Sony libs/such)
 
-} // namespace elfldr
+} // namespace mlstd
 
-#endif // ELFLDR_CHARTRAITS_H
+#endif // MLSTD_CHARTRAITS_H

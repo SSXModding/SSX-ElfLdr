@@ -5,11 +5,12 @@
  * under the terms of the MIT license.
  */
 
-#ifndef UTILS_HASH_H
-#define UTILS_HASH_H
+#ifndef MLSTD_HASH_H
+#define MLSTD_HASH_H
 
-#include <mlstd/Fnv1a.h>
 #include <utils/Utils.h>
+
+#include "mlstd/detail/Fnv1a.h"
 
 namespace mlstd {
 
@@ -45,6 +46,6 @@ namespace mlstd {
 
 #undef HASH_TRIVIAL_SPECIALIZATION
 
-} // namespace elfldr
+} // namespace mlstd
 
-#endif // UTILS_HASH_H
+#endif // MLSTD_HASH_H

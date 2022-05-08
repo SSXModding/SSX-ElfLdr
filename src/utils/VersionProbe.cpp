@@ -21,7 +21,7 @@ namespace elfldr::util {
 			//
 			// If this branch is executed, the PCSX2 version being used is probably
 			// too old to work, so we intentionally crash.
-			ELFLDR_VERIFY(false && "Your PCSX2 version is too old!");
+			MLSTD_VERIFY(false && "Your PCSX2 version is too old!");
 		}
 
 		dir.Iterate([&](io_dirent_t& ent) {

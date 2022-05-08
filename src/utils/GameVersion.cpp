@@ -20,12 +20,12 @@ namespace elfldr::util {
 						case GameRegion::NTSC:
 							return "SLUS_200.95";
 						default:
-							ELFLDR_ASSERT(false && "Invalid region!");
+							MLSTD_ASSERT(false && "Invalid region!");
 					}
 					break;
 			}
 
-			ELFLDR_UNREACHABLE();
+			MLSTD_UNREACHABLE();
 		}
 
 		const char* SSXDVDBinary(GameRegion region, GameVersion version) {
@@ -35,14 +35,17 @@ namespace elfldr::util {
 						case GameRegion::NTSC:
 							return "SLUS_203.26";
 						default:
-							ELFLDR_ASSERT(false && "Invalid region!");
+							MLSTD_ASSERT(false && "Invalid region!");
 					}
 					break;
 				case GameVersion::SSXDVD_JAMPACK_DEMO:
 					return "SSXDEMO.ELF";
+
+				default:
+					break;
 			}
 
-			ELFLDR_UNREACHABLE();
+			MLSTD_UNREACHABLE();
 		}
 
 		const char* SSX3Binary(GameRegion region, GameVersion version) {
@@ -56,15 +59,15 @@ namespace elfldr::util {
 						case GameRegion::NTSC:
 							return "SLUS_207.72";
 						default:
-							ELFLDR_ASSERT(false && "Invalid region!");
+							MLSTD_ASSERT(false && "Invalid region!");
 					}
 			}
 
-			ELFLDR_UNREACHABLE();
+			MLSTD_UNREACHABLE();
 		}
 
 		mlstd::StringView GameToString(Game g) {
-			ELFLDR_ASSERT(g != Game::Invalid && "this codepath shouldn't be called with an invalid game");
+			MLSTD_ASSERT(g != Game::Invalid && "this codepath shouldn't be called with an invalid game");
 
 			switch(g) {
 				case Game::SSXOG:
@@ -75,7 +78,7 @@ namespace elfldr::util {
 					return "ssx3";
 
 				default:
-					ELFLDR_VERIFY(false && "Invalid game passed to GameToString()");
+					MLSTD_VERIFY(false && "Invalid game passed to GameToString()");
 			}
 		}
 
@@ -90,7 +93,7 @@ namespace elfldr::util {
 				case GameRegion::PAL:
 					return "eu";
 			}
-			ELFLDR_UNREACHABLE();
+			MLSTD_UNREACHABLE();
 		}
 
 		mlstd::StringView VersionToString(GameVersion ver) {
@@ -110,7 +113,7 @@ namespace elfldr::util {
 					return "opmd";
 			}
 
-			ELFLDR_UNREACHABLE();
+			MLSTD_UNREACHABLE();
 		}
 
 	} // namespace
@@ -124,7 +127,7 @@ namespace elfldr::util {
 			case Game::SSX3:
 				return SSX3Binary(region, version);
 			default:
-				ELFLDR_VERIFY(false && "Invalid game passed to GameBinaryFor...");
+				MLSTD_VERIFY(false && "Invalid game passed to GameBinaryFor...");
 		}
 	}
 

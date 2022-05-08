@@ -5,8 +5,8 @@
  * under the terms of the MIT license.
  */
 
-#ifndef ELFLDR_SCOPEEXITGUARD_H
-#define ELFLDR_SCOPEEXITGUARD_H
+#ifndef MLSTD_SCOPEEXITGUARD_H
+#define MLSTD_SCOPEEXITGUARD_H
 
 #include <utils/Utils.h>
 
@@ -44,6 +44,6 @@ namespace mlstd {
 		bool should_call { true };
 	};
 
-} // namespace elfldr
+} // namespace mlstd
 
-#endif // ELFLDR_SCOPEEXITGUARD_H
+#endif // MLSTD_SCOPEEXITGUARD_H

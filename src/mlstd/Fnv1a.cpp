@@ -7,7 +7,7 @@
 
 // FNV1a hash algorithm.
 
-#include <mlstd/Hash.h>
+#include <mlstd/detail/Fnv1a.h>
 
 //#define USE_PRIME // Use magic prime from original C FNV1a implementation
 

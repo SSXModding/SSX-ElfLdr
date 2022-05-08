@@ -5,8 +5,8 @@
  * under the terms of the MIT license.
  */
 
-#ifndef ELFLDR_UTILITY_H
-#define ELFLDR_UTILITY_H
+#ifndef MLSTD_UTILITY_H
+#define MLSTD_UTILITY_H
 
 #include <mlstd/TypeTraits.h>
 #include <stddef.h>
@@ -56,7 +56,9 @@ namespace mlstd {
 	 */
 	template <class T>
 	struct TypedTransfer {
-		inline static void Copy(T* dest, const T* source, size_t length) requires(IsTrivallyCopyableV<T>) {
+		inline static void Copy(T* dest, const T* source, size_t length)
+			requires(IsTrivallyCopyableV<T>)
+		{
 			// For performance reasons, if we can copy via memcpy(),
 			// prefer that.
 			memcpy(dest, source, length * sizeof(T));
@@ -113,6 +115,6 @@ namespace mlstd {
 		return u.dst;
 	}
 
-} // namespace elfldr
+} // namespace mlstd
 
-#endif // ELFLDR_UTILITY_H
+#endif // MLSTD_UTILITY_H

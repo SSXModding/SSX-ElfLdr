@@ -5,8 +5,8 @@
  * under the terms of the MIT license.
  */
 
-#ifndef ELFLDR_OPTIONAL_H
-#define ELFLDR_OPTIONAL_H
+#ifndef MLSTD_OPTIONAL_H
+#define MLSTD_OPTIONAL_H
 
 #include <mlstd/detail/DeferredHolder.h>
 
@@ -15,7 +15,7 @@ namespace mlstd {
 	/**
 	 * Safe optional object.
 	 */
-	template<class T>
+	template <class T>
 	struct Optional {
 		using ValueType = T;
 		using Reference = T&;
@@ -45,12 +45,12 @@ namespace mlstd {
 		}
 
 		constexpr T& Value() {
-			ELFLDR_VERIFY(HasValue());
+			MLSTD_VERIFY(HasValue());
 			return value.GetConstructed();
 		}
 
 		constexpr const T& Value() const {
-			ELFLDR_VERIFY(HasValue());
+			MLSTD_VERIFY(HasValue());
 			return value.GetConstructed();
 		}
 
@@ -74,6 +74,6 @@ namespace mlstd {
 		detail::DeferredHolder<T> value;
 	};
 
-}
+} // namespace mlstd
 
 #endif // ELFLDR_OPTIONAL_H

@@ -46,7 +46,7 @@ namespace elfldr::util {
 #ifndef ERL
 		// use nano newlib puts() where we can
 		// printf("%s\n", buf);
-		elfldr_printf("%s\n", buf);
+		mlstd_printf("%s\n", buf);
 #else
 		// I could *probably* search through the binary for puts(),
 		// but this is fine (and just as safe).

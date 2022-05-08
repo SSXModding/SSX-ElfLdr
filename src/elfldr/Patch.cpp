@@ -42,7 +42,7 @@ namespace elfldr {
 	/*
 	ElfPatch* GetPatchByIdentifier(const char* ident) {
 		// ident must be a valid string pointer
-		ELFLDR_ASSERT(ident);
+		MLSTD_ASSERT(ident);
 
 		auto** patches = gPatchMap.GetValues();
 

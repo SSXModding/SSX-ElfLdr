@@ -6,7 +6,6 @@
  */
 
 #include <elf.h>
-#include <elfldr/ElfLoader.h>
 #include <erl/ErlLoader.h>
 #include <mlstd/Allocator.h>
 #include <mlstd/DynamicArray.h>
@@ -15,6 +14,8 @@
 #include <mlstd/String.h>
 #include <utils/CodeUtils.h>
 #include <utils/FioFile.h>
+
+#include "../elfldr/ElfLoader.h"
 
 #define DEBUG
 

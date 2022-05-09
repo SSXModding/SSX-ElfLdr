@@ -8,7 +8,7 @@
 add_executable(elfldr
         # Elfldr core
         ElfLoader.cpp
-        Patch.cpp
+        ElfPatch.cpp
 
         # patches
         Patches/HostFS.cpp

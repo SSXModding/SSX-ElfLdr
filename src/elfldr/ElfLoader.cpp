@@ -5,7 +5,8 @@
  * under the terms of the MIT license.
  */
 
-#include <elfldr/ElfLoader.h>
+#include "ElfLoader.h"
+
 #include <fileio.h>
 #include <iopcontrol.h>
 #include <iopheap.h>
@@ -17,12 +18,11 @@
 
 namespace elfldr {
 
-
 	void FlushCaches() {
 		FlushCache(CPU_INSTRUCTION_CACHE | CPU_DATA_CACHE);
 	}
 
-	void ResetIOP() {
+	void RebootIop() {
 		SifInitRpc(0);
 
 		while(!SifIopReset("", 0))
@@ -33,9 +33,15 @@ namespace elfldr {
 		SifInitRpc(0);
 	}
 
-	void InitLoader() {
+	// Global exec data, written by SifLoadElf(...)
+	// We use this to run the elf in ElfLoader::ExecElf
+	static t_ExecData gExecData {};
+
+	ElfLoader::ElfLoader() {
+		// Initialize loader services:
+
 		// Reboot the IOP.
-		ResetIOP();
+		RebootIop();
 		SifInitIopHeap();
 		SifLoadFileInit();
 
@@ -47,15 +53,6 @@ namespace elfldr {
 
 		// Initialize FIO.
 		fioInit();
-	}
-
-	// Global exec data, written by SifLoadElf(...)
-	// We use this to run the elf in ElfLoader::ExecElf
-	static t_ExecData gExecData {};
-
-	ElfLoader::ElfLoader() {
-		// Initialize loader services.
-		InitLoader();
 	}
 
 	bool ElfLoader::LoadElf(const char* inputPath) {
@@ -76,7 +73,7 @@ namespace elfldr {
 		FlushCaches();
 
 		// Reset the IOP and then ExecPS2 the loaded ELF.
-		ResetIOP();
+		RebootIop();
 		ExecPS2(reinterpret_cast<void*>(gExecData.epc), reinterpret_cast<void*>(gExecData.gp), argc, argv);
 	}
 

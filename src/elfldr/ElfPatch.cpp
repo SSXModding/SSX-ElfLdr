@@ -5,9 +5,8 @@
  * under the terms of the MIT license.
  */
 
-#include "Patch.h"
-
 #include "BinaryMap.h"
+#include "ElfPatch.h"
 
 // This is the max amount of patches the system can take.
 // Right now this number is kinda overkill,

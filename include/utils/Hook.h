@@ -18,7 +18,7 @@ namespace elfldr::util {
 		 *
 		 * \return Allocated trampoline for function.
 		 * \param[out] dest Destination function to hook.
-		 * \par
+		 * \param[in] hook Hook function pointer.
 		 */
 		void* HookFunctionBase(void* dest, const void* hook);
 	} // namespace detail
@@ -28,8 +28,8 @@ namespace elfldr::util {
 	 * \tparam HookT Hook function pointer type. Also determines trampoline type.
 	 * \return The trampoline. You can use this to call the original routine
 	 * 			from your hook.
-	 * 	\param[out] funcptr Function to hook. This function must be at least 5*sizeof(uint32_t) bytes long.
-	 * 	\param[in] hook The hook routine.
+	 * \param[out] funcptr Function to hook. This function must be at least 5*sizeof(uint32_t) bytes long.
+	 * \param[in] hook The hook routine.
 	 */
 	template <class HookT>
 	constexpr HookT HookFunction(void* funcptr, const HookT hook) {

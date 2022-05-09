@@ -11,21 +11,9 @@
 namespace elfldr {
 
 	/**
-	 * Flush both I & D caches. Used to save ps2sdk includes
+	 * Flush both I & D caches. Used to save ps2sdk includes.
 	 */
 	void FlushCaches();
-
-	/**
-	 * Initialize loader services, reset IOP and load modules.
-	 * Call this before using ElfLoader.
-	 */
-	void InitLoader();
-
-	/**
-	 * Reset the IOP.
-	 */
-	void ResetIOP();
-
 
 	/**
 	 * ELF loader class.

@@ -12,7 +12,7 @@
 #include <utils/GameVersion.h>
 #include <utils/Utils.h>
 
-#include "../Patch.h"
+#include "../ElfPatch.h"
 
 namespace elfldr {
 

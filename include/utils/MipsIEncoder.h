@@ -16,7 +16,7 @@
 
 #include <stdint.h>
 
-namespace elfldr::mips {
+namespace elfldr::util::mips {
 
 	// clang-format off
 

@@ -1,4 +1,4 @@
-site_name: SSX-ElfLdr v0.5
+site_name: SSX-ElfLdr v0.6
 copyright: (C) 2021-2022 modeco80 under the terms of the MIT License.
 theme: readthedocs
 
@@ -14,3 +14,6 @@ nav:
         - 'Patch Descriptions': patchdescriptions.md
     - 'Developers':
         - 'Building SSX-ElfLdr From Source': develop/building.md
+        - 'Library Reference':
+              - 'mlstd': develop/mlstd.md
+              - 'LibUtils': develop/utils.md

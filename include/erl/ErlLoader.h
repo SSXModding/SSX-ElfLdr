@@ -30,7 +30,7 @@ namespace elfldr::erl {
 	struct Symbol {
 		constexpr Symbol() = default;
 
-		constexpr Symbol(uintptr_t p)
+		constexpr explicit Symbol(uintptr_t p)
 			: _ptr(p) {
 		}
 
@@ -38,7 +38,7 @@ namespace elfldr::erl {
 			return mlstd::UBCast<int>(_ptr) != -1;
 		}
 
-		uintptr_t AsRaw() const {
+		[[nodiscard]] uintptr_t AsRaw() const {
 			return _ptr;
 		}
 
@@ -112,7 +112,7 @@ namespace elfldr::erl {
 		 */
 		Symbol ResolveSymbol(const char* symbolName);
 
-		const char* GetFileName() const;
+		[[nodiscard]] const char* GetFileName() const;
 
 	   private:
 		// Bump this up or down depending on changes to ImageImpl, in

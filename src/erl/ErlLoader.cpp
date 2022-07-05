@@ -51,9 +51,11 @@ namespace elfldr::erl {
 		return extender.sign_extended;
 	}
 
-	// TODO: Array<Image*>
-	// 	or HashTable<String(View), Image*> gLoadedImages?
-	//		for dependency support
+	// TODO:
+	// 		- global hashtable of loaded images
+	//		- dependency section parsing?
+	//		- working imports (we will be using this later...)
+	//
 
 	/**
 	 * Implementation of ERL image things.
@@ -136,7 +138,7 @@ namespace elfldr::erl {
 
 			// Validate elf header, return error condition
 
-			if(memcmp(header.e_ident, ELFMAG, sizeof(ELFMAG) - 1))
+			if(memcmp(header.e_ident, ELFMAG, sizeof(ELFMAG) - 1)) // NOLINT (we want this to branch if it's not exact)
 				return ErlLoadError::NotElf;
 
 			if(header.e_machine != EM_MIPS)
@@ -175,7 +177,7 @@ namespace elfldr::erl {
 
 	// helper to reduce the boilerplate.
 #define AS_IMPL() reinterpret_cast<ImageImpl*>(&this->_impl[0])
-#define AS_IMPL_C() reinterpret_cast<const ImageImpl*>(&this->_impl[0])
+#define AS_IMPL_C() reinterpret_cast<const ImageImpl*>(&this->_impl[0]) // const access
 
 	Image::Image() {
 		constexpr auto IMPL_SIZE = sizeof(ImageImpl);

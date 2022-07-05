@@ -74,7 +74,7 @@ namespace elfldr::erl {
 				return *sym;
 			}
 
-			return -1;
+			return Symbol(-1);
 		}
 
 		[[nodiscard]] const char* GetFileName() const {

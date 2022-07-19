@@ -31,7 +31,7 @@ target_link_libraries(elfldr
         # System libraries
         c_nano
         kernel
-        ps2sdkc
+        cglue
 
         # Project libraries
         elfldr::utils_elf

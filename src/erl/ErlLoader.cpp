@@ -162,7 +162,7 @@ namespace elfldr::erl {
 
 			file.Seek(header_->e_shoff, SEEK_SET);
 
-			if(auto count = header_->e_shnum * sizeof(Elf32_Shdr); file.Read(reinterpret_cast<void*>(&res[0]), count) != count)
+			if(auto count = header_->e_shnum * sizeof(Elf32_Shdr); file.Read(reinterpret_cast<void*>(&res[0]), count) != static_cast<int>(count))
 				return ErlLoadError::ErrorReading;
 
 			return res;

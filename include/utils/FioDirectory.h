@@ -13,11 +13,8 @@
 
 namespace elfldr::util {
 
-	// this is a GIANT hack but the Newlib constants don't work,
-	// so we have to define our own here.
-
-#define ELFLDR_FIO_ISDIR(entry) (((entry).stat.mode & 0b00000001))
-#define ELFLDR_FIO_ISREG(entry) (!((entry).stat.mode & 0b00000001))
+#define ELFLDR_FIO_ISDIR(entry) (((entry).stat.mode & 0x20))
+#define ELFLDR_FIO_ISREG(entry) (!((entry).stat.mode & 0x10))
 
 	/**
 	 * A safe wrapper over FIO directory iteration.
@@ -72,12 +69,12 @@ namespace elfldr::util {
 		void Iterate(DirectoryIterator&& callback) const {
 			if(!Good())
 				return;
+			io_dirent_t dirent{};
 
-			io_dirent_t dirent;
-
-			while(fioDread(fd, &dirent))
+			while(fioDread(fd, &dirent)) {
 				if(!callback(dirent))
 					return;
+			}
 		}
 
 	   private:

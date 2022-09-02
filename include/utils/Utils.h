@@ -26,10 +26,14 @@ namespace elfldr::util {
 	//		- asserts always blast?
 	//		- Uhh.. that's about it
 
+	void DebugInit();
+
 	/**
 	 * Write a message with a prefix.
 	 */
 	void DebugOut(const char* format, ...);
+
+	void DebugClose();
 
 } // namespace elfldr::util
 

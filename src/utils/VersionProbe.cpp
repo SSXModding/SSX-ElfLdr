@@ -37,7 +37,10 @@ namespace elfldr::util {
 				return false;
 			};
 
-			if(ELFLDR_FIO_ISREG(ent)) {
+			util::DebugOut("%s stat mode 0x%08x attr 0x%08x", ent.name, ent.stat.mode, ent.stat.attr);
+
+			// This is a hack but if this works it works
+			//if(ELFLDR_FIO_ISREG(ent)) {
 				if(TryGame(Game::SSXOG, GameRegion::NTSC, GameVersion::SSXOG_10))
 					return false;
 				if(TryGame(Game::SSXDVD, GameRegion::NTSC, GameVersion::SSXDVD_10))
@@ -50,7 +53,7 @@ namespace elfldr::util {
 					return false;
 				if(TryGame(Game::SSX3, GameRegion::NTSC, GameVersion::SSX3_10))
 					return false;
-			}
+			//}
 
 			return true;
 		});

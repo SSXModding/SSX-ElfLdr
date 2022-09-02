@@ -20,6 +20,9 @@
 elfldr::ElfLoader gLoader;
 
 int main() {
+
+	elfldr::util::DebugInit();
+
 #ifndef NDEBUG
 	elfldr::util::DebugOut("SSX-ElfLdr version " ELFLDR_VERSION_TAG " (" __DATE__ " " __TIME__ ")");
 #else
@@ -78,6 +81,9 @@ int main() {
 	char* argv[1];
 	argv[0] = mlstd::UBCast<char*>("host:"); // I hate this
 
+	elfldr::util::DebugOut("Executing game ELF (end of resident execution)\n");
+
+	elfldr::util::DebugClose();
 	gLoader.ExecElf(sizeof(argv) / sizeof(argv[0]), argv);
 
 	return 0;

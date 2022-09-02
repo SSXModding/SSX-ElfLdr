@@ -8,6 +8,7 @@
 #include <mlstd/Assert.h>
 #include <utils/FioFile.h>
 #include <utils/Utils.h>
+#include <string.h>
 
 namespace elfldr::util {
 
@@ -35,11 +36,18 @@ namespace elfldr::util {
 		return -1;
 	}
 
-	int FioFile::Write(void* buffer, size_t length) {
+	int FioFile::Write(const void* buffer, size_t length) {
 		if(Good())
 			return fioWrite(fd, buffer, length);
 
 		return -1;
+	}
+
+	void FioFile::WriteLine(const char* buffer) {
+		constexpr char NEWLINE[] = "\n";
+
+		Write(static_cast<const char*>(buffer), strlen(buffer));
+		Write(&NEWLINE, 1);
 	}
 
 	int FioFile::Seek(int offset, int whence) {

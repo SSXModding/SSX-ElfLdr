@@ -27,15 +27,10 @@ namespace elfldr::util {
 #define LITERAL_STRCPY(dst, lit) __builtin_memcpy(dst, lit, LITERAL_STRLEN(lit))
 #define VSNPRINTF_OFFSET(buf, size, offset) __builtin_vsnprintf(&(buf)[offset], ((size) - (offset)), format, val)
 
-
-	bool logfileAttempted = false;
 	FioFile logFile;
 
 	void DebugInit() {
-		if(!logFile.Good() && !logfileAttempted) {
-			logFile.Open("host:modloader.log", FIO_O_CREAT | FIO_O_APPEND | FIO_O_RDWR);
-			logfileAttempted = true;
-		}
+		logFile.Open("host:modloader.log", FIO_O_CREAT | FIO_O_APPEND | FIO_O_RDWR);
 	}
 
 	// This code is messy since it needs to only use gcc builtins
@@ -63,10 +58,7 @@ namespace elfldr::util {
 
 		// logfile
 		if(logFile.Good()) {
-			char newline = '\n';
-			logFile.Write(&buf[0], strlen(buf));
-			logFile.Write(&newline, 1);
-
+			logFile.WriteLine(buf);
 			fioSync(FIO_WAIT, nullptr);
 		}
 

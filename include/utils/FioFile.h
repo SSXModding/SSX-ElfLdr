@@ -62,7 +62,9 @@ namespace elfldr::util {
 		/**
 		 * Write some bytes to the file.
 		 */
-		int Write(void* buffer, size_t length);
+		int Write(const void* buffer, size_t length);
+
+		void WriteLine(const char* buffer);
 
 		/**
 		 * Seek somewhere in the file.

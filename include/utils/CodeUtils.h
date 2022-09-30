@@ -148,8 +148,7 @@ namespace elfldr::util {
 	 */
 	template <class Ret = void, class... Args>
 	constexpr Ret CallFunction(void* ptr, Args... args) {
-		using FuncT = Ret (*)(Args...);
-		return (reinterpret_cast<FuncT>(ptr))(args...);
+		return (reinterpret_cast<Ret(*)(Args...)>(ptr))(args...);
 	}
 
 	/**
@@ -179,7 +178,7 @@ namespace elfldr::util {
 		 * Only takes base argument types.
 		 */
 		constexpr Ret operator()(BaseArgTypes... args) const {
-			DebugOut("address is 0x%08x", functionAddress);
+			//DebugOut("address is 0x%08x", functionAddress);
 			return CallFunction<Ret>(Ptr(functionAddress), args...);
 		}
 

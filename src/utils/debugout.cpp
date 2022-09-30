@@ -52,16 +52,14 @@ namespace elfldr::util {
 		VSNPRINTF_OFFSET(buf, sizeof(buf), LITERAL_STRLEN(DEBUGOUT_PREFIX));
 
 #ifndef ERL
-		// use nano newlib puts() where we can
 		printf("%s\n", buf);
-		//mlstd_printf("%s\n", buf);
+		mlstd_printf("%s\n", buf);
 
-		// logfile
+		// Write messages to the logfile if it opened successfully
 		if(logFile.Good()) {
 			logFile.WriteLine(buf);
 			fioSync(FIO_WAIT, nullptr);
 		}
-
 #else
 		// I could *probably* search through the binary for puts(),
 		// but this is fine (and just as safe).

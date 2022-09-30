@@ -78,13 +78,15 @@ int main() {
 
 
 	// Execute the game ELF.
-	char* argv[1];
+	char* argv[3];
 	argv[0] = mlstd::UBCast<char*>("host:"); // I hate this
+	argv[1] = mlstd::UBCast<char*>("-track");
+	argv[2] = mlstd::UBCast<char*>("host:data/worlds/bam.big");
 
 	elfldr::util::DebugOut("Executing game ELF (end of resident execution)\n");
 
 	elfldr::util::DebugClose();
-	gLoader.ExecElf(sizeof(argv) / sizeof(argv[0]), argv);
+	gLoader.ExecElf(sizeof(argv) / sizeof(char**), argv);
 
 	return 0;
 }

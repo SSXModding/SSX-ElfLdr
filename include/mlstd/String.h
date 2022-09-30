@@ -14,6 +14,7 @@
 
 namespace mlstd {
 
+	// TODO: Move to a separate StringView header
 	/**
 	 * A "view" of a string. Does not own the memory,
 	 * and when copied, simply copies its pointer/length.
@@ -25,7 +26,7 @@ namespace mlstd {
 		using CharType = T;
 		using SizeType = size_t;
 
-		constexpr BasicStringView()
+		constexpr BasicStringView() noexcept
 			: data_ptr(nullptr),
 			  len(0) {
 		}
@@ -34,17 +35,17 @@ namespace mlstd {
 		// copy constructor.
 		constexpr BasicStringView(const BasicStringView&) = default;
 
-		constexpr BasicStringView(const T* ptr)
+		constexpr BasicStringView(const T* ptr) noexcept
 			: data_ptr(ptr),
 			  len(strlen(ptr)) {
 		}
 
-		constexpr BasicStringView(T* ptr, SizeType len)
+		constexpr BasicStringView(T* ptr, SizeType len) noexcept
 			: data_ptr(ptr),
 			  len(len) {
 		}
 
-		[[nodiscard]] constexpr SizeType Length() const {
+		[[nodiscard]] constexpr SizeType Length() const noexcept {
 			return len;
 		}
 
@@ -52,19 +53,19 @@ namespace mlstd {
 			return data_ptr;
 		}
 
-		constexpr const T* CStr() const {
+		constexpr const T* CStr() const noexcept {
 			return data_ptr;
 		}
 
-		constexpr const T& operator[](SizeType index) const {
+		constexpr const T& operator[](SizeType index) const noexcept {
 			return data_ptr[index];
 		}
 
-		friend constexpr bool operator==(const BasicStringView& lhs, const BasicStringView& rhs) {
+		friend constexpr bool operator==(const BasicStringView& lhs, const BasicStringView& rhs) noexcept {
 			return !Traits::Compare(lhs.data_ptr, rhs.data_ptr);
 		}
 
-		friend constexpr bool operator!=(const BasicStringView& lhs, const BasicStringView& rhs) {
+		friend constexpr bool operator!=(const BasicStringView& lhs, const BasicStringView& rhs) noexcept {
 			return !(lhs == rhs);
 		}
 
@@ -80,12 +81,12 @@ namespace mlstd {
 
 		inline BasicString() = default;
 
-		inline BasicString(const T* cstr) {
+		inline BasicString(const T* cstr) noexcept {
 			MLSTD_VERIFY(cstr != nullptr);
 			CopyFromCString(cstr);
 		}
 
-		inline BasicString(const T* mem, int length) {
+		inline BasicString(const T* mem, int length) noexcept {
 			MLSTD_VERIFY(mem != nullptr);
 
 			// TODO: maybe some interning.
@@ -95,7 +96,7 @@ namespace mlstd {
 			Traits::Copy(&mem[0], &memory[0], length);
 		}
 
-		inline BasicString(BasicString&& move) {
+		inline BasicString(BasicString&& move) noexcept {
 			memory = move.memory;
 			len = move.len;
 
@@ -106,13 +107,13 @@ namespace mlstd {
 			move.len = 0;
 		}
 
-		inline BasicString(const BasicString& source) {
+		inline BasicString(const BasicString& source) noexcept {
 			// new buffer.
 			Resize(source.len);
 			Traits::Copy(&source.memory[0], &memory[0], source.len);
 		}
 
-		inline BasicString& operator=(const BasicString& copy) {
+		inline BasicString& operator=(const BasicString& copy) noexcept {
 			if(this == &copy)
 				return *this;
 
@@ -121,35 +122,42 @@ namespace mlstd {
 			return *this;
 		}
 
+		inline BasicString& operator=(BasicString&& move) noexcept {
+			memory = move.memory;
+			len = move.len;
+
+			return *this;
+		}
+
 		inline ~BasicString() {
 			Resize(0);
 		}
 
-		inline const T* c_str() const {
+		inline const T* c_str() const noexcept {
 			return memory;
 		}
 
-		[[nodiscard]] inline SizeType length() const {
+		[[nodiscard]] inline SizeType length() const noexcept {
 			return len;
 		}
 
-		inline T& operator[](SizeType index) {
+		inline T& operator[](SizeType index) noexcept {
 			return memory[index];
 		}
 
-		inline const T& operator[](SizeType index) const {
+		inline const T& operator[](SizeType index) const noexcept {
 			return memory[index];
 		}
 
-		inline T* data() {
+		inline T* data() noexcept {
 			return memory;
 		}
 
-		inline const T* data() const {
+		inline const T* data() const noexcept {
 			return memory;
 		}
 
-		inline void Resize(SizeType newLength) {
+		inline void Resize(SizeType newLength) noexcept {
 			if(newLength == 0) {
 				// Destroy the buffer, if we have one to destroy
 				if(memory) {
@@ -182,7 +190,7 @@ namespace mlstd {
 		//
 		// BasicString substr(SizeType pos, SizeType len) - Returns a new allocated substring of this source string
 
-		inline BasicString substr(SizeType pos, SizeType len = -1) {
+		inline BasicString substr(SizeType pos, SizeType len = -1) noexcept {
 			if(pos > this->len)
 				return "";
 
@@ -214,21 +222,21 @@ namespace mlstd {
 		// equality operators
 		// operator== might need some work done to it.
 
-		friend inline bool operator==(const BasicString& lhs, const BasicString& rhs) {
+		friend inline bool operator==(const BasicString& lhs, const BasicString& rhs) noexcept {
 			// would probably need some work for introducing U8String
 			return !Traits::Compare(lhs.data(), rhs.data());
 		}
 
-		friend inline bool operator!=(const BasicString& lhs, const BasicString& rhs) {
+		friend inline bool operator!=(const BasicString& lhs, const BasicString& rhs) noexcept {
 			return !(lhs == rhs);
 		}
 
-		explicit operator BasicStringView<T>() {
+		explicit operator BasicStringView<T>() noexcept {
 			return BasicStringView<T>(data(), length());
 		}
 
 	   private:
-		void CopyFromCString(const T* cstr) {
+		void CopyFromCString(const T* cstr) noexcept {
 			if(!cstr)
 				return;
 
@@ -250,14 +258,14 @@ namespace mlstd {
 
 	template <class CharT, template <class> class Traits, class Allocator>
 	struct Hash<BasicString<CharT, Traits<CharT>, Allocator>> {
-		inline static uint32_t hash(const BasicString<CharT, Traits<CharT>>& str) {
+		inline static uint32_t hash(const BasicString<CharT, Traits<CharT>>& str) noexcept {
 			return detail::fnv1a_hash(reinterpret_cast<const void*>(str.c_str()), str.length() * sizeof(CharT), 0);
 		}
 	};
 
 	template <class CharT, template <class> class Traits>
 	struct Hash<BasicStringView<CharT, Traits<CharT>>> {
-		inline static uint32_t hash(const BasicStringView<CharT, Traits<CharT>>& str) {
+		inline static uint32_t hash(const BasicStringView<CharT, Traits<CharT>>& str) noexcept {
 			return detail::fnv1a_hash(reinterpret_cast<const void*>(str.Data()), str.Length() * sizeof(CharT), 0);
 		}
 	};
@@ -270,7 +278,6 @@ namespace mlstd {
 	// doesn't do extra work + linker doesn't have
 	// to do it either.
 	extern template struct BasicString<char>;
-	extern template struct BasicStringView<char>;
 
 	// safe for UTF-8 (?)
 	// using U8String = BasicString<char8_t>;
@@ -279,7 +286,7 @@ namespace mlstd {
 	// String Algorithms:
 
 	template <class CharT, template <class> class Traits>
-	constexpr bool StrCaseMatch(BasicStringView<CharT, Traits<CharT>> sv, BasicStringView<CharT, Traits<CharT>> sv2) {
+	constexpr bool StrCaseMatch(BasicStringView<CharT, Traits<CharT>> sv, BasicStringView<CharT, Traits<CharT>> sv2) noexcept {
 		if(sv.Length() != sv2.Length())
 			return false; // Quick shortcut
 
@@ -291,7 +298,7 @@ namespace mlstd {
 	}
 
 	template <class CharT, template <class> class Traits>
-	constexpr bool StrMatch(BasicStringView<CharT, Traits<CharT>> sv, BasicStringView<CharT, Traits<CharT>> sv2) {
+	constexpr bool StrMatch(BasicStringView<CharT, Traits<CharT>> sv, BasicStringView<CharT, Traits<CharT>> sv2) noexcept {
 		if(sv.Length() != sv2.Length())
 			return false; // Quick shortcut
 

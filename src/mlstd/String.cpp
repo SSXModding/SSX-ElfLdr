@@ -10,5 +10,4 @@
 
 #include <mlstd/String.h>
 
-template struct mlstd::BasicStringView<char>;
 template struct mlstd::BasicString<char>;

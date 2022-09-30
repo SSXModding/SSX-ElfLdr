@@ -25,18 +25,27 @@
 // I'm only kidding of course, but, for the most part,
 // MLSTD_VERIFY() is used for sanity checking I'd always like in
 // the release build.
+//
+// This header and all definitions are usable in both C and C++ code;
+// although the C++ code will have additional niceties (like [[unlikely]] usage) included.
 
 #ifndef MLSTD_ASSERT_H
 #define MLSTD_ASSERT_H
+
+#ifdef __cplusplus
+	#define __MLSTD_ASSERT_UNLIKELY [[unlikely]]
+#else
+	#define __MLSTD_ASSERT_UNLIKELY
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #ifndef NDEBUG
-extern "C" void mlstdAssertionFailure(const char* exp, const char* function, const char* file, unsigned line);
+void mlstdAssertionFailure(const char* exp, const char* function, const char* file, unsigned line);
 #endif
-extern "C" void mlstdVerifyFailure(const char* exp, const char* file, unsigned line);
+void mlstdVerifyFailure(const char* exp, const char* file, unsigned line);
 
 #ifdef __cplusplus
 }
@@ -46,23 +55,25 @@ extern "C" void mlstdVerifyFailure(const char* exp, const char* file, unsigned l
 // just enough to assert/verify. Don't go putting this into expressions.
 
 #ifndef NDEBUG
-	#define MLSTD_ASSERT(x)                                                         \
-		do {                                                                        \
-			if(!(x)) {                                                              \
-				mlstdAssertionFailure(#x, __PRETTY_FUNCTION__, __FILE__, __LINE__); \
-				__builtin_unreachable();                                            \
-			}                                                                       \
+	#define MLSTD_ASSERT(x)                                                             \
+		do {                                                                            \
+			if(!(x))                                                                    \
+				__MLSTD_ASSERT_UNLIKELY {                                               \
+					mlstdAssertionFailure(#x, __PRETTY_FUNCTION__, __FILE__, __LINE__); \
+					__builtin_unreachable();                                            \
+				}                                                                       \
 		} while(0)
 #else
 	#define MLSTD_ASSERT(x)
 #endif
 
-#define MLSTD_VERIFY(x)                                 \
-	do {                                                \
-		if(!(x)) {                                      \
-			mlstdVerifyFailure(#x, __FILE__, __LINE__); \
-			__builtin_unreachable();                    \
-		}                                               \
+#define MLSTD_VERIFY(x)                                     \
+	do {                                                    \
+		if(!(x))                                            \
+			__MLSTD_ASSERT_UNLIKELY {                       \
+				mlstdVerifyFailure(#x, __FILE__, __LINE__); \
+				__builtin_unreachable();                    \
+			}                                               \
 	} while(0)
 
 #define MLSTD_UNREACHABLE() __builtin_unreachable()

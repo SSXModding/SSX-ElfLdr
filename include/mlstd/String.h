@@ -70,9 +70,15 @@ namespace mlstd {
 		}
 
 	   private:
+
 		const T* data_ptr;
 		SizeType len;
 	};
+
+	// TODO:
+	//  - Clean up SSO implementation
+	//		- Make class a bit less grody
+	//		- Add adapters for allocating/deallocating based on SSO tag
 
 	template <class T, class Traits = CharTraits<T>, class Alloc = StdAllocator<T>>
 	struct BasicString {
@@ -89,28 +95,32 @@ namespace mlstd {
 		inline BasicString(const T* mem, int length) noexcept {
 			MLSTD_VERIFY(mem != nullptr);
 
-			// TODO: maybe some interning.
-			// 32 chars max intern, before it becomes an allocation.
 			Resize(length);
-			// memcpy(&memory[0], &mem[0], length * sizeof(T));
-			Traits::Copy(&mem[0], &memory[0], length);
+			Traits::Copy(&mem[0], &GetMemory()[0], length);
 		}
 
 		inline BasicString(BasicString&& move) noexcept {
-			memory = move.memory;
-			len = move.len;
 
-			// invalidate the string we're moving from,
-			// since this instance now owns the memory.
+			if(move.isSmall) {
+				isSmall = move.isSmall;
+				move.storage = storage;
+			} else {
+				isSmall = false;
+				storage.InitAllocated();
+				storage.allocated.memory = move.storage.allocated.memory;
+				storage.allocated.len = move.storage.allocated.len;
 
-			move.memory = nullptr;
-			move.len = 0;
+				// exchange allocators (for now); should implement a trait
+				// to allow allocators to tell code when to not exchange
+				storage.allocated.alloc = move.storage.allocated.alloc;
+			}
+
 		}
 
 		inline BasicString(const BasicString& source) noexcept {
 			// new buffer.
-			Resize(source.len);
-			Traits::Copy(&source.memory[0], &memory[0], source.len);
+			Resize(source.GetSize());
+			Traits::Copy(&source.GetMemory()[0], GetMemory(), source.length());
 		}
 
 		inline BasicString& operator=(const BasicString& copy) noexcept {
@@ -123,79 +133,85 @@ namespace mlstd {
 		}
 
 		inline BasicString& operator=(BasicString&& move) noexcept {
-			memory = move.memory;
-			len = move.len;
-
-			return *this;
+			return *new (this) BasicString(move);
 		}
 
 		inline ~BasicString() {
 			Resize(0);
+			// TODO: the above Resize(0) should be handled here, except w/ brute force
+			DestroyStorage();
 		}
 
 		inline const T* c_str() const noexcept {
-			return memory;
+			return GetMemory();
 		}
 
 		[[nodiscard]] inline SizeType length() const noexcept {
-			return len;
+			return GetSize();
 		}
 
 		inline T& operator[](SizeType index) noexcept {
-			return memory[index];
+			return GetMemory()[index];
 		}
 
 		inline const T& operator[](SizeType index) const noexcept {
-			return memory[index];
+			return GetMemory()[index];
 		}
 
 		inline T* data() noexcept {
-			return memory;
+			return GetMemory();
 		}
 
 		inline const T* data() const noexcept {
-			return memory;
+			return GetMemory();
 		}
 
 		inline void Resize(SizeType newLength) noexcept {
 			if(newLength == 0) {
-				// Destroy the buffer, if we have one to destroy
-				if(memory) {
-					len = 0;
-					alloc.Deallocate(memory);
+				// Free non-sso buffer
+				if(!isSmall) {
+					storage.allocated.Deallocate();
+				} else {
+					storage.small.Deallocate();
 				}
 				return;
 			}
 
-			// save old buffer
-			auto* old = memory;
+			if(newLength + 1 > SsoStorage::Small::SSO_BUFFER_SIZE) {
+				// We'll need to allocate memory for this..
 
-			// allocate new buffer
-			memory = alloc.Allocate(newLength + 1);
-			memory[newLength] = '\0';
+				// save old buffer so we can free it later
+				auto* old = GetMemory();
+				bool wasSmall = isSmall;
 
-			if(old) {
-				// copy the old buffer in
-				// TODO: could probably maybe truncate for any length?
-				if(len <= newLength)
-					Traits::Copy(&old[0], &memory[0], len);
+				storage.InitAllocated();
 
-				// don't need it
-				alloc.Deallocate(old);
+				isSmall = false;
+				storage.allocated.Allocate(newLength + 1);
+				GetMemory()[newLength] = '\0';
+
+				if(old) {
+					if(GetSize() <= newLength)
+						Traits::Copy(&old[0], &GetMemory()[0], GetSize());
+
+					// If the old buffer came from SSO previously, make sure
+					// to handle that case so that we don't break anything
+					if(!wasSmall)
+						storage.allocated.alloc.Deallocate(old);
+				}
+
+			} else {
+				storage.InitSmall();
+				storage.small.Allocate(newLength + 1);
 			}
-			len = newLength;
 		}
 
-		// TODO (maybe?):
-		//
-		// BasicString substr(SizeType pos, SizeType len) - Returns a new allocated substring of this source string
-
 		inline BasicString substr(SizeType pos, SizeType len = -1) noexcept {
-			if(pos > this->len)
+			if(pos > GetSize())
 				return "";
 
 			if(len != -1) {
-				if((pos + len) > this->len)
+				if((pos + len) > GetSize())
 					return "";
 			} else {
 				len = 0;
@@ -206,8 +222,8 @@ namespace mlstd {
 				while(*d != '\0') {
 					// If we weren't able to find the terminator, then give up,
 					// and just say it's the end of the string.
-					if(d == &data()[this->len]) {
-						len = pos - this->len;
+					if(d == &data()[GetSize()]) {
+						len = pos - GetSize();
 						break;
 					}
 
@@ -219,11 +235,7 @@ namespace mlstd {
 			return BasicString(&data()[pos], len);
 		}
 
-		// equality operators
-		// operator== might need some work done to it.
-
 		friend inline bool operator==(const BasicString& lhs, const BasicString& rhs) noexcept {
-			// would probably need some work for introducing U8String
 			return !Traits::Compare(lhs.data(), rhs.data());
 		}
 
@@ -243,12 +255,90 @@ namespace mlstd {
 			const auto clen = Traits::Length(cstr);
 
 			Resize(clen);
-			memcpy(&memory[0], &cstr[0], clen * sizeof(T));
+			memcpy(&GetMemory()[0], &cstr[0], clen * sizeof(T));
 		}
 
-		T* memory { nullptr };
-		SizeType len {};
-		Alloc alloc;
+		constexpr T* GetMemory() noexcept {
+			if(isSmall)
+				return &storage.small.ssoMemory[0];
+
+			return storage.allocated.memory;
+		}
+
+		constexpr const T* GetMemory() const noexcept {
+			if(isSmall)
+				return &storage.small.ssoMemory[0];
+
+			return storage.allocated.memory;
+		}
+
+		constexpr SizeType GetSize() const noexcept {
+			if(isSmall)
+				return storage.small.len;
+			return storage.allocated.len;
+		}
+
+
+		constexpr void DestroyStorage() noexcept {
+			if(isSmall)
+				storage.allocated.~Allocated();
+			else
+				storage.small.~Small();
+		}
+
+		/**
+		 * True if SSO storage is being used.
+		 */
+		bool isSmall{true};
+
+		union SsoStorage {
+			~SsoStorage() = default;
+
+			struct Allocated {
+				T* memory { nullptr };
+				SizeType len {};
+				Alloc alloc;
+
+				// pads the size to 16/32 bytes
+				SizeType pad[2];
+
+				void Allocate(SizeType length) {
+					memory = alloc.Allocate(length + 1);
+					len = length;
+				}
+
+				void Deallocate() {
+					if(memory)
+						alloc.Deallocate(memory);
+				}
+			} allocated;
+
+			struct Small {
+				constexpr static auto SSO_BUFFER_SIZE = sizeof(Allocated) - sizeof(SizeType) / sizeof(T);
+				T ssoMemory[SSO_BUFFER_SIZE];
+				SizeType len;
+
+				void Allocate(SizeType length) {
+					MLSTD_VERIFY(length >= SSO_BUFFER_SIZE && "Invalid Allocate() for SSO");
+					len = length;
+				}
+
+				void Deallocate() {
+					len = 0;
+				}
+			} small;
+
+			void InitAllocated() {
+				new (&allocated) Allocated;
+			}
+
+			void InitSmall() {
+				new (&small) Small;
+			}
+
+			static_assert(sizeof(Small) == sizeof(Allocated), "SSO storage types deviated, fix it please");
+		} storage {};
+
 	};
 
 	// Hash<T> specializations for string stuff,

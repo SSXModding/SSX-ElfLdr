@@ -36,6 +36,7 @@ int main() {
 
 	const auto& gdata = elfldr::util::GetGameVersionData();
 
+
 	if(gdata.game == elfldr::util::Game::Invalid) {
 		// TODO: if config file, change this message to state "Invalid game configured in config file {config}".
 		elfldr::util::DebugOut("No supported game could be detected alongside ModLoader.");

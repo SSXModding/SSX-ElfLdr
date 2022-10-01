@@ -28,4 +28,13 @@ void _ps2sdk_libc_deinit() {
 
 void _ps2sdk_timezone_update() {
 }
+
+void __libpthreadglue_init() {
+
+}
+
+void __libpthreadglue_deinit() {
+
+}
+
 }

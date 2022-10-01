@@ -117,7 +117,7 @@ namespace elfldr::erl {
 	   private:
 		// Bump this up or down depending on changes to ImageImpl, in
 		// erl/ErlLoader.cpp.
-		using ImplStorage = uint8_t[44];
+		using ImplStorage = uint8_t[64];
 
 		// impl. Please no touch :(
 		ImplStorage _impl;

@@ -31,12 +31,13 @@ target_link_libraries(elfldr
         # System libraries
         c_nano
         kernel
-        cglue
+	cglue
 
         # Project libraries
         elfldr::utils_elf
         elfldr::mlstd
 
+	
         # add for v0.6.0
         #elfldr::erl
         "-Wl,--end-group")

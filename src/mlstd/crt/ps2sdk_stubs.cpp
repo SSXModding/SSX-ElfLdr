@@ -5,35 +5,27 @@
  * under the terms of the MIT license.
  */
 
-// Stubs for PS2SDK
+// Stubs for PS2SDK, so we don't bring in bulky code
+// or have to link it in at all
 
 extern "C" {
 int printf(const char* __restrict format, ...);
 
-// void _ps2sdk_args_parse(int argc, char ** argv) {
-//	(void)argc;
-//	(void)argv;
-// }
-
-// Remove code relating to setting up the time zone,
-// we don't need it
-
-void _ps2sdk_libc_init() {
-	printf("libc init\n");
-}
-
-void _ps2sdk_libc_deinit() {
-	printf("libc deinit\n");
-}
-
 void _ps2sdk_timezone_update() {
 }
 
-void __libpthreadglue_init() {
+// HACK(lily): It's techinicially supposed to be possible to override the
+// pthreadglue functions to do what we want here, however for some reason,
+// that doesn't work here. So I'm doing the very-much-bad-idea of just
+// overriding the pthread_* functions to be no-ops. This works perfectly,
+// for some reason I'd rather not know. Before someone asks, yes, this is a
+// hack, and I'm not ashemed of it.
+
+void pthread_init() {
 
 }
 
-void __libpthreadglue_deinit() {
+void pthread_terminate() {
 
 }
 

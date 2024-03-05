@@ -85,7 +85,14 @@ namespace elfldr::erl {
 
 		mlstd::HashTable<mlstd::String, Symbol> symbol_table;
 		mlstd::String filename;
-		mlstd::DynamicArray<uint8_t> bytes;
+
+		//mlstd::DynamicArray<uint8_t> bytes;
+
+		// ELF Data
+
+
+		Elf32_Ehdr header_ {};
+		mlstd::DynamicArray<Elf32_Shdr> shdrs_;
 	};
 
 	/**
@@ -98,8 +105,8 @@ namespace elfldr::erl {
 		 * \param[in] path Path to ERL
 		 * \param[in,out] impl Reference to impl object to fill. Mostly for null safety
 		 */
-		ErlLoader(const char* path, ImageImpl& impl)
-			: image(&impl) {
+		ErlLoader(const char* path, ImageImpl* impl)
+			: image(impl) {
 			// Open the ERL
 			file.Open(path, O_RDONLY);
 		}
@@ -108,71 +115,61 @@ namespace elfldr::erl {
 		 * Main driver load function.
 		 * \returns no error, or an ErlLoadError from any of the steps.
 		 */
-		LoadResult<void> Load() {
+		LoadResult<> Load() {
 			// load the header
-			auto header = LoadHeader();
-			if(header.HasError())
-				return header.Error();
+			if(auto res = LoadHeader(); res.HasError())
+				return res.Error();
 
-			// Get address of the stored header,
-			// and keep note of it (to avoid calling into Expected over and over)
-			header_ = &(*header);
+			// Load section headers
+			if(auto res = LoadSectionHeaders(); res.HasError())
+				return res.Error();
 
-			auto sections = LoadSectionHeaders();
-			if(sections.HasError())
-				return sections.Error();
-
-			shdrs_ = &(*sections);
-
-
-			return mlstd::NO_ERROR<ErlLoadError>;
+			return { };
 		}
 
-		LoadResult<Elf32_Ehdr> LoadHeader() {
+		LoadResult<> LoadHeader() {
 			if(!file)
 				return ErlLoadError::FileNotFound;
 
-			Elf32_Ehdr header;
-			if(file.Read(reinterpret_cast<void*>(&header), sizeof(header)) != sizeof(header))
+			if(file.Read(reinterpret_cast<void*>(&header_), sizeof(header_)) != sizeof(header_))
 				return ErlLoadError::ErrorReading;
 
 			// Validate elf header, return error condition
 
-			if(memcmp(header.e_ident, ELFMAG, sizeof(ELFMAG) - 1)) // NOLINT (we want this to branch if it's not exact)
+			if(memcmp(header_.e_ident, ELFMAG, sizeof(ELFMAG) - 1)) // NOLINT (we want this to branch if it's not exact)
 				return ErlLoadError::NotElf;
 
-			if(header.e_machine != EM_MIPS)
+			if(header_.e_machine != EM_MIPS)
 				return ErlLoadError::NotMips;
 
-			if(header.e_type != ET_REL)
+			if(header_.e_type != ET_REL)
 				return ErlLoadError::NotRelocatable;
 
 			// Do some size sanity checks
 
-			if(sizeof(Elf32_Shdr) != header.e_shentsize)
+			if(sizeof(Elf32_Shdr) != header_.e_shentsize)
 				return ErlLoadError::SizeMismatch;
 
 			// Now we're good.
-			return header;
+			return {};
 		}
 
-		LoadResult<mlstd::DynamicArray<Elf32_Shdr>> LoadSectionHeaders() {
-			mlstd::DynamicArray<Elf32_Shdr> res;
-			res.Resize(header_->e_shnum);
+		LoadResult<void> LoadSectionHeaders() {
+			shdrs_.Resize(header_.e_shnum);
 
-			file.Seek(header_->e_shoff, SEEK_SET);
+			file.Seek(header_.e_shoff, SEEK_SET);
 
-			if(auto count = header_->e_shnum * sizeof(Elf32_Shdr); file.Read(reinterpret_cast<void*>(&res[0]), count) != static_cast<int>(count))
+			if(auto count = header_.e_shnum * sizeof(Elf32_Shdr); file.Read(reinterpret_cast<void*>(&shdrs_[0]), count) != static_cast<int>(count))
 				return ErlLoadError::ErrorReading;
 
-			return res;
+			return mlstd::NO_ERROR<ErlLoadError>;
 		}
 
 	   private:
 		util::FioFile file;
 		ImageImpl* image;
-		Elf32_Ehdr* header_ {};
-		mlstd::DynamicArray<Elf32_Shdr>* shdrs_;
+		Elf32_Ehdr header_ {};
+		mlstd::DynamicArray<Elf32_Shdr> shdrs_;
 	};
 
 	// helper to reduce the boilerplate.
@@ -180,17 +177,15 @@ namespace elfldr::erl {
 #define AS_IMPL_C() reinterpret_cast<const ImageImpl*>(&this->_impl[0]) // const access
 
 	Image::Image() {
-		constexpr auto IMPL_SIZE = sizeof(ImageImpl);
-		static_assert(sizeof(_impl) >= IMPL_SIZE, "Impl data can't hold impl object");
-		new(AS_IMPL()) ImageImpl();
+		_impl = reinterpret_cast<uint8_t*>(new ImageImpl());
 	}
 
 	Image::~Image() {
-		AS_IMPL()->~ImageImpl();
+		delete AS_IMPL();
 	}
 
 	LoadResult<void> Image::LoadFromFile(const char* filename) {
-		return ErlLoader { filename, *AS_IMPL() }.Load();
+		return ErlLoader { filename, AS_IMPL() }.Load();
 	}
 
 	Symbol Image::ResolveSymbol(const char* symbolName) {

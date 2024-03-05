@@ -1,0 +1,5 @@
+{
+    "cmake.configureArgs": [
+        "--toolchain cmake/Toolchain/ps2.cmake"
+    ]
+}

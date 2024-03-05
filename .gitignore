@@ -1,6 +1,7 @@
 .idea/
+.cache/
 build/
-cmake-build-*
+cmake-build-*/
 
 /publish.sh
 /site

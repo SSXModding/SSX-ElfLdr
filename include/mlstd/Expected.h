@@ -13,6 +13,8 @@
 #include <mlstd/Utility.h>
 #include <stdint.h>
 
+// TODO: lvalue & rvalue take overloads
+
 namespace mlstd {
 
 	/**
@@ -23,6 +25,7 @@ namespace mlstd {
 	template <class T, class E>
 	struct Expected {
 		constexpr Expected() = default;
+		constexpr Expected(const Expected&) = default;
 
 		constexpr Expected(const T& t) // NOLINT
 			: value(t) {
@@ -70,22 +73,22 @@ namespace mlstd {
 		}
 
 		constexpr T& Value() {
-			MLSTD_VERIFY(HasValue() && !HasError());
+			MLSTD_ASSERT(HasValue() && !HasError());
 			return value.GetConstructed();
 		}
 
 		constexpr E& Error() {
-			MLSTD_VERIFY(!HasValue() && HasError());
+			MLSTD_ASSERT(!HasValue() && HasError());
 			return error.GetConstructed();
 		}
 
 		constexpr const T& Value() const {
-			MLSTD_VERIFY(HasValue() && !HasError());
+			MLSTD_ASSERT(HasValue() && !HasError());
 			return value.GetConstructed();
 		}
 
 		constexpr const E& Error() const {
-			MLSTD_VERIFY(!HasValue() && HasError());
+			MLSTD_ASSERT(!HasValue() && HasError());
 			return error.GetConstructed();
 		}
 

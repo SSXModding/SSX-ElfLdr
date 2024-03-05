@@ -9,6 +9,7 @@
 #define MLSTD_DETAIL_DEFERREDHOLDER_H
 
 #include <mlstd/Assert.h>
+#include <mlstd/Utility.h>
 #include <stdint.h>
 
 namespace mlstd::detail {

@@ -28,6 +28,8 @@ add_dependencies(elfldr __elfldr_gittag)
 target_link_libraries(elfldr
         "-nodefaultlibs"
         "-Wl,--start-group"
+        gcc
+        
         # System libraries
         c_nano
         kernel

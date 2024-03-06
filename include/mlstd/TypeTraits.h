@@ -6,12 +6,16 @@
  */
 
 // This file declares my own implementation
-// of C++ type traits in MLSTD.
+// of C++ type traits in MLSTD. (TODO: Replace with better impementation)
 
 #ifndef MLSTD_TYPETRAITS_H
 #define MLSTD_TYPETRAITS_H
 
 namespace mlstd {
+
+	template <class T>
+	consteval auto declval() -> T;
+
 
 	// declares ::type using,
 	// useful since you can just baseclass TypeConstant<T>

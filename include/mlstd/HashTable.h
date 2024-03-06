@@ -10,19 +10,16 @@
 
 #include <mlstd/Hash.h>
 #include <mlstd/Utility.h>
+#include "mlstd/Allocator.h"
+#include "mlstd/DynamicArray.h"
 
 namespace mlstd {
 
 	// TODO:
-	// - Multi dimension/linked buckets for hash collisions maybe
-	//  (I may just throw out a ERL which does that.)
-	//
-	// - (should really do) dynamic growing, as needed
-	//      Will be done probably after the Allocator API is finalized and Vector<T> is implemented
-	//		We will also need to rehash all keys when resizing which sucks but meh
+	// - Quadratic probl
 
 	/**
-	 * A simple hash table/hashmap. Doesn't handle collisions,
+	 * A simple hash table/unordered map. Doesn't handle collisions,
 	 * and is probably boneheaded in design. It works though.
 	 *
 	 * \tparam Key Key type. Must have a Hash implementation.
@@ -32,28 +29,15 @@ namespace mlstd {
 	 */
 	template <class Key, class Value, class Hash = Hash<Key>, template <class> class Allocator = StdAllocator>
 	struct HashTable {
-		inline HashTable() = default;
-
-		inline HashTable(size_t bucketSize) {
-			Init(bucketSize);
-		}
-
-		~HashTable() {
-			if(bucket_size)
-				FreeBuckets();
-		}
-
-		void Init(size_t size) {
-			if(!bucket_size)
-				AllocBuckets(size);
+		inline HashTable()  {
+			// TODO?
+			buckets.Resize(64);
 		}
 
 		/**
 		 * Add a value to the hash table.
-		 * This is a direct API that may clash
-		 * with operator[]. Sorry.
 		 */
-		void Set(const Key& key, const Value& value) {
+		void Insert(const Key& key, const Value& value) {
 			auto* bucket = MaybeGetBucket(key);
 
 			if(!bucket)
@@ -75,7 +59,7 @@ namespace mlstd {
 			// for this key isn't used, then
 			// we definitely don't have the key,
 			// and we don't need to bug Key::operator==.
-			if(!bucket->used)
+			if(bucket->state != Bucket::State::Full)
 				return false;
 
 			return bucket->key == key;
@@ -100,8 +84,8 @@ namespace mlstd {
 			//
 			// AKA: It's not an error condition
 			// if we get here and the bucket isn't used.
-			if(!bucket->used) {
-				bucket->used = true;
+			if(!bucket->state == Bucket::State::Empty) {
+				bucket->state = Bucket::State::Full;
 				bucket->key = k;
 			}
 
@@ -115,46 +99,26 @@ namespace mlstd {
 		struct Bucket {
 			Key key;
 			Value value;
-			bool used;
+			enum class State : uint8_t {
+				Empty,
+				Full
+			};
+
+			State state{State::Empty};
 		};
 
-		Allocator<Bucket> alloc;
-
 		uint32_t HashKey(const Key& key) {
-			return Hash::hash(key) % bucket_size;
+			return Hash::hash(key) % buckets.Size();
 		}
 
 		Bucket* MaybeGetBucket(const Key& key) {
-			if(!buckets)
+			if(!buckets.Size())
 				return nullptr;
+			
 			return &buckets[HashKey(key)];
 		}
 
-		void AllocBuckets(size_t size) {
-			// avoid a memory leak by freeing any old buckets
-			// beforehand.
-			if(buckets)
-				FreeBuckets();
-
-			buckets = alloc.Allocate(size);
-
-			// initialize storage
-			for(size_t i = 0; i < size; ++i)
-				alloc.Construct(&buckets[i]);
-
-			bucket_size = size;
-		}
-
-		void FreeBuckets() {
-			for(size_t i = 0; i < bucket_size; ++i)
-				buckets[i].~Bucket();
-
-			alloc.Deallocate(buckets);
-			bucket_size = 0;
-		}
-
-		Bucket* buckets {};
-		size_t bucket_size {};
+		DynamicArray<Bucket, Allocator<Bucket>> buckets;
 	};
 
 } // namespace mlstd

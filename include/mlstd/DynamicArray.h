@@ -14,10 +14,6 @@
 
 namespace mlstd {
 
-	// some stuff to do:
-	// - implement push operation
-	// - implement growing (as we get closer to initial length, or immediately, begin reallocating)
-
 	/**
 	 * A simple dynamic array.
 	 */
@@ -44,12 +40,14 @@ namespace mlstd {
 
 		inline DynamicArray(DynamicArray&& move) noexcept {
 			rawArray = move.rawArray;
-			length = move.length;
+			capacity = move.length;
+			size = move.size;
 
 			// invalidate what we're moving from,
 			// since this instance now owns the memory.
 			move.rawArray = nullptr;
 			move.length = 0;
+			move.size = 0;
 		}
 
 		constexpr ~DynamicArray() {
@@ -71,42 +69,75 @@ namespace mlstd {
 		// we might want to provide a Reserve() function as well,
 		// which resizes to N but does not activate storage of Elem's
 
-		void Resize(SizeType newSize) {
-			if(newSize == 0) {
+		void Reserve(SizeType newCapacity) {
+			auto destroy = [&](Elem* ptr, SizeType size) {
+				for(SizeType i = 0; i < size; ++i)
+					ptr[i].~Elem();
+				alloc.Deallocate(ptr);
+			};
+
+			if(newCapacity == 0) {
 				// Sentinel value indicating we need to delete array.
-
-				if(length != 0) {
-					for(size_t i = 0; i < length; ++i)
-						rawArray[i].~Elem();
-					alloc.Deallocate(rawArray);
-
-					length = 0;
+				if(capacity != 0) {
+					destroy(rawArray, capacity);
+					capacity = 0;
+					size = 0;
+					return;
 				}
 			}
 
-			// Keep old data by so we can copy it before nuking it from orbit
-			auto oldArray = rawArray;
-			auto oldLen = length;
+			if(newCapacity < capacity) {
+				return;
+			}
 
-			rawArray = alloc.Allocate(newSize);
+			// Keep old data so we can copy it before nuking it from orbit
+			auto oldArray = rawArray;
+			auto oldCapacity = capacity;
+
+			rawArray = alloc.Allocate(newCapacity);
 
 			if(oldArray) {
-				if(oldLen <= newSize)
-					TypedTransfer<Elem>::Copy(rawArray, oldArray, newSize);
+				// Copy the old data to the new buffer
+				TypedTransfer<Elem>::Copy(rawArray, oldArray, oldCapacity);
+
+				// Initalize newly reserved elements by default construction
+				for(SizeType i = oldCapacity; i < newCapacity; ++i)
+					alloc.Construct(&rawArray[i]);
 
 				// don't need the old array anymore
-				alloc.Deallocate(oldArray);
+				destroy(oldArray, oldCapacity);
 			} else {
-				// Activate storage for Elem's by default-constructing
-				for(size_t i = 0; i < newSize; ++i)
+				// Activate storage lifetime by default-construction
+				for(SizeType i = 0; i < newCapacity; ++i)
 					alloc.Construct(&rawArray[i]);
 			}
 
-			length = newSize;
+			capacity = newCapacity;
 		}
 
-		[[nodiscard]] constexpr SizeType Length() const {
-			return length;
+		 void Resize(SizeType newSize) {
+            if(newSize >= capacity) {
+                Reserve(newSize + 4);
+			} else {
+				// Destroy
+				for(SizeType i = newSize; i < size; ++i)
+                 rawArray[i].~Elem();
+			}
+
+            size = newSize;
+        }
+
+		void PushBack(const Elem& elem) {
+            Resize(size + 1);
+            rawArray[size-1] = elem;
+        }
+
+		[[nodiscard]] constexpr SizeType Capacity() const {
+			return capacity;
+		}
+
+		[[nodiscard]] constexpr SizeType Size() const {
+			return size;
 		}
 
 		[[nodiscard]] inline Pointer Data() {
@@ -118,19 +149,19 @@ namespace mlstd {
 		}
 
 		[[nodiscard]] inline Reference At(size_t index) {
-			MLSTD_VERIFY(index >= length);
+			MLSTD_VERIFY(index >= size);
 			return rawArray[index];
 		}
 
 		[[nodiscard]] inline ConstReference At(size_t index) const {
-			MLSTD_VERIFY(index >= length);
+			MLSTD_VERIFY(index >= size);
 			return rawArray[index];
 		}
 
 		inline Reference operator[](size_t index) {
 			// If this is a debug build enforce
 			// size checking using At() for verification,
-			// otherwise just index into the array lmao
+			// otherwise just index into the array
 #ifdef DEBUG
 			return At(index);
 #else
@@ -147,10 +178,10 @@ namespace mlstd {
 		}
 
 	   private:
-		Alloc alloc;
+		[[no_unique_address]] Alloc alloc;
 		Pointer rawArray { nullptr };
-		SizeType length { 0 }; // note that this is in Elem, not bytes
-		SizeType size {};
+		SizeType capacity { 0 }; // note that this is in Elem, not bytes
+		SizeType size { 0 };
 	};
 
 } // namespace mlstd

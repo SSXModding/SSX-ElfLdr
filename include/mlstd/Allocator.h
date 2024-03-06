@@ -103,6 +103,26 @@ namespace mlstd {
 		}
 	};
 
+
+	template<class T>
+	concept Deleter = requires(T deleter) {
+		typename T::Type;
+
+		// deleter must have a operator() which takes
+		// a pointer to the memory to delete.
+
+		deleter(declval<typename T::Type*>());
+	};
+
+	template<class T>
+    struct StdDeleter {
+		using Type = T;
+        void operator()(T* ptr) const {
+            delete ptr;
+        }
+    };
+
+
 	// maybe: StdAllocator<const T>
 
 	// Concept for a fixed allocator which could maybe be used to bootstrap?

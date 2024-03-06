@@ -57,7 +57,7 @@ namespace mlstd {
 	template <class T>
 	struct TypedTransfer {
 		inline static void Copy(T* dest, const T* source, size_t length)
-			requires(IsTrivallyCopyableV<T>)
+			requires(IsTriviallyCopyable<T>::Value)
 		{
 			// For performance reasons, if we can copy via memcpy(),
 			// prefer that.
@@ -67,10 +67,20 @@ namespace mlstd {
 		inline static void Copy(T* dest, const T* source, size_t length) {
 			// If we can't, oh well, that's OK too.
 			for(size_t i = 0; i < length; ++i)
-				new(dest[i]) T(source);
+				new(&dest[i]) T(source[i]);
 		}
 
-		// Move() later on
+		inline static void Move(T* dest, const T* source, size_t length)
+			requires(IsTriviallyCopyable<T>::Value)
+		{
+			memmove(dest, source, length * sizeof(T));
+		}
+
+		inline static void Move(T* dest, const T* source, size_t length) {
+			// If we can't, oh well, that's OK too.
+			for(size_t i = 0; i < length; ++i)
+				new(&dest[i]) T(Move<T>(source[i]));
+		}
 	};
 
 	/**

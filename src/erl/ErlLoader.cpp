@@ -67,7 +67,7 @@ namespace elfldr::erl {
 
 		Symbol ResolveSymbol(const char* symbolName) {
 			// FIXME: Does this need to construct a temporary string *EVERY* time it gets called?
-			//        that's a new[], memcpy(), and delete[] just to look up a symbol.
+			//        that's a new[], strlen(), memcpy(), and delete[] just to look up a symbol.
 			//        Too expensive for my liking, but it shouldn't happen frequently.
 
 			if(auto sym = symbol_table.MaybeGet(mlstd::String(symbolName)); sym != nullptr) {
@@ -86,10 +86,9 @@ namespace elfldr::erl {
 		mlstd::HashTable<mlstd::String, Symbol> symbol_table;
 		mlstd::String filename;
 
-		//mlstd::DynamicArray<uint8_t> bytes;
+		// mlstd::DynamicArray<uint8_t> bytes;
 
 		// ELF Data
-
 
 		Elf32_Ehdr header_ {};
 		mlstd::DynamicArray<Elf32_Shdr> shdrs_;
@@ -124,7 +123,7 @@ namespace elfldr::erl {
 			if(auto res = LoadSectionHeaders(); res.HasError())
 				return res.Error();
 
-			return { };
+			return {};
 		}
 
 		LoadResult<> LoadHeader() {
@@ -162,7 +161,7 @@ namespace elfldr::erl {
 			if(auto count = header_.e_shnum * sizeof(Elf32_Shdr); file.Read(reinterpret_cast<void*>(&shdrs_[0]), count) != static_cast<int>(count))
 				return ErlLoadError::ErrorReading;
 
-			return mlstd::NO_ERROR<ErlLoadError>;
+			return {};
 		}
 
 	   private:

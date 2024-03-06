@@ -7,7 +7,7 @@
  * SSX-Elfldr
  *
  * (C) 2021-${YEAR} Lily/modeco80 <lily.modeco80@protonmail.ch>
- * under the terms of the MIT license.
+ * SPDX-License-Identifier: MIT
  */
 
 // CMake version:
@@ -16,5 +16,5 @@
 # SSX-Elfldr
 #
 # (C) 2021-${YEAR} Lily/modeco80 <lily.modeco80@protonmail.ch>
-# under the terms of the MIT license.
+# SPDX-License-Identifier: MIT
 #

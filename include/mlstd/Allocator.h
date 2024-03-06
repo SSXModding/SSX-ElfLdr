@@ -114,6 +114,7 @@ namespace mlstd {
 		deleter(declval<typename T::Type*>());
 	};
 
+	/// Implementation of [Deleter] which just calls the standard operator delete
 	template<class T>
     struct StdDeleter {
 		using Type = T;

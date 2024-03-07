@@ -115,6 +115,9 @@ namespace elfldr::erl {
 		 * \returns no error, or an ErlLoadError from any of the steps.
 		 */
 		LoadResult<> Load() {
+			if(!file)
+				return ErlLoadError::FileNotFound;
+
 			// load the header
 			if(auto res = LoadHeader(); res.HasError())
 				return res.Error();
@@ -127,9 +130,6 @@ namespace elfldr::erl {
 		}
 
 		LoadResult<> LoadHeader() {
-			if(!file)
-				return ErlLoadError::FileNotFound;
-
 			if(file.Read(reinterpret_cast<void*>(&header_), sizeof(header_)) != sizeof(header_))
 				return ErlLoadError::ErrorReading;
 

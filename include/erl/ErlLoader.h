@@ -12,6 +12,7 @@
 #include <mlstd/String.h>
 #include <mlstd/Utility.h>
 #include <stdint.h>
+#include <mlstd/Bit.h>
 
 // The public API surface for LibErl.
 //
@@ -35,7 +36,7 @@ namespace elfldr::erl {
 		}
 
 		[[nodiscard]] constexpr bool IsValid() const {
-			return mlstd::UBCast<int>(_ptr) != -1;
+			return mlstd::BitCast<int>(_ptr) != -1;
 		}
 
 		[[nodiscard]] uintptr_t AsRaw() const {

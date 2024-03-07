@@ -14,9 +14,7 @@
 
 namespace mlstd {
 
-	/**
-	 * A simple dynamic array.
-	 */
+	/// A dynamic array of Elem's.
 	template <class Elem, class Alloc = StdAllocator<Elem>>
 	struct DynamicArray {
 		using ValueType = RemoveCvRefT<Elem>;
@@ -25,6 +23,10 @@ namespace mlstd {
 		using ConstReference = const ValueType&;
 		using Pointer = ValueType*;
 		using ConstPointer = const ValueType*;
+
+		// Iterator support (TODO)
+		using Iterator = Pointer;
+		using ConstIterator = ConstPointer;
 
 		constexpr DynamicArray() = default;
 
@@ -54,7 +56,7 @@ namespace mlstd {
 			Resize(0);
 		}
 
-		inline DynamicArray& operator=(const DynamicArray& copy) {
+		inline DynamicArray& operator=(const DynamicArray& copy) noexcept {
 			if(this == &copy)
 				return *this;
 
@@ -69,7 +71,7 @@ namespace mlstd {
 		// we might want to provide a Reserve() function as well,
 		// which resizes to N but does not activate storage of Elem's
 
-		void Reserve(SizeType newCapacity) {
+		bool TryReserve(SizeType newCapacity) noexcept {
 			auto destroy = [&](Elem* ptr, SizeType size) {
 				for(SizeType i = 0; i < size; ++i)
 					ptr[i].~Elem();
@@ -82,12 +84,12 @@ namespace mlstd {
 					destroy(rawArray, capacity);
 					capacity = 0;
 					size = 0;
-					return;
+					return true;
 				}
 			}
 
 			if(newCapacity < capacity) {
-				return;
+				return false;
 			}
 
 			// Keep old data so we can copy it before nuking it from orbit
@@ -95,6 +97,14 @@ namespace mlstd {
 			auto oldCapacity = capacity;
 
 			rawArray = alloc.Allocate(newCapacity);
+
+			if(!rawArray) {
+				// If this occurs, fail the reserve, but don't
+				// destroy the old array or its objects, and
+				// revert back to the previous array.
+				rawArray = oldArray;
+				return false;
+			}
 
 			if(oldArray) {
 				// Copy the old data to the new buffer
@@ -113,47 +123,67 @@ namespace mlstd {
 			}
 
 			capacity = newCapacity;
+			return true;
 		}
 
-		 void Resize(SizeType newSize) {
-            if(newSize >= capacity) {
-                Reserve(newSize + 4);
+		void Reserve(SizeType newCapacity) noexcept {
+			// Ignore the result of TryReserve.
+			static_cast<void>(TryReserve(newCapacity));
+		}
+
+		void Resize(SizeType newSize) noexcept {
+			if(newSize >= capacity) {
+				// If reserving fails, don't destroy or actually resize.
+				//
+				// We can probably do a better job communicating this to users,
+				// but for now not breaking the state seems "good enough".
+				if(!TryReserve(newSize + 4))
+					return;
 			} else {
 				// Destroy
 				for(SizeType i = newSize; i < size; ++i)
-                 rawArray[i].~Elem();
+					rawArray[i].~Elem();
 			}
 
-            size = newSize;
-        }
+			size = newSize;
+		}
+
+		void Clear() {
+			// Resize(0) has the correct semantics to work as Clear().
+			Resize(0);
+		}
 
 		void PushBack(const Elem& elem) {
-            Resize(size + 1);
-            rawArray[size-1] = elem;
-        }
+			Resize(size + 1);
+			rawArray[size - 1] = elem;
+		}
 
-		[[nodiscard]] constexpr SizeType Capacity() const {
+		constexpr SizeType Capacity() const {
 			return capacity;
 		}
 
-		[[nodiscard]] constexpr SizeType Size() const {
+		constexpr SizeType Size() const {
 			return size;
 		}
 
-		[[nodiscard]] inline Pointer Data() {
+		constexpr bool Empty() const {
+			return Size() == 0;
+		}
+
+		constexpr Pointer Data() {
 			return &rawArray[0];
 		}
 
-		[[nodiscard]] inline ConstPointer Data() const {
+		constexpr ConstPointer Data() const {
 			return &rawArray[0];
 		}
 
-		[[nodiscard]] inline Reference At(size_t index) {
+		inline Reference At(size_t index) {
 			MLSTD_VERIFY(index >= size);
 			return rawArray[index];
 		}
 
-		[[nodiscard]] inline ConstReference At(size_t index) const {
+		inline ConstReference At(size_t index) const {
 			MLSTD_VERIFY(index >= size);
 			return rawArray[index];
 		}
@@ -175,6 +205,48 @@ namespace mlstd {
 #else
 			return rawArray[index];
 #endif
+		}
+
+		constexpr Reference Front() {
+			return rawArray[0];
+		}
+		constexpr ConstReference Front() const {
+			return rawArray[0];
+		}
+
+		constexpr Reference Back() {
+			return rawArray[Size() - 1];
+		}
+
+		constexpr ConstReference Back() const {
+			return rawArray[Size() - 1];
+		}
+
+		// In order for range-for to work, these functions have to be named like this.
+		// ...Kind of sucks, but whatever.
+
+		constexpr Iterator begin() noexcept {
+			return &rawArray[0];
+		}
+
+		constexpr ConstIterator cbegin() noexcept {
+			return &rawArray[0];
+		}
+
+		constexpr ConstIterator begin() const noexcept {
+			return &rawArray[0];
+		}
+
+		constexpr Iterator end() noexcept {
+			return &rawArray[Size()];
+		}
+
+		constexpr ConstIterator cend() noexcept {
+			return &rawArray()[Size()];
+		}
+
+		constexpr ConstIterator end() const noexcept {
+			return &rawArray[Size()];
 		}
 
 	   private:

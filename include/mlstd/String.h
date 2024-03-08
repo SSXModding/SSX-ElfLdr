@@ -88,12 +88,12 @@ namespace mlstd {
 		inline BasicString() = default;
 
 		inline BasicString(const T* cstr) noexcept {
-			MLSTD_VERIFY(cstr != nullptr);
+			MLSTD_ASSERT(cstr != nullptr);
 			CopyFromCString(cstr);
 		}
 
 		inline BasicString(const T* mem, int length) noexcept {
-			MLSTD_VERIFY(mem != nullptr);
+			MLSTD_ASSERT(mem != nullptr);
 
 			Resize(length);
 			Traits::Copy(&mem[0], &GetMemory()[0], length);
@@ -319,7 +319,7 @@ namespace mlstd {
 				SizeType len;
 
 				void Allocate(SizeType length) {
-					MLSTD_VERIFY(length >= SSO_BUFFER_SIZE && "Invalid Allocate() for SSO");
+					MLSTD_ASSERT(length >= SSO_BUFFER_SIZE && "Invalid Allocate() for SSO");
 					len = length;
 				}
 

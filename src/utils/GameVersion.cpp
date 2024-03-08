@@ -78,7 +78,8 @@ namespace elfldr::util {
 					return "ssx3";
 
 				default:
-					MLSTD_VERIFY(false && "Invalid game passed to GameToString()");
+					MLSTD_ASSERT(false && "Invalid game passed to GameToString()");
+					return "invalid";
 			}
 		}
 
@@ -127,7 +128,8 @@ namespace elfldr::util {
 			case Game::SSX3:
 				return SSX3Binary(region, version);
 			default:
-				MLSTD_VERIFY(false && "Invalid game passed to GameBinaryFor...");
+				MLSTD_ASSERT(false && "Invalid game passed to GameBinaryFor...");
+				return "slps_000.00";
 		}
 	}
 

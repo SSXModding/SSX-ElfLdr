@@ -15,6 +15,7 @@ add_library(mlstd
         # C++ Runtime code
         # ./
         Allocator.cpp
+        Error.cpp
         String.cpp
         Fnv1a.cpp
         )

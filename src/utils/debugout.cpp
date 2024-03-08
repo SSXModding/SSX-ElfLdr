@@ -52,7 +52,7 @@ namespace elfldr::util {
 		VSNPRINTF_OFFSET(buf, sizeof(buf), LITERAL_STRLEN(DEBUGOUT_PREFIX));
 
 #ifndef ERL
-		printf("%s\n", buf);
+		//printf("%s\n", buf);
 		mlstd_printf("%s\n", buf);
 
 		// Write messages to the logfile if it opened successfully

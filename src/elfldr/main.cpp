@@ -53,7 +53,10 @@ int main() {
 	{
 		static char elfPath[elfldr::util::MaxPath] {};
 		snprintf(&elfPath[0], elfldr::util::MaxPath * sizeof(char), "host:%s", gdata.GetGameBinary().CStr());
-		MLSTD_VERIFY(gLoader.LoadElf(elfPath));
+		if(!gLoader.LoadElf(elfPath)) {
+			elfldr::util::DebugOut("Could not load ELF \"%s\". Bailing", elfPath);
+			return 0;
+		}
 	}
 
 	// Set up the mlstd memory allocator automagically.
@@ -77,37 +80,6 @@ int main() {
 	// Apply the basic ELF patches, HostFS and MemoryClear.
 	ApplyElfPatch(elfldr::GetPatchById(0x00));
 	ApplyElfPatch(elfldr::GetPatchById(0x01));
-
-	// test dynamicarray
-
-	mlstd::DynamicArray<int> ints;
-
-	for(uint32_t i = 0; i < 24; ++i) {
-		if((i & 1))
-			ints.PushBack(0x41414141);
-		else
-			ints.PushBack(0x42424242);
-	}
-
-	// print the address of the array so we can look at it
-	elfldr::util::DebugOut("ints.Data() = %p", ints.Data());
-
-#if 0
-	for(uint32_t i = 0; i < ints.Size(); ++i) {
-		elfldr::util::DebugOut("ints[%u] = 0x%08x", i, ints[i]);
-	}
-#endif
-
-	// test rangefor
-	for(auto& num : ints) {
-		elfldr::util::DebugOut("num is 0x%08x", num);
-	}
-
-	// test that string SSO's when it should and heap allocates when it should
-	mlstd::String stackStr = "HI STACK";
-	mlstd::String heapStr = "Hello World this string should be allocated on the heap";
-	elfldr::util::DebugOut("stackStr: %s/%p\n", stackStr.data(), stackStr.data());
-	elfldr::util::DebugOut("heapStr: %s/%p\n", heapStr.data(), heapStr.data());
 
 	// Load codehooks into memory and initialize them.
 

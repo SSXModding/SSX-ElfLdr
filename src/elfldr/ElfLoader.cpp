@@ -68,7 +68,7 @@ namespace elfldr {
 	void ElfLoader::ExecElf(int argc, char** argv) {
 		// This function shouldn't be called if
 		// the elf didn't load properly.
-		MLSTD_VERIFY(gExecData.epc > 0);
+		MLSTD_ASSERT(gExecData.epc > 0);
 
 		FlushCaches();
 

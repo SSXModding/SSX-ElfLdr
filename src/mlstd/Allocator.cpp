@@ -56,13 +56,13 @@ namespace mlstd {
 
 void* operator new(size_t size) {
 	auto* p = mlstd::Alloc(size);
-	MLSTD_VERIFY(p != nullptr && "Alloc() returned nullptr!!!");
+	MLSTD_ASSERT(p != nullptr && "Alloc() returned nullptr!!!");
 	return p;
 }
 
 void* operator new[](size_t size) {
 	auto* p = mlstd::Alloc(size);
-	MLSTD_VERIFY(p != nullptr && "Alloc() returned nullptr!!!");
+	MLSTD_ASSERT(p != nullptr && "Alloc() returned nullptr!!!");
 	return p;
 }
 
